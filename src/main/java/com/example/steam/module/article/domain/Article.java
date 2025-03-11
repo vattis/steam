@@ -1,6 +1,6 @@
 package com.example.steam.module.article.domain;
 
-import com.example.steam.module.comment.domain.Comment;
+import com.example.steam.module.comment.domain.ArticleComment;
 import com.example.steam.module.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,10 +29,9 @@ public class Article {
     @Column(nullable = false)
     private String content;
 
-
-    @OneToMany(mappedBy="article")
+    @OneToMany(mappedBy="article", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<Comment> comments = new ArrayList<Comment>();
+    private List<ArticleComment> comments = new ArrayList<>();
 
     @Column(nullable = false)
     private int likes;

@@ -1,4 +1,4 @@
-package com.example.steam.module.shoppingCart.domain;
+package com.example.steam.module.order.domain;
 
 import com.example.steam.module.member.domain.Member;
 import jakarta.persistence.*;
@@ -13,16 +13,16 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShoppingCart {
+public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy="shoppingCart")
+    @OneToMany(mappedBy="order")
     @Builder.Default
-    private List<ShoppingCartProduct> shoppingCartProducts = new ArrayList<>();
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 }

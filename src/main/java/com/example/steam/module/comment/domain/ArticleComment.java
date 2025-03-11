@@ -7,19 +7,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+//커뮤니티 게시글의 댓글
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
+public class ArticleComment {
     @Id
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Article article;
 
