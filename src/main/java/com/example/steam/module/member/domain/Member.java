@@ -23,8 +23,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?") //delete를 사용시, delete=true 업데이트 쿼리를 대신 날린다
+@SQLRestriction("deleted is false") //search 사용시 where 절에 delete=false 조건을 추가한다
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,5 +64,5 @@ public class Member {
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default
-    private Boolean deleted = false;
+    private Boolean deleted = false; //soft delete를 위한 field
 }
