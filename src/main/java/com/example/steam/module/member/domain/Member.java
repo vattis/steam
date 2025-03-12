@@ -9,15 +9,22 @@ import com.example.steam.module.shoppingCart.domain.ShoppingCart;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLRestriction("deleted is false")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,4 +60,9 @@ public class Member {
 
     @OneToMany(mappedBy="fromMember", cascade = CascadeType.ALL)
     private List<Friendship> friendships = new ArrayList<>();
+
+    @Column(name="deleted", nullable = false)
+    @ColumnDefault("false")
+    @Builder.Default
+    private Boolean deleted = false;
 }

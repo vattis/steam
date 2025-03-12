@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLRestriction("deleted is false")
 public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +30,9 @@ public class Orders {
     @OneToMany(mappedBy="order")
     @Builder.Default
     private List<OrderProduct> orderProducts = new ArrayList<>();
+
+    @Column(name="deleted", nullable = false)
+    @ColumnDefault("false")
+    @Builder.Default
+    private Boolean deleted = false;
 }

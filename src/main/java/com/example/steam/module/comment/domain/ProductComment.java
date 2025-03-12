@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 
 //상품(게임)의 리뷰
@@ -13,6 +16,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLRestriction("deleted is false")
 public class ProductComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +38,9 @@ public class ProductComment {
     //리뷰 점수
     @Column
     private float rate;
+
+    @Column(name="deleted", nullable = false)
+    @ColumnDefault("false")
+    @Builder.Default
+    private Boolean deleted = false;
 }
