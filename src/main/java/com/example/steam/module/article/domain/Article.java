@@ -5,16 +5,19 @@ import com.example.steam.module.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
@@ -39,10 +42,25 @@ public class Article {
     private List<ArticleComment> comments = new ArrayList<>();
 
     @Column(nullable = false)
-    private int likes;
+    @Builder.Default
+    private int likes = 0;
 
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default
     private Boolean deleted = false;
+
+    @Column(nullable = false)
+    private LocalDateTime created;
+
+    public static Article of(Member member, String title, String content) {
+        return Article.builder()
+                .member(member)
+                .title(title)
+                .content(content)
+                .created(LocalDateTime.now())
+                .build();
+    }
+
+
 }
