@@ -26,8 +26,8 @@ public class ArticleService {
 
     //게시판 전체 탐색, page 로 반환, 날짜 최신순
     public Page<Article> findAllPage(){
-        Pageable pageable = PageRequest.of(PageConst.ARTICLE_PAGE_NUMBER, PageConst.ARTICLE_PAGE_SIZE);
-        return articleRepository.findAllOrderByCreatedAtDesc(pageable);
+        Pageable pageable = PageRequest.of(0, PageConst.ARTICLE_PAGE_SIZE);
+        return articleRepository.findAllByOrderByCreated(pageable);
     }
     //단일 article 탐색
     public Article findArticle(Long id){

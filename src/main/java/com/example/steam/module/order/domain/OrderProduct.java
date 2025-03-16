@@ -10,10 +10,11 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@Table(name="order_product")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLDelete(sql="UPDATE order_product SET deleted = true WHERE id=?")
 @SQLRestriction("deleted is false")
 public class OrderProduct {
     @Id

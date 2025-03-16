@@ -55,14 +55,41 @@ public class Member {
     @Builder.Default
     private List<Orders> orders = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     private ShoppingCart shoppingCart;
 
     @OneToMany(mappedBy="fromMember", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Friendship> friendships = new ArrayList<>();
 
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default
     private Boolean deleted = false; //soft delete를 위한 field
+
+    public static Member makeSampleWithId(int i){
+        Member member= Member.builder()
+                            .id((long)i)
+                            .nickname("nickName" + i)
+                            .email("email" + i)
+                            .password("password" + i)
+                            .build();
+        member.setShoppingCart(ShoppingCart.makeSampleWithId(i, member));
+        return member;
+    }
+    public static Member makeSample(int i){
+        Member member= Member.builder()
+                .nickname("nickName" + i)
+                .email("email" + i)
+                .password("password" + i)
+                .build();
+        member.setShoppingCart(ShoppingCart.makeSample(i, member));
+        return member;
+    }
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        if(this.shoppingCart == null){
+            this.shoppingCart = shoppingCart;
+            shoppingCart.setMember(this);
+        }
+    }
 }

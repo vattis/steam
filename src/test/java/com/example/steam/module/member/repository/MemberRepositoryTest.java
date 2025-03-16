@@ -6,28 +6,57 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class MemberRepositoryTest {
     @Autowired MemberRepository memberRepository;
     @Autowired EntityManager em;
+
+    @Test
+    void saveTest(){
+        //given
+        Member member = Member.makeSample(1);
+
+        //when
+        Member memberResult = memberRepository.save(member);
+
+        //then
+        assertThat(memberResult.getId()).isNotNull();
+        assertThat(member.getNickname()).isEqualTo(memberResult.getNickname());
+        assertThat(member.getEmail()).isEqualTo(memberResult.getEmail());
+        assertThat(member.getPassword()).isEqualTo(memberResult.getPassword());
+    }
     @Test
     void deleteTest(){
-        Member member = Member.builder()
-                .email("email")
-                .nickname("nickName")
-                .password("password")
-                .shoppingCart(null)
-                //.deleted(false)
-                .build();
-        member = memberRepository.save(member);
-
-        member = memberRepository.findById(member.getId()).get();
-        System.out.println(member.getId() + " " + member.getDeleted());
+        //given
+        Member member = Member.makeSample(1);
+        memberRepository.save(member);
         em.flush();
         em.clear();
+
+        //when
         memberRepository.delete(member);
         em.flush();
+        em.clear();
+
+        //then
+        assertThat(memberRepository.existsById(member.getId())).isFalse();
+
+    }
+    @Test
+    void findTest(){
+        //given
+        Member member = Member.makeSample(1);
+        Member member1 = memberRepository.save(member);
+
+        //when
+        Member memberResult = memberRepository.findById(member1.getId()).orElse(null);
+
+        //then
+        assertThat(memberResult).isNotNull();
+        assertThat(member.getNickname()).isEqualTo(memberResult.getNickname());
+        assertThat(member.getEmail()).isEqualTo(memberResult.getEmail());
+        assertThat(member.getPassword()).isEqualTo(memberResult.getPassword());
     }
 }

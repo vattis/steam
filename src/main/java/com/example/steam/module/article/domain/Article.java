@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLDelete(sql="UPDATE article SET deleted = true WHERE id=?")
 @SQLRestriction("deleted is false")
 public class Article {
     @Id
@@ -62,5 +62,26 @@ public class Article {
                 .build();
     }
 
+    public static Article makeSampleWithId(int i, Member member){
+        Article article = Article.builder()
+                                .id((long)i)
+                                .member(member)
+                                .title("title"+i)
+                                .content("content"+i)
+                                .created(LocalDateTime.now())
+                                .build();
+        member.getArticles().add(article);
+        return article;
+    }
+    public static Article makeSample(int i, Member member){
+        Article article = Article.builder()
+                                .member(member)
+                                .title("title"+i)
+                                .content("content"+i)
+                                .created(LocalDateTime.now())
+                                .build();
+        member.getArticles().add(article);
+        return article;
+    }
 
 }

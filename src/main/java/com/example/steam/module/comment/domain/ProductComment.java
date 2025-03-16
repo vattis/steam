@@ -13,10 +13,11 @@ import org.hibernate.annotations.SQLRestriction;
 
 //상품(게임)의 리뷰
 @Entity
+@Table(name="product_comment")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLDelete(sql="UPDATE product_comment SET deleted = true WHERE id=?")
 @SQLRestriction("deleted is false")
 public class ProductComment {
     @Id

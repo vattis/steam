@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLDelete(sql="UPDATE product SET deleted = true WHERE id=?")
 @SQLRestriction("deleted is false")
 public class Product {
     @Id

@@ -12,10 +12,11 @@ import org.hibernate.annotations.SQLRestriction;
 
 //커뮤니티 게시글의 댓글
 @Entity
+@Table(name="article_comment")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLDelete(sql="UPDATE article_comment SET deleted = true WHERE id=?")
 @SQLRestriction("deleted is false")
 public class ArticleComment {
     @Id

@@ -17,7 +17,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?")
+@SQLDelete(sql="UPDATE friendship SET deleted = true WHERE id=?")
 @SQLRestriction("deleted is false")
 public class Friendship {
     @Id
@@ -36,7 +36,7 @@ public class Friendship {
     
     //친구 수락 여부
     @Column(nullable = false)
-    private Boolean accepted = false;
+    private Boolean accepted;
 
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
