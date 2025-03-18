@@ -92,4 +92,18 @@ public class Member {
             shoppingCart.setMember(this);
         }
     }
+
+    public static Member of(String nickname, String email, String password){
+        return Member.builder()
+                .nickname(nickname)
+                .email(email)
+                .password(password)
+                .build();
+    }
+
+    public Member update(String nickname, String password){
+        this.nickname = nickname;
+        this.password = password;
+        return this;
+    }
 }
