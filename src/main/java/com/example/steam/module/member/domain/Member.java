@@ -67,6 +67,9 @@ public class Member {
     @Builder.Default
     private Boolean deleted = false; //soft delete를 위한 field
 
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
+
     public static Member makeSampleWithId(int i){
         Member member= Member.builder()
                             .id((long)i)
