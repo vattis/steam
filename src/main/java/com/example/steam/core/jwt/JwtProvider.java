@@ -40,7 +40,7 @@ public class JwtProvider {
                 .collect(Collectors.joining(","));
 
 
-        String accessToken = Jwts.builder()
+        String accessToken = Jwts.builder()   //만료 기한, subject, 권한이 포함되고 시크릿 키로 해싱해서 생성
                 .setExpiration(new Date(now+JwtConst.JWT_ACCESS_TOKEN_EXPIRES_IN))
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
@@ -48,7 +48,7 @@ public class JwtProvider {
                 .compact();
 
 
-        String refreshToken = Jwts.builder()
+        String refreshToken = Jwts.builder()    //중요한 정보 대신 만료 기한만 포함되고 시크릿 키로 해싱해서 생성
                 .setExpiration(new Date(now+JwtConst.JWT_REFRESH_TOKEN_EXPIRES_IN))
                 .signWith(key)
                 .compact();
@@ -61,7 +61,7 @@ public class JwtProvider {
                 .build();
     }
 
-    //accessToken을 받아서 인증이 안 된 UsernamePasswordAuthenticationToken으로 만들어주는 메서드
+    //accessToken을 받아서 인증된 UsernamePasswordAuthenticationToken으로 만들어주는 메서드
     public Authentication getAuthentication(String accessToken){
         Claims claims = parseClaim(accessToken);
 

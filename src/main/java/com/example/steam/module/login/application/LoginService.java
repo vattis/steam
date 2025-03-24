@@ -18,11 +18,20 @@ public class LoginService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     public JwtToken login(LoginForm loginForm) {
+        //검증되지 않은 AuthenticationToken
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword());
 
+
+        /*
+    AuthenticationManager가 authenticate() 메서드를 실행하면 검증 진행
+    UserDetailsService를 구현한 CustomUserDetailsService의 loadUserByUsername()메서드를 찾아서 내부에서 실행
+    DB로부터 해당되는 Member를 찾아와서 검증된 Authentication으로 반환
+    */
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
+
+        //JwtToken 생성
         return jwtProvider.generateToken(authentication);
     }
 }
