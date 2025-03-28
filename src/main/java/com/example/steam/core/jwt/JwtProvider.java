@@ -64,14 +64,12 @@ public class JwtProvider {
     //accessToken을 받아서 인증된 UsernamePasswordAuthenticationToken으로 만들어주는 메서드
     public Authentication getAuthentication(String accessToken){
         Claims claims = parseClaim(accessToken);
-
         if(claims.get("auth") == null){
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .toList();
-
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", authorities);
     }
 

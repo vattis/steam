@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private UserDetails createUserDetails(Member member){
         List<String> role = new ArrayList<>();
-        role.add(member.getRole().name());
+        role.add(member.getRole().getLabel());
         return MemberUserDetails.builder()
                 .id(member.getId())
                 .username(member.getEmail())

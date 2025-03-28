@@ -85,6 +85,7 @@ public class Member {
                 .nickname("nickName" + i)
                 .email("email" + i)
                 .password("password" + i)
+                .role(Role.USER)
                 .build();
         member.setShoppingCart(ShoppingCart.makeSample(i, member));
         return member;
