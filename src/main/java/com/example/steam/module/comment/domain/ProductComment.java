@@ -5,6 +5,7 @@ import com.example.steam.module.product.domain.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Table(name="product_comment")
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql="UPDATE product_comment SET deleted = true WHERE id=?")
@@ -38,10 +40,26 @@ public class ProductComment {
 
     //리뷰 점수
     @Column
-    private float rate;
+    private Float rate;
 
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default
     private Boolean deleted = false;
+
+    public static ProductComment of(Product product, Member member, String content, Float rate) {
+        ProductComment productComment =  ProductComment.builder()
+                .product(product)
+                .member(member)
+                .content(content)
+                .rate(rate)
+                .build();
+        product.addComment(productComment);
+        member.getProductComments().add(productComment);
+        return productComment;
+    }
+
+    public static ProductComment makeSample(Product product, Member member, int num) {
+        return ProductComment.of(product, member, "productCommentContent"+num, 4f);
+    }
 }
