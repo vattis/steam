@@ -5,6 +5,7 @@ import com.example.steam.module.company.domain.Company;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql="UPDATE product SET deleted = true WHERE id=?")
