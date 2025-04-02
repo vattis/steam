@@ -9,8 +9,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByOrderByDownloadNum(Pageable pageable);
+
     Page<Product> findAllByNameContaining(String searchWord, Pageable pageable);
+
     Page<Product> findAllByCompanyNameContaining(String searchWord, Pageable pageable);
+
     @Query(value = "select distinct p from Product p join p.company c where p.name like concat('%', :searchWord, '%') or c.name like concat('%', :searchWord, '%')")
     Page<Product> findAllByNameOrCompanyNameContaining(@Param("searchWord") String searchWord, Pageable pageable);
+
+    Page<Product> findAllByCompanyId(Long companyId, Pageable pageable);
 }

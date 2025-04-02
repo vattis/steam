@@ -29,8 +29,8 @@ public class ProductService {
     }
 
     //전체 조회 및 검색
-    public Page<Product> search(ProductSearch productSearch){
-        PageRequest pageRequest = PageRequest.of(0, PageConst.ARTICLE_PAGE_SIZE);
+    public Page<Product> search(ProductSearch productSearch){//정렬 기능 추가 예정
+        PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_PAGE_SIZE);
         if(productSearch.getSearchWord() == null || productSearch.getSearchWord().isEmpty()){ //전체 조회
             return productRepository.findAllByOrderByDownloadNum(pageRequest);
         }else if(productSearch.getSearchTag() == ProductSearchTag.NAME){ //게임 이름 조회
@@ -41,6 +41,12 @@ public class ProductService {
             return productRepository.findAllByNameOrCompanyNameContaining(productSearch.getSearchWord(), pageRequest);
         }
         return null;
+    }
+
+    //개발사로 게임 조회
+    public Page<Product> findAllByCompany(Long companyId){
+        PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_PAGE_SIZE);
+        return productRepository.findAllByCompanyId(companyId, pageRequest);
     }
 
     //게임 한개 조회
