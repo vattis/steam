@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -41,6 +42,12 @@ public class MemberService {
     //회원가입 유효성 검증
     public boolean isValid(SignUpForm signUpForm){
         return signUpForm.isValid() && !memberRepository.existsByEmail(signUpForm.getEmail());
+    }
+
+    //회원 가입 이메일 인증 코드 만들기
+    public int createAuthCode(){
+        Random random = new Random();
+        return random.nextInt(900000)+100000;
     }
 
 }

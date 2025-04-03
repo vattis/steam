@@ -20,3 +20,20 @@ spring:
       mode: always
   jwt:
     secret: YW5kcmV3MDI3MzkyNzg2Mjk0NzQ2Mjk1NjUyOTM3NjQ5NQ==
+  mail:
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: superhsk00@gmail.com
+      password: kvaelytnqmpofrfy
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+              required: true
+            connectiontimeout: 5000
+            timeout: 5000
+            writetimeout: 5000
+        auth-code-expiration-millis: 1800000
