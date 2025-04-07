@@ -42,7 +42,7 @@ public class EmailConfig {
 
 
     @Bean
-    public JavaMailSender javaMailSender() {
+    public JavaMailSender javaMailSender() {  //JavaMailSenderImpl에 미리 설정을 넣어둠
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setUsername(username);
@@ -53,7 +53,7 @@ public class EmailConfig {
         return mailSender;
     }
 
-    private Properties getProperties() {
+    private Properties getProperties() { //JavaMailSenderImpl에 필요한 다른 설정은 Properties타임으로 추가 가능
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", auth);
         properties.put("mail.smtp.starttls.enable", starttlsEnable);
