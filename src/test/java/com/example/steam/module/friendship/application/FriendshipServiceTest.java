@@ -5,6 +5,7 @@ import com.example.steam.module.friendship.domain.Friendship;
 import com.example.steam.module.friendship.repository.FriendshipRepository;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,6 +46,7 @@ class FriendshipServiceTest {
     }
 
     @Test
+    @DisplayName("이미 친구 관계가 성립된 경우 친구 신청")
     void addFriend1() {
         //given
         Member friendMember1 = Member.makeSample(1);
@@ -52,39 +54,42 @@ class FriendshipServiceTest {
         ReflectionTestUtils.setField(friendMember1, "id", 1L);
         ReflectionTestUtils.setField(friendMember2, "id", 2L);
 
-
-
         given(friendshipRepository.existsByFromMemberIdAndToMemberId(friendMember1.getId(), friendMember2.getId())).willReturn(true);
-
-
         given(friendshipRepository.findByFromMemberIdAndToMemberId(friendMember1.getId(), friendMember2.getId())).willReturn(Friendship.of(friendMember1, friendMember2, true));
 
         //when
         friendshipService.addFriend(friendMember1.getId(), friendMember2.getId());
 
         //then
+        verify(memberRepository, never()).findById(any(Long.class));
         verify(friendshipRepository, never()).save(any(Friendship.class));
-
     }
 
     @Test
+    @DisplayName("친구 관계가 아닌 경우의 친구 신청")
     void addFriend2(){
         //given
         Member nonFriendMember1 = Member.makeSample(3);
         Member nonFriendMember2 = Member.makeSample(4);
         ReflectionTestUtils.setField(nonFriendMember1, "id", 3L);
         ReflectionTestUtils.setField(nonFriendMember2, "id", 4L);
+        Optional<Member> optionalMember1 = Optional.of(nonFriendMember1); //미리 생성해두는게 핵심
+        Optional<Member> optionalMember2 = Optional.of(nonFriendMember2);
 
         given(friendshipRepository.existsByFromMemberIdAndToMemberId(nonFriendMember1.getId(), nonFriendMember2.getId())).willReturn(false);
-        given(memberRepository.findById(nonFriendMember1.getId())).willReturn(Optional.of(nonFriendMember1));
-        given(memberRepository.findById(nonFriendMember2.getId())).willReturn(Optional.of(nonFriendMember2));
+        //미리 만들어둔 인스턴스를 테스트 메서드 내부로 넣기
+        given(memberRepository.findById(nonFriendMember1.getId())).willReturn(optionalMember1);
+        given(memberRepository.findById(nonFriendMember2.getId())).willReturn(optionalMember2);
 
         //when
         friendshipService.addFriend(nonFriendMember1.getId(), nonFriendMember2.getId());
 
         //then
+        //만들어둔 인스턴스를 통해 서로 친구관계 교환이 됐나 확인
+        assertThat(optionalMember1.get().getFriendships().get(0).getToMember().getId()).isEqualTo(nonFriendMember2.getId());
+        assertThat(optionalMember2.get().getFriendships().get(0).getToMember().getId()).isEqualTo(nonFriendMember1.getId());
+        //save()가 2번 호출 되었는지 확인
         verify(friendshipRepository, times(2)).save(any(Friendship.class));
-
     }
 
     @Test
