@@ -4,6 +4,7 @@ import com.example.steam.module.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
@@ -17,6 +18,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
 @SQLDelete(sql="UPDATE friendship SET deleted = true WHERE id=?")
 @SQLRestriction("deleted is false")
 public class Friendship {
@@ -42,4 +44,15 @@ public class Friendship {
     @ColumnDefault("false")
     @Builder.Default
     private Boolean deleted = false;
+
+    public static Friendship of(Member fromMember, Member toMember, Boolean accepted){
+        return Friendship.builder()
+                .fromMember(fromMember)
+                .toMember(toMember)
+                .accepted(accepted)
+                .build();
+    }
+    public static Friendship createReverseFriendship(Friendship friendship){
+        return Friendship.of(friendship.toMember, friendship.fromMember, friendship.accepted);
+    }
 }
