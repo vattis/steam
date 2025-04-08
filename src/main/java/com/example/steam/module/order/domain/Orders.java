@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.query.Order;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,4 +36,31 @@ public class Orders {
     @ColumnDefault("false")
     @Builder.Default
     private Boolean deleted = false;
+
+    @Column(nullable = false)
+    private int totalPrice;
+
+    public void calcTotalPrice(){
+        totalPrice = 0;
+        for(OrderProduct orderProduct : orderProducts){
+            totalPrice += orderProduct.getCount()*orderProduct.getProduct().getPrice();
+        }
+    }
+
+    public static Orders of(Member member){
+        Orders order = Orders.builder()
+                .member(member)
+                .build();
+        member.getOrders().add(order);
+        return order;
+    }
+
+    public void addOrderProduct(OrderProduct orderProduct){
+        this.orderProducts.add(orderProduct);
+        calcTotalPrice();
+    }
+
+    public void removeOrderProduct(OrderProduct orderProduct){
+        orderProducts.remove(orderProduct);
+    }
 }
