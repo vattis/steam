@@ -31,27 +31,17 @@ public class ShoppingCartProduct {
     @JoinColumn(nullable = false)
     private Product product;
 
-    @Column(nullable = false)
-    private int count;
 
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default
     private Boolean deleted = false;
 
-    public static ShoppingCartProduct of(ShoppingCart shoppingCart, Product product, int count){
+    public static ShoppingCartProduct of(ShoppingCart shoppingCart, Product product){
         ShoppingCartProduct shoppingCartProduct =  ShoppingCartProduct.builder()
                 .shoppingCart(shoppingCart)
                 .product(product)
-                .count(count)
                 .build();
-        shoppingCart.addShoppingCartProduct(shoppingCartProduct);
         return shoppingCartProduct;
-    }
-
-    public int changeCount(int cnt){
-        count = cnt;
-        shoppingCart.calculateTotalPrice();
-        return count;
     }
 }

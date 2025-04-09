@@ -1,6 +1,9 @@
 package com.example.steam.module.shoppingCart.domain;
 
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.order.domain.OrderProduct;
+import com.example.steam.module.order.domain.Orders;
+import com.example.steam.module.product.domain.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -60,28 +63,38 @@ public class ShoppingCart {
         }
     }
 
-    public void addShoppingCartProduct(ShoppingCartProduct shoppingCartProduct){
-        this.shoppingCartProducts.add(shoppingCartProduct);
+    public void addShoppingCartProduct(Product product){
+        this.shoppingCartProducts.add(ShoppingCartProduct.of(this, product));
         calculateTotalPrice();
     }
 
     public static ShoppingCart of(Member member){
-        return ShoppingCart.builder()
+        ShoppingCart shoppingCart = ShoppingCart.builder()
                 .member(member)
                 .totalPrice(0)
                 .build();
+        return shoppingCart;
     }
 
     public void calculateTotalPrice(){
         this.totalPrice = 0;
         for(ShoppingCartProduct shoppingCartProduct : shoppingCartProducts){
             if(shoppingCartProduct.getProduct().getPrice() != null){
-                this.totalPrice += shoppingCartProduct.getCount()*shoppingCartProduct.getProduct().getPrice();
+                this.totalPrice += shoppingCartProduct.getProduct().getPrice();
             }
         }
 
     }
     public void removeShoppingCartProduct(ShoppingCartProduct shoppingCartProduct){
         shoppingCartProducts.remove(shoppingCartProduct);
+    }
+
+    public Orders toOrders(){
+        Orders order = Orders.of(member);
+        for(ShoppingCartProduct shoppingCartProduct : shoppingCartProducts){
+            order.addOrderProduct(OrderProduct.of(order, shoppingCartProduct.getProduct()));
+        }
+        shoppingCartProducts.clear();
+        return order;
     }
 }

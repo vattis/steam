@@ -49,7 +49,7 @@ public class Orders {
     public void calcTotalPrice(){
         totalPrice = 0;
         for(OrderProduct orderProduct : orderProducts){
-            totalPrice += orderProduct.getCount()*orderProduct.getProduct().getPrice();
+            totalPrice += orderProduct.getProduct().getPrice();
         }
     }
 
@@ -69,5 +69,6 @@ public class Orders {
 
     public void removeOrderProduct(OrderProduct orderProduct){
         orderProducts.remove(orderProduct);
+        calcTotalPrice();
     }
 }

@@ -98,11 +98,13 @@ public class Member {
     }
 
     public static Member of(String nickname, String email, String password){
-        return Member.builder()
+        Member member = Member.builder()
                 .nickname(nickname)
                 .email(email)
                 .password(password)
                 .build();
+        member.setShoppingCart(ShoppingCart.of(member));
+        return member;
     }
 
     public Member update(String nickname, String password){

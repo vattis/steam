@@ -36,23 +36,12 @@ public class OrderProduct {
     @Builder.Default
     private Boolean deleted = false;
 
-    @Column(nullable = false)
-    private int count;
 
-    public int changeCount(int cnt){
-        count = cnt;
-        order.calcTotalPrice();
-        return count;
-    }
-
-
-    public static OrderProduct of(Orders order, Product product, int count){
+    public static OrderProduct of(Orders order, Product product){
         OrderProduct orderProduct = OrderProduct.builder()
                 .order(order)
                 .product(product)
-                .count(count)
                 .build();
-        order.addOrderProduct(orderProduct);
         return orderProduct;
     }
 }
