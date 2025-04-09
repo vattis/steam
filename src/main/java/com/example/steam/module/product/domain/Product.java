@@ -30,7 +30,7 @@ public class Product {
     private String name;
 
     @Column
-    private int price;
+    private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)

@@ -30,6 +30,9 @@ public class ShoppingCart {
     @JoinColumn(nullable = false)
     private Member member;
 
+    @Column(nullable = false)
+    private int totalPrice;
+
     @OneToMany(mappedBy="shoppingCart")
     @Builder.Default
     private List<ShoppingCartProduct> shoppingCartProducts = new ArrayList<>();
@@ -55,5 +58,30 @@ public class ShoppingCart {
             this.member = member;
             member.setShoppingCart(this);
         }
+    }
+
+    public void addShoppingCartProduct(ShoppingCartProduct shoppingCartProduct){
+        this.shoppingCartProducts.add(shoppingCartProduct);
+        calculateTotalPrice();
+    }
+
+    public static ShoppingCart of(Member member){
+        return ShoppingCart.builder()
+                .member(member)
+                .totalPrice(0)
+                .build();
+    }
+
+    public void calculateTotalPrice(){
+        this.totalPrice = 0;
+        for(ShoppingCartProduct shoppingCartProduct : shoppingCartProducts){
+            if(shoppingCartProduct.getProduct().getPrice() != null){
+                this.totalPrice += shoppingCartProduct.getCount()*shoppingCartProduct.getProduct().getPrice();
+            }
+        }
+
+    }
+    public void removeShoppingCartProduct(ShoppingCartProduct shoppingCartProduct){
+        shoppingCartProducts.remove(shoppingCartProduct);
     }
 }
