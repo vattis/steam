@@ -39,13 +39,8 @@ public class OrderProduct {
     @Column(nullable = false)
     private int count;
 
-    public int countUp(int cnt){
-        count+=cnt;
-        order.calcTotalPrice();
-        return count;
-    }
-    public int countDown(int cnt){
-        count -= cnt;
+    public int changeCount(int cnt){
+        count = cnt;
         order.calcTotalPrice();
         return count;
     }

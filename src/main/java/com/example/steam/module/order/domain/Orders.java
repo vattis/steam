@@ -4,17 +4,20 @@ import com.example.steam.module.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.query.Order;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql="UPDATE orders SET deleted = true WHERE id=?")
@@ -40,6 +43,9 @@ public class Orders {
     @Column(nullable = false)
     private int totalPrice;
 
+    @Column(nullable = false)
+    private LocalDateTime createdDate;
+
     public void calcTotalPrice(){
         totalPrice = 0;
         for(OrderProduct orderProduct : orderProducts){
@@ -50,6 +56,7 @@ public class Orders {
     public static Orders of(Member member){
         Orders order = Orders.builder()
                 .member(member)
+                .createdDate(LocalDateTime.now())
                 .build();
         member.getOrders().add(order);
         return order;
