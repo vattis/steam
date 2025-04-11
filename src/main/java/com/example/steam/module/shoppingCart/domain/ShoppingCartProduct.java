@@ -38,10 +38,9 @@ public class ShoppingCartProduct {
     private Boolean deleted = false;
 
     public static ShoppingCartProduct of(ShoppingCart shoppingCart, Product product){
-        ShoppingCartProduct shoppingCartProduct =  ShoppingCartProduct.builder()
+        return ShoppingCartProduct.builder()
                 .shoppingCart(shoppingCart)
                 .product(product)
                 .build();
-        return shoppingCartProduct;
     }
 }

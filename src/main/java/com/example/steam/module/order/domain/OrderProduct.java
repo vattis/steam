@@ -38,10 +38,9 @@ public class OrderProduct {
 
 
     public static OrderProduct of(Orders order, Product product){
-        OrderProduct orderProduct = OrderProduct.builder()
+        return OrderProduct.builder()
                 .order(order)
                 .product(product)
                 .build();
-        return orderProduct;
     }
 }

@@ -31,7 +31,7 @@ public class Orders {
     @JoinColumn(nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy="order")
+    @OneToMany(mappedBy="order", cascade = CascadeType.ALL)
     @Builder.Default
     private List<OrderProduct> orderProducts = new ArrayList<>();
 

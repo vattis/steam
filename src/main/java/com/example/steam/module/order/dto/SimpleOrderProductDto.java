@@ -13,16 +13,15 @@ public class SimpleOrderProductDto {
     private SimpleProductDto simpleProductDto;
     private int count;
 
-    public static SimpleOrderProductDto of(Long orderProductId, Long orderId, SimpleProductDto simpleProductDto, int count) {
+    public static SimpleOrderProductDto of(Long orderProductId, Long orderId, SimpleProductDto simpleProductDto) {
         return SimpleOrderProductDto.builder()
                 .orderProductId(orderProductId)
                 .orderId(orderId)
                 .simpleProductDto(simpleProductDto)
-                .count(count)
                 .build();
     }
 
     public static SimpleOrderProductDto fromEntity(OrderProduct orderProduct){
-        return SimpleOrderProductDto.of(orderProduct.getId(), orderProduct.getOrder().getId(), SimpleProductDto.fromEntity(orderProduct.getProduct()), orderProduct.getCount());
+        return SimpleOrderProductDto.of(orderProduct.getId(), orderProduct.getOrder().getId(), SimpleProductDto.fromEntity(orderProduct.getProduct()));
     }
 }

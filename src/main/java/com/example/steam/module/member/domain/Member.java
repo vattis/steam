@@ -70,16 +70,6 @@ public class Member {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    public static Member makeSampleWithId(int i){
-        Member member= Member.builder()
-                            .id((long)i)
-                            .nickname("nickName" + i)
-                            .email("email" + i)
-                            .password("password" + i)
-                            .build();
-        member.setShoppingCart(ShoppingCart.makeSampleWithId(i, member));
-        return member;
-    }
     public static Member makeSample(int i){
         Member member= Member.builder()
                 .nickname("nickName" + i)
