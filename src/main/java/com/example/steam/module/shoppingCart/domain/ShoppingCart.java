@@ -36,7 +36,7 @@ public class ShoppingCart {
     @Column(nullable = false)
     private int totalPrice;
 
-    @OneToMany(mappedBy="shoppingCart")
+    @OneToMany(mappedBy="shoppingCart", cascade = CascadeType.ALL)
     @Builder.Default
     private List<ShoppingCartProduct> shoppingCartProducts = new ArrayList<>();
 
@@ -45,15 +45,10 @@ public class ShoppingCart {
     @Builder.Default
     private Boolean deleted = false;
 
-    public static ShoppingCart makeSampleWithId(int i, Member member){
-        return ShoppingCart.builder()
-                .id(i)
-                .member(member)
-                .build();
-    }
     public static ShoppingCart makeSample(int i, Member member){
         return ShoppingCart.builder()
                 .member(member)
+                .totalPrice(0)
                 .build();
     }
     public void setMember(Member member){
@@ -63,8 +58,8 @@ public class ShoppingCart {
         }
     }
 
-    public void addShoppingCartProduct(Product product){
-        this.shoppingCartProducts.add(ShoppingCartProduct.of(this, product));
+    public void addShoppingCartProduct(ShoppingCartProduct shoppingCartProduct){
+        this.shoppingCartProducts.add(shoppingCartProduct);
         calculateTotalPrice();
     }
 

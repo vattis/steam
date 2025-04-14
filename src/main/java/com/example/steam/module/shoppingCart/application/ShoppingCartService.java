@@ -48,7 +48,8 @@ public class ShoppingCartService {
     public void addShoppingCartProduct(Long memberId, Long productId){
         Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
         Product product = productRepository.findById(productId).orElseThrow(NoSuchElementException::new);
-        member.getShoppingCart().addShoppingCartProduct(product);
+        ShoppingCartProduct shoppingCartProduct = ShoppingCartProduct.of(member.getShoppingCart(), product);
+        member.getShoppingCart().addShoppingCartProduct(shoppingCartProduct);
     }
 
     //장바구니를 주문으로 변경
