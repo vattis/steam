@@ -1,8 +1,6 @@
-package com.example.steam.module.article.presentation;
+package com.example.steam.module.article.application;
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class ArticleServiceTest {

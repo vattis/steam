@@ -1,4 +1,4 @@
-package com.example.steam.module.article.presentation;
+package com.example.steam.module.article.application;
 
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.article.domain.Article;
