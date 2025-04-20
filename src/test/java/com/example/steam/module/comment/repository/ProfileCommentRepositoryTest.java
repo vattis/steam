@@ -50,7 +50,7 @@ class ProfileCommentRepositoryTest {
     void saveAndFindTest(){
         //given
         PageRequest pageRequest = PageRequest.of(0, PageConst.PROFILE_COMMENT_PAGE_SIZE);
-        Member member = memberRepository.findAll().get(0);
+        Member member = memberRepository.findByEmail("email11").orElseThrow();
 
         //when
         Page<ProfileComment> profileCommentPage = profileCommentRepository.findAllByProfileMemberId(member.getId(), pageRequest);
