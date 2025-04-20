@@ -6,6 +6,7 @@ public class PageConst {
     public final static int FRIENDS_PAGE_SIZE = 20;
     public final static int ORDERS_PAGE_SIZE = 10;
     public final static int ORDERS_PRODUCT_PAGE_SIZE = 20;
-
     public final static int SHOPPING_CART_PRODUCT_PAGE_SIZE = 20;
+    public final static int PRODUCT_COMMENT_PAGE_SIZE = 20;
+    public final static int PROFILE_COMMENT_PAGE_SIZE = 10;
 }
