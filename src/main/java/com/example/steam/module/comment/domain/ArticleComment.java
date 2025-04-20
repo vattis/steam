@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -13,29 +14,14 @@ import org.hibernate.annotations.SQLRestriction;
 //커뮤니티 게시글의 댓글
 @Entity
 @Table(name="article_comment")
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql="UPDATE article_comment SET deleted = true WHERE id=?")
 @SQLRestriction("deleted is false")
-public class ArticleComment {
-    @Id
-    private int id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private Member member;
+public class ArticleComment extends Comment{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Article article;
-
-    @Column(nullable = false)
-    private String content;
-
-    @Column(name="deleted", nullable = false)
-    @ColumnDefault("false")
-    @Builder.Default
-    private Boolean deleted = false;
-
 }
