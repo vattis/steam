@@ -8,6 +8,7 @@ import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.repository.ProductRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ class ProductCommentRepositoryTest {
     @Autowired private ProductRepository productRepository;
     @Autowired private CompanyRepository companyRepository;
     @Autowired private ProductCommentRepository productCommentRepository;
+    @Autowired private EntityManager em;
 
     @BeforeEach
     void init(){
@@ -67,14 +69,30 @@ class ProductCommentRepositoryTest {
     }
 
     @Test
-    void deleteTest(){
+    void deleteTest1(){
         //given
         Product product = productRepository.findAll().get(0);
         ProductComment productComment = product.getProductComments().get(0);
+
         //when
         productCommentRepository.deleteById(productComment.getId());
 
         //then
         assertThat(productCommentRepository.findById(productComment.getId())).isEmpty();
+    }
+
+    @Test
+    void deleteTest2(){
+        //given
+        Product product = productRepository.findAll().get(0);
+        PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_COMMENT_PAGE_SIZE);
+        Long productId = product.getId();
+
+        //when
+        productRepository.delete(product);
+
+
+        //then
+        assertThat(productCommentRepository.findAllByProductId(productId, pageRequest).isEmpty());
     }
 }
