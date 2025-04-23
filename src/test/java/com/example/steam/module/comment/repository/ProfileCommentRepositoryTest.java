@@ -58,4 +58,18 @@ class ProfileCommentRepositoryTest {
         //then
         assertThat(profileCommentPage.getTotalElements()).isEqualTo(2);
     }
+
+    @Test
+    void deleteTest(){
+        //given
+        PageRequest pageRequest = PageRequest.of(0, PageConst.PROFILE_COMMENT_PAGE_SIZE);
+        Member member = memberRepository.findByEmail("email11").orElseThrow();
+        Page<ProfileComment> profileCommentPage = profileCommentRepository.findAllByProfileMemberId(member.getId(), pageRequest);
+
+        //when
+        profileCommentRepository.deleteAll(profileCommentPage);
+
+        //then
+        assertThat(profileCommentRepository.findAllByProfileMemberId(member.getId(), pageRequest).getTotalElements()).isEqualTo(0);
+    }
 }

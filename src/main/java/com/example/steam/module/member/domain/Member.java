@@ -1,9 +1,6 @@
 package com.example.steam.module.member.domain;
 
 import com.example.steam.module.article.domain.Article;
-import com.example.steam.module.comment.domain.ArticleComment;
-import com.example.steam.module.comment.domain.ProductComment;
-import com.example.steam.module.comment.domain.ProfileComment;
 import com.example.steam.module.friendship.domain.Friendship;
 import com.example.steam.module.order.domain.Orders;
 import com.example.steam.module.shoppingCart.domain.ShoppingCart;
