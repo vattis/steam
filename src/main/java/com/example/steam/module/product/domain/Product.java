@@ -36,7 +36,7 @@ public class Product {
     @JoinColumn(nullable = false)
     private Company company;
 
-    @OneToMany(mappedBy="product")
+    @OneToMany(mappedBy="product", cascade = CascadeType.ALL)
     @Builder.Default
     private List<ProductComment> productComments = new ArrayList<>();
 

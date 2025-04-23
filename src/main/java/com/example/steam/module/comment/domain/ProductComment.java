@@ -3,14 +3,13 @@ package com.example.steam.module.comment.domain;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.product.domain.Product;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 
@@ -22,8 +21,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql="UPDATE product_comment SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class ProductComment extends Comment{
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,6 +31,8 @@ public class ProductComment extends Comment{
     //리뷰 점수
     @Column
     private Float rate;
+
+
 
     public static ProductComment of(Product product, Member member, String content, Float rate) {
         ProductComment productComment =  ProductComment.builder()
@@ -44,7 +44,6 @@ public class ProductComment extends Comment{
                 .build();
 
         product.addComment(productComment);
-        member.getProductComments().add(productComment);
         return productComment;
     }
 

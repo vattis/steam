@@ -83,5 +83,8 @@ public class Article {
         member.getArticles().add(article);
         return article;
     }
+    public void addComment(ArticleComment articleComment){
+        this.comments.add(articleComment);
+    }
 
 }

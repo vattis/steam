@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -15,8 +17,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql="UPDATE profile_comment SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class ProfileComment extends Comment{
 
     @ManyToOne(fetch = FetchType.LAZY)
