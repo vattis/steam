@@ -4,6 +4,8 @@ import com.example.steam.module.product.domain.Product;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.List;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql="UPDATE company SET deleted = true WHERE id=?")
+@SQLRestriction("deleted is false")
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
