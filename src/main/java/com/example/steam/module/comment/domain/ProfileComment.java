@@ -3,6 +3,7 @@ package com.example.steam.module.comment.domain;
 import com.example.steam.module.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="profile_comment")
 @SuperBuilder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @OnDelete(action = OnDeleteAction.CASCADE)

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="article_comment")
 @SuperBuilder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @OnDelete(action = OnDeleteAction.CASCADE)
