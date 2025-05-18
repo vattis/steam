@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
@@ -22,6 +23,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     //request에서 token을 추출 -> 유효성 검사 -> authentication 변환 -> SecurityContext에 authentication 저장
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        if (isExcluded(request.getRequestURI())) { //예외처리 해야하는 uri 설정
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+
         String token = resolveToken((HttpServletRequest) servletRequest);
         if(jwtProvider.validateToken(token)) {
             Authentication auth = jwtProvider.getAuthentication(token);
@@ -38,4 +46,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }
         return null;
     }
+
+    private boolean isExcluded(String uri) {
+        return EXCLUDE_PREFIXES.stream().anyMatch(uri::startsWith);
+    }
+
+    private static final Set<String> EXCLUDE_PREFIXES = Set.of(
+            "/",
+            "/login",
+            "/sign-up",
+            "/favicon.ico",
+            "/.well-known",
+            "/error"
+    );
 }

@@ -19,14 +19,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, HttpSecurity httpSecurity, JwtProvider jwtProvider) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtProvider jwtProvider) throws Exception {
         return httpSecurity
                 .httpBasic(AbstractHttpConfigurer::disable) //기본 인증 로그인 비활성화
                 .csrf(AbstractHttpConfigurer::disable) //서버에 인증정보를 보관하지 않기 때문에 csrf 보호 비활성화
+                .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer //세션 사용 안함
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeRequest)->authorizeRequest
-                        .requestMatchers("/", "/login", "/sign-up", "/articles", "/auth/**").permitAll()
+                        .requestMatchers("/", "/login", "/sign-up", "/articles", "/auth/**", "/favicon.ico", "/error", "/.well-known/**").permitAll()
                         .requestMatchers("/login/test").hasRole("USER")
                         .anyRequest().authenticated())
                 .exceptionHandling(a->a.accessDeniedPage("/noAuthorities"))
