@@ -6,16 +6,20 @@ import com.example.steam.module.login.dto.LoginForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @Slf4j
 @RequiredArgsConstructor
 public class LoginController {
     private final LoginService loginService;
+    @GetMapping("/login")
+    public String gotoLogin(Model model){
+        model.addAttribute("loginForm", LoginForm.of());
+        return "login";
+    }
+
     @PostMapping("/login")
     public JwtToken login(@RequestBody LoginForm loginForm) {
         log.info("email: " + loginForm.getEmail() + " password: " + loginForm.getPassword());
