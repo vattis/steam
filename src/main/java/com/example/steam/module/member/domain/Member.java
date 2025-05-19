@@ -63,7 +63,7 @@ public class Member {
     public static Member makeSample(int i){
         Member member= Member.builder()
                 .nickname("nickName" + i)
-                .email("email" + i)
+                .email("member" + i + "@email.com")
                 .password("password" + i)
                 .role(Role.USER)
                 .build();

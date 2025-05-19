@@ -5,10 +5,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -28,10 +28,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-
-
         String token = resolveToken((HttpServletRequest) servletRequest);
-        if(jwtProvider.validateToken(token)) {
+        if(StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
             Authentication auth = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
@@ -44,6 +42,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         if(StringUtils.hasText(token) && token.startsWith("Bearer")){
             return token.substring(7);
         }
+        if(request.getCookies() != null){
+            for(Cookie cookie : request.getCookies()){
+                if(cookie.getName().equals("accessToken")){
+                    return cookie.getValue();
+                }
+            }
+        }
         return null;
     }
 
@@ -51,8 +56,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         return EXCLUDE_PREFIXES.stream().anyMatch(uri::startsWith);
     }
 
-    private static final Set<String> EXCLUDE_PREFIXES = Set.of(
-            "/",
+    private static final Set<String> EXCLUDE_PREFIXES = Set.of( //필터를 패스하는 패턴
             "/login",
             "/sign-up",
             "/favicon.ico",

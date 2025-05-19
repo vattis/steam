@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer //세션 사용 안함
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeRequest)->authorizeRequest
-                        .requestMatchers("/", "/login", "/sign-up", "/articles", "/auth/**", "/favicon.ico", "/error", "/.well-known/**").permitAll()
+                        .requestMatchers("/", "/login", "/sign-up", "/sign-in", "/articles", "/auth/**", "/favicon.ico", "/error", "/.well-known/**").permitAll()
                         .requestMatchers("/login/test").hasRole("USER")
                         .anyRequest().authenticated())
                 .exceptionHandling(a->a.accessDeniedPage("/noAuthorities"))

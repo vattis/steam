@@ -39,10 +39,5 @@ public class MemberController {
     public ResponseEntity<?> checkAuth(@RequestParam("authCode") String authNum) {
         return ResponseEntity.ok(tempAuthNum == Integer.parseInt(authNum));
     }
-
-    @GetMapping("/")
-    @ResponseBody
-    public String index() {
-        return "index";
-    }
+    
 }
