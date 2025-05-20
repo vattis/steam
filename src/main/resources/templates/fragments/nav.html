@@ -1,0 +1,28 @@
+<!-- fragments/nav.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:fragment="navbar">
+  <header>
+    <a href="/" style="text-decoration: none;">
+      <h1 style="margin: 0; color: #66c0f4;">Steam</h1>
+    </a>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Store</a>
+      <a href="#">Community</a>
+      <a href="#">Support</a>
+
+      <span sec:authorize="isAnonymous()">
+                <a href="/login" style="margin-left: 40px; color: #3ecf8e; font-weight: bold;">로그인</a>
+            </span>
+
+      <span sec:authorize="isAuthenticated()">
+                <a href="/mypage" style="margin-left: 40px; color: #3ecf8e; font-weight: bold;">마이페이지</a>
+            </span>
+    </nav>
+  </header>
+</div>
+</body>
+</html>
