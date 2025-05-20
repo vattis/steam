@@ -52,6 +52,10 @@ public class Member {
     @Builder.Default
     private List<Friendship> friendships = new ArrayList<>();
 
+    @OneToMany(mappedBy="member", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<MemberGame> memberGames = new ArrayList<>();
+
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default

@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequest)->authorizeRequest
                         .requestMatchers("/", "/login", "/sign-up", "/sign-in", "/articles", "/auth/**", "/favicon.ico", "/error", "/.well-known/**").permitAll()
                         .requestMatchers("/login/test").hasRole("USER")
+                        .requestMatchers("/library/**").authenticated()
                         .anyRequest().authenticated())
                 .exceptionHandling(a->a.accessDeniedPage("/noAuthorities"))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class).build();
