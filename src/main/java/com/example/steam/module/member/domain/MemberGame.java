@@ -5,6 +5,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql="UPDATE member_game SET deleted = true WHERE id=?") //delete를 사용시, delete=true 업데이트 쿼리를 대신 날린다
@@ -21,10 +23,13 @@ import java.time.LocalDateTime;
 public class MemberGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
-    int playMinutes;
+    private int playMinutes;
+
+    @Column(nullable = false)
+    private String name;
 
     @ManyToOne
     private Product product;
@@ -36,6 +41,9 @@ public class MemberGame {
     @Column(nullable = true)
     private LocalDateTime lastPlayedTime;
 
+    @Column(nullable = true)
+    private String imageUrl = null;
+
     private boolean playing = false;
 
     @Column(name="deleted", nullable = false)
@@ -45,6 +53,7 @@ public class MemberGame {
 
     public static MemberGame of(Product product, Member member){
         MemberGame memberGame = MemberGame.builder()
+                .name(product.getName())
                 .product(product)
                 .member(member)
                 .playMinutes(0)

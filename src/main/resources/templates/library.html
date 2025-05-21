@@ -72,7 +72,7 @@
 <aside>
   <h2>라이브러리</h2>
   <div class="game-list">
-    <a th:each="game : ${games}" th:href="@{/library/{id}(id=${game.id})}" th:text="${game.name}">게임 이름</a>
+    <a th:each="game : ${games}" th:href="@{/library/{memberId}/{selectedGameId}(memberId=${game.id}, selectedGameId=${game.id})}" th:text="${game.name}">게임 이름</a>
   </div>
 </aside>
 
@@ -83,23 +83,26 @@
     <a href="/logout">로그아웃</a>
   </div>
 
-  <div class="game-details" th:if="${selectedGame != null}">
-    <<!-- 이미지가 있을 때 -->
+  <!-- games가 비어있을 경우 -->
+  <div th:if="${#lists.isEmpty(games)}">
+    <p>아직 게임이 없습니다. 게임을 추가하세요.</p>
+  </div>
+
+  <!-- games가 있고, selectedGame이 있을 경우 -->
+  <div class="game-details" th:if="${!#lists.isEmpty(games)} and ${selectedGame != null}">
     <img th:if="${selectedGame.imageUrl != null}"
          th:src="@{${selectedGame.imageUrl}}"
          alt="Game Image"
          style="max-width: 500px; width: 100%; border-radius: 8px;">
-
-    <!-- 이미지가 없을 때 -->
     <img th:unless="${selectedGame.imageUrl != null}"
          th:src="@{/images/game-placeholder.png}"
          alt="Game Placeholder"
          style="max-width: 500px; width: 100%; border-radius: 8px;">
     <h1 th:text="${selectedGame.name}">게임 이름</h1>
-    <p th:text="${selectedGame.description}">게임 설명</p>
   </div>
 
-  <div th:if="${selectedGame == null}">
+  <!-- games가 있고, selectedGame이 없을 경우 -->
+  <div th:if="${!#lists.isEmpty(games)} and ${selectedGame == null}">
     <p>왼쪽에서 게임을 선택하세요.</p>
   </div>
 </main>
