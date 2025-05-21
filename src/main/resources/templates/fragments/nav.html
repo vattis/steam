@@ -3,7 +3,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<div th:fragment="navbar(memberId)" style="display: flex; align-items: center; background-color: #171a21; padding: 20px;">
+<div th:fragment="navbar(currentUser)" style="display: flex; align-items: center; background-color: #171a21; padding: 20px;">
+
   <!-- 왼쪽: 로고 -->
   <div style="flex-shrink: 0;">
     <a href="/" style="text-decoration: none;">
@@ -13,11 +14,18 @@
 
   <!-- 오른쪽: 메뉴 -->
   <nav style="display: flex; align-items: center; margin-left: auto;">
+
     <a href="#" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">상점</a>
-    <a th:href="@{/library/{memberId}(memberId=${memberId})}" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">라이브러리</a>
+
+    <!-- currentUser가 null이 아닐 때만 라이브러리 링크 출력 -->
+    <a th:if="${currentUser != null}"
+       th:href="@{/library/{memberId}(memberId=${currentUser.id})}"
+       style="color: #c6d4df; margin-left: 20px; text-decoration: none;">라이브러리</a>
+
     <a href="#" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">커뮤니티</a>
     <a href="#" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">지원</a>
 
+    <!-- 로그인 여부에 따라 다른 버튼 표시 -->
     <span sec:authorize="isAnonymous()">
       <a href="/login" style="margin-left: 40px; color: #3ecf8e; font-weight: bold;">로그인</a>
     </span>
@@ -25,6 +33,7 @@
     <span sec:authorize="isAuthenticated()">
       <a href="/mypage" style="margin-left: 40px; color: #3ecf8e; font-weight: bold;">마이페이지</a>
     </span>
+
   </nav>
 </div>
 </body>

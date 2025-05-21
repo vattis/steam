@@ -13,13 +13,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 public class LoginController {
     private final LoginService loginService;
     @GetMapping("/login")
-    public String gotoLogin(Model model){
+    public String gotoLogin(Model model, Principal principal){
+        if(principal != null){
+            return "redirect:/";
+        }
         model.addAttribute("loginForm", LoginForm.of());
         return "login";
     }

@@ -101,7 +101,7 @@
     </style>
 </head>
 <body>
-<div th:replace="~{fragments/nav :: navbar(memberId=${memberId})}"></div>
+<div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
 <div class="banner">
     <h2>Explore the World of Games</h2>
 </div>

@@ -17,9 +17,6 @@ public class ProductController {
 
     @GetMapping("/")
     String gotoMain(@AuthenticationPrincipal MemberUserDetails userDetails, Model model){
-        if(userDetails != null){
-            model.addAttribute("memberId", userDetails.getId());
-        }
         return "/main";
     }
 }

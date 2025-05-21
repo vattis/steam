@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -50,8 +51,12 @@ public class MemberController {
     }
 
     @GetMapping({"/library/{memberId}", "/library/{memberId}/{selectedGameId}"}) //유저 라이브러리
-    public String gotoLibrary(@PathVariable("memberId") Long memberId, @PathVariable(value = "selectedGameId", required = false) Long selectedGameId, Model model) {
+    public String gotoLibrary(@PathVariable("memberId") Long memberId, @PathVariable(value = "selectedGameId", required = false) Long selectedGameId, Model model, Principal principal) {
         Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
+        if(member.getEmail() != principal.getName()){ //다른 사용자의 접근 차단
+            log.info("[MemberController] 일치하지 않은 유저의 라이브러리 접근 확인");
+            return "redirect:/";
+        }
         model.addAttribute("games", member.getMemberGames());
         if(selectedGameId == null){
             model.addAttribute("selectedGame", null);
