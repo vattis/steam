@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<div th:fragment="navbar" style="display: flex; align-items: center; background-color: #171a21; padding: 20px;">
+<div th:fragment="navbar(memberId)" style="display: flex; align-items: center; background-color: #171a21; padding: 20px;">
   <!-- 왼쪽: 로고 -->
   <div style="flex-shrink: 0;">
     <a href="/" style="text-decoration: none;">
@@ -14,7 +14,7 @@
   <!-- 오른쪽: 메뉴 -->
   <nav style="display: flex; align-items: center; margin-left: auto;">
     <a href="#" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">상점</a>
-    <a href="#" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">라이브러리</a>
+    <a th:href="@{/library/{memberId}(memberId=${memberId})}" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">라이브러리</a>
     <a href="#" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">커뮤니티</a>
     <a href="#" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">지원</a>
 

@@ -1,6 +1,7 @@
 package com.example.steam.module.member.domain;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Builder
+@Getter
 public class MemberUserDetails implements UserDetails {
     private Long id;
     private String username;
