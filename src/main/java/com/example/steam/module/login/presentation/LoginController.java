@@ -68,29 +68,7 @@ public class LoginController {
     @GetMapping("/log-out") //로그아웃
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         log.info("[LoginController]-logout");
-        try{
-            String accessToken = jwtProvider.resolveAccessToken(request);
-            String refreshToken = jwtProvider.resolveRefreshToken(request);
-            long accessExpire = jwtProvider.parseClaim(accessToken).getExpiration().getTime();
-            long refreshExpire = jwtProvider.parseClaim(refreshToken).getExpiration().getTime();
-            JwtBlackList.addBlackList(accessToken, accessExpire);
-            JwtBlackList.addBlackList(refreshToken, refreshExpire);
-        }catch (JwtException | IllegalArgumentException e){
-            log.warn("토큰 로그아웃 블랙리스트 등록 실패");
-        }
-        ResponseCookie deleteCookie1 = ResponseCookie.from("accessToken", "")
-                .path("/")
-                .httpOnly(true)
-                .maxAge(0)
-                .build();
-        ResponseCookie deleteCookie2 = ResponseCookie.from("refreshToken", "")
-                .path("/")
-                .httpOnly(true)
-                .maxAge(0)
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie1.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie2.toString());
-        SecurityContextHolder.clearContext();
+        loginService.logout(request, response);
         return "redirect:/";
     }
 

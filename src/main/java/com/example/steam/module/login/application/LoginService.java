@@ -1,15 +1,22 @@
 package com.example.steam.module.login.application;
 
+import com.example.steam.core.security.jwt.JwtBlackList;
 import com.example.steam.core.security.jwt.JwtProvider;
 import com.example.steam.core.security.jwt.JwtToken;
 import com.example.steam.module.login.dto.LoginForm;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +40,30 @@ public class LoginService {
         //JwtToken 생성
     }
 
-    private void logout(){
-
+    public void logout(HttpServletRequest request, HttpServletResponse response){
+        try{
+            String accessToken = jwtProvider.resolveAccessToken(request);
+            String refreshToken = jwtProvider.resolveRefreshToken(request);
+            long accessExpire = jwtProvider.parseClaim(accessToken).getExpiration().getTime();
+            long refreshExpire = jwtProvider.parseClaim(refreshToken).getExpiration().getTime();
+            JwtBlackList.addBlackList(accessToken, accessExpire);
+            JwtBlackList.addBlackList(refreshToken, refreshExpire);
+        }catch (JwtException | IllegalArgumentException e){
+            log.warn("토큰 로그아웃 블랙리스트 등록 실패");
+        }
+        ResponseCookie deleteCookie1 = ResponseCookie.from("accessToken", "")
+                .path("/")
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+        ResponseCookie deleteCookie2 = ResponseCookie.from("refreshToken", "")
+                .path("/")
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie1.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie2.toString());
+        SecurityContextHolder.clearContext();
     }
 
     private Authentication makeAuthentication(UsernamePasswordAuthenticationToken authenticationToken) {
