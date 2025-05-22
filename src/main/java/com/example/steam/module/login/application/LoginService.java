@@ -1,7 +1,7 @@
 package com.example.steam.module.login.application;
 
-import com.example.steam.core.jwt.JwtProvider;
-import com.example.steam.core.jwt.JwtToken;
+import com.example.steam.core.security.jwt.JwtProvider;
+import com.example.steam.core.security.jwt.JwtToken;
 import com.example.steam.module.login.dto.LoginForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +31,10 @@ public class LoginService {
         return jwtProvider.generateToken(authentication);
 
         //JwtToken 생성
+    }
+
+    private void logout(){
+
     }
 
     private Authentication makeAuthentication(UsernamePasswordAuthenticationToken authenticationToken) {

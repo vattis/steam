@@ -1,11 +1,10 @@
 package com.example.steam.core.filter;
 
-import com.example.steam.core.jwt.JwtProvider;
+import com.example.steam.core.security.jwt.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -28,7 +27,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-        String token = resolveToken((HttpServletRequest) servletRequest);
+        String token = jwtProvider.resolveAccessToken((HttpServletRequest) servletRequest);
         if(StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
             Authentication auth = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
@@ -37,20 +36,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     }
 
     //request에서 token 추출
-    private String resolveToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if(StringUtils.hasText(token) && token.startsWith("Bearer")){
-            return token.substring(7);
-        }
-        if(request.getCookies() != null){
-            for(Cookie cookie : request.getCookies()){
-                if(cookie.getName().equals("accessToken")){
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
+
 
     private boolean isExcluded(String uri) {
         return EXCLUDE_PREFIXES.stream().anyMatch(uri::startsWith);

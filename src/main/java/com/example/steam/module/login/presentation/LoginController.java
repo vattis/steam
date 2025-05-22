@@ -1,14 +1,19 @@
 package com.example.steam.module.login.presentation;
 
-import com.example.steam.core.jwt.JwtConst;
-import com.example.steam.core.jwt.JwtToken;
+import com.example.steam.core.security.jwt.JwtBlackList;
+import com.example.steam.core.security.jwt.JwtConst;
+import com.example.steam.core.security.jwt.JwtProvider;
+import com.example.steam.core.security.jwt.JwtToken;
 import com.example.steam.module.login.application.LoginService;
 import com.example.steam.module.login.dto.LoginForm;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +25,8 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class LoginController {
     private final LoginService loginService;
+    private final JwtProvider jwtProvider;
+
     @GetMapping("/login")
     public String gotoLogin(Model model, Principal principal){
         if(principal != null){
@@ -44,7 +51,7 @@ public class LoginController {
                 .sameSite("Lax")
                 .build();
 
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", token.getRefreshToken())
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", token.getRefreshToken())
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -53,10 +60,40 @@ public class LoginController {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         return "redirect:/";
     }
+
+    @GetMapping("/log-out") //로그아웃
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        log.info("[LoginController]-logout");
+        try{
+            String accessToken = jwtProvider.resolveAccessToken(request);
+            String refreshToken = jwtProvider.resolveRefreshToken(request);
+            long accessExpire = jwtProvider.parseClaim(accessToken).getExpiration().getTime();
+            long refreshExpire = jwtProvider.parseClaim(refreshToken).getExpiration().getTime();
+            JwtBlackList.addBlackList(accessToken, accessExpire);
+            JwtBlackList.addBlackList(refreshToken, refreshExpire);
+        }catch (JwtException | IllegalArgumentException e){
+            log.warn("토큰 로그아웃 블랙리스트 등록 실패");
+        }
+        ResponseCookie deleteCookie1 = ResponseCookie.from("accessToken", "")
+                .path("/")
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+        ResponseCookie deleteCookie2 = ResponseCookie.from("refreshToken", "")
+                .path("/")
+                .httpOnly(true)
+                .maxAge(0)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie1.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie2.toString());
+        SecurityContextHolder.clearContext();
+        return "redirect:/";
+    }
+
     @PostMapping("login/test")
     public String test(){
         return "/main";

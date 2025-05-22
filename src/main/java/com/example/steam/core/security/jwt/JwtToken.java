@@ -1,4 +1,4 @@
-package com.example.steam.core.jwt;
+package com.example.steam.core.security.jwt;
 
 import lombok.Builder;
 import lombok.Getter;

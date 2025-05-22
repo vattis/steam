@@ -1,10 +1,12 @@
-package com.example.steam.core.jwt;
+package com.example.steam.core.security.jwt;
 
 import com.example.steam.module.member.application.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -105,7 +108,36 @@ public class JwtProvider {
         return false;
     }
 
-    private Claims parseClaim(String accessToken){
+    public String resolveAccessToken(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if(StringUtils.hasText(token) && token.startsWith("Bearer")){
+            return token.substring(7);
+        }
+        if(request.getCookies() != null){
+            for(Cookie cookie : request.getCookies()){
+                if(cookie.getName().equals("accessToken")){
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+    public String resolveRefreshToken(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if(StringUtils.hasText(token) && token.startsWith("Bearer")){
+            return token.substring(7);
+        }
+        if(request.getCookies() != null){
+            for(Cookie cookie : request.getCookies()){
+                if(cookie.getName().equals("accessToken")){
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    public Claims parseClaim(String accessToken){
         try{
             return Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -114,6 +146,9 @@ public class JwtProvider {
                     .getBody();
         }catch (ExpiredJwtException e){
             return e.getClaims();
+        }catch (JwtException | IllegalArgumentException e) {
+            log.error("JWT 파싱 실패: {}", e.getMessage());
+            throw new IllegalStateException("유효하지 않은 토큰입니다.", e);
         }
     }
 }
