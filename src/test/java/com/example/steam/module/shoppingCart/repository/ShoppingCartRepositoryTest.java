@@ -92,7 +92,7 @@ class ShoppingCartRepositoryTest {
         ShoppingCartProduct shoppingCartProduct = shoppingCart.getShoppingCartProducts().get(0);
 
         //when
-        shoppingCartRepository.deleteById(shoppingCartProduct.getId());
+        shoppingCartProductRepository.deleteById(shoppingCartProduct.getId());
         shoppingCart.removeShoppingCartProduct(shoppingCartProduct);
 
         //then

@@ -52,7 +52,7 @@ class ProductServiceTest {
     @Test
     void search() {
         //given
-        PageRequest pageRequest = PageRequest.of(0, PageConst.ARTICLE_PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_PAGE_SIZE);
         ProductSearch search = ProductSearch.of(ProductSearchTag.ALL, null);
         ProductSearch nameSearch = ProductSearch.of(ProductSearchTag.NAME, "name3");
         ProductSearch companySearch = ProductSearch.of(ProductSearchTag.COMPANY, "companyName4");

@@ -23,6 +23,8 @@ class ProfileCommentRepositoryTest {
     @Autowired
     private ProfileCommentRepository profileCommentRepository;
 
+    private Member targetProfileMember;
+
     @BeforeEach
     void init(){
         List<Member> commentMember = new ArrayList<>();
@@ -44,13 +46,14 @@ class ProfileCommentRepositoryTest {
             profileComments.add(profileComment2);
         }
         profileCommentRepository.saveAll(profileComments);
+        targetProfileMember = profileMembers.get(0);
     }
 
     @Test
     void saveAndFindTest(){
         //given
         PageRequest pageRequest = PageRequest.of(0, PageConst.PROFILE_COMMENT_PAGE_SIZE);
-        Member member = memberRepository.findByEmail("email11").orElseThrow();
+        Member member = memberRepository.findByEmail(targetProfileMember.getEmail()).orElseThrow();
 
         //when
         Page<ProfileComment> profileCommentPage = profileCommentRepository.findAllByProfileMemberId(member.getId(), pageRequest);
@@ -63,7 +66,7 @@ class ProfileCommentRepositoryTest {
     void deleteTest(){
         //given
         PageRequest pageRequest = PageRequest.of(0, PageConst.PROFILE_COMMENT_PAGE_SIZE);
-        Member member = memberRepository.findByEmail("email11").orElseThrow();
+        Member member = memberRepository.findByEmail(targetProfileMember.getEmail()).orElseThrow();
         Page<ProfileComment> profileCommentPage = profileCommentRepository.findAllByProfileMemberId(member.getId(), pageRequest);
 
         //when
