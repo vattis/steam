@@ -1,15 +1,17 @@
 package com.example.steam.module.member.presentation;
 
-import com.example.steam.core.utils.SecurityUtil;
+import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.email.application.EmailService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
+import com.example.steam.module.member.dto.ProfileDto;
 import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -68,9 +70,10 @@ public class MemberController {
         return "/library";
     }
 
-    @GetMapping("/mypage/{memberId}")
-    public String gotoMyPage(@PathVariable Long memberId, Model model) {
-
-        return "/mypage";
+    @GetMapping("/profile/{memberId}/{commentPageNum}")
+    public String gotoMyPage(@PathVariable Long memberId, @PathVariable int commentPageNum, Model model) {
+        ProfileDto profileDto = memberService.getProfile(memberId, PageRequest.of(commentPageNum, PageConst.PROFILE_COMMENT_PAGE_SIZE));
+        model.addAttribute("profileDto", profileDto);
+        return "/profile";
     }
 }

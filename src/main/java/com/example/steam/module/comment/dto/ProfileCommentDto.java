@@ -12,17 +12,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProfileCommentDto {
     private Long id;
-    private String nickName;
+    private String nickname;
     private String content;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdTime;
 
     public static ProfileCommentDto of(Long id, String nickName, String content, LocalDateTime createdAt){
         return ProfileCommentDto
                 .builder()
                 .id(id)
-                .nickName(nickName)
+                .nickname(nickName)
                 .content(content)
-                .createdAt(createdAt)
+                .createdTime(createdAt)
                 .build();
     }
     public static ProfileCommentDto from(ProfileComment profileComment) {

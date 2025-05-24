@@ -14,11 +14,15 @@
         }
 
         .profile-container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 40px auto;
             padding: 20px;
             background-color: #1b2838;
             border-radius: 10px;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 30px;
+            align-items: start;
         }
 
         .header {
@@ -55,6 +59,9 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
 
         .game-title {
@@ -66,33 +73,76 @@
             font-size: 14px;
             color: #acb2b8;
         }
+
+        .comments {
+            margin-top: 40px;
+        }
+
+        .comment-box {
+            background-color: #2a475e;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            border-radius: 6px;
+            border: none;
+            padding: 10px;
+            resize: vertical;
+        }
+
+        .comment-form button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #66c0f4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .friend-list {
+            background-color: #2a475e;
+            padding: 15px;
+            border-radius: 8px;
+            height: 100%;
+        }
+
+        .friend {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .friend img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
-<div class="profile-container" style="display: flex; gap: 30px;">
-    <!-- 좌측: 프로필 및 게임, 댓글 -->
-    <div style="flex: 3;">
+<div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
+<div class="profile-container">
+    <!-- 좌측: 프로필, 게임, 댓글 -->
+    <div th:with="profile=${profileDto}">
         <div class="header">
             <img class="avatar"
-                 th:src="${#strings.isEmpty(user.avatarUrl)} ? '/images/profile-image.jpg' : ${user.avatarUrl}"
+                 th:src="${#strings.isEmpty(profile.profileMember.avatarUrl)} ? '/images/profile-image.jpg' : ${profile.profileMember.avatarUrl}"
                  alt="프로필 이미지">
-            <div class="username" th:text="${user.username}">사용자 이름</div>
-        </div>
-
-        <div class="details">
-            <p>보유 게임 수: <span th:text="${user.totalGames}">0</span></p>
-            <p>친구 수: <span th:text="${user.friendCount}">0</span></p>
-            <p>Steam 가입일: <span th:text="${user.joinDate}">2023-01-01</span></p>
+            <div class="username" th:text="${profile.profileMember.nickname}">사용자 이름</div>
         </div>
 
         <div class="recent-games">
             <h3>최근 플레이한 게임</h3>
-            <div th:each="game : ${user.recentGames}">
-                <div class="game" style="display: flex; gap: 15px; align-items: center;">
+            <div th:each="game : ${profile.simpleMemberGames}">
+                <div class="game">
                     <img th:src="${#strings.isEmpty(game.gameImageUrl)} ? '/images/game-placeholder.jpg' : ${game.gameImageUrl}"
                          alt="게임 이미지"
                          style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
-
                     <div>
                         <div class="game-title" th:text="${game.gameName}">게임 제목</div>
                         <div class="playtime" th:text="|플레이 시간: ${game.playTime}|">플레이 시간</div>
@@ -102,37 +152,37 @@
             </div>
         </div>
 
-        <div class="comments" style="margin-top: 40px;">
+        <div class="comments">
             <h3>프로필 댓글</h3>
-
-            <div th:each="comment : ${user.comments}">
-                <div style="background-color: #2a475e; margin-bottom: 10px; padding: 10px; border-radius: 8px;">
-                    <strong th:text="${comment.author}">작성자</strong>
+            <div th:each="comment : ${profile.getProfileCommentPage()}">
+                <div class="comment-box">
+                    <strong th:text="${comment.nickname}">작성자</strong>
                     <p th:text="${comment.content}" style="margin: 5px 0 0 0;">댓글 내용</p>
-                    <small th:text="${comment.date}">2025-05-23</small>
+                    <small th:text="${comment.createdTime}">2025-05-23</small>
                 </div>
             </div>
 
-            <form th:action="@{/profile/comment}" method="post" style="margin-top: 20px;">
-                <input type="hidden" name="userId" th:value="${user.id}" />
-                <textarea name="content" placeholder="댓글을 입력하세요" rows="3" style="width: 100%; border-radius: 6px; border: none; padding: 10px;"></textarea>
-                <button type="submit" style="margin-top: 10px; padding: 8px 16px; background-color: #66c0f4; color: white; border: none; border-radius: 6px;">댓글 작성</button>
+            <form class="comment-form" th:action="@{/profile/comment}" method="post">
+                <input type="hidden" name="userId" th:value="${currentUser.id}" />
+                <textarea name="content" placeholder="댓글을 입력하세요" rows="3"></textarea>
+                <button type="submit">댓글 작성</button>
             </form>
         </div>
     </div>
 
     <!-- 우측: 친구 목록 -->
-    <div class="friend-list" style="flex: 1; background-color: #2a475e; padding: 15px; border-radius: 8px; height: fit-content;">
+    <!---
+    <div class="friend-list">
         <h3>친구 목록</h3>
         <div th:each="friend : ${user.friends}">
-            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div class="friend">
                 <img th:src="${#strings.isEmpty(friend.avatarUrl)} ? '/images/profile-image.jpg' : ${friend.avatarUrl}"
-                     alt="친구 이미지"
-                     style="width: 40px; height: 40px; border-radius: 6px; margin-right: 10px;" />
+                     alt="친구 이미지" />
                 <div th:text="${friend.nickname}">친구 닉네임</div>
             </div>
         </div>
     </div>
+    --->
 </div>
 </body>
 </html>

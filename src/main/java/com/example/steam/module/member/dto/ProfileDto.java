@@ -15,17 +15,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProfileDto {
-    private Long id;
-    private String nickName;
-    private String avatarUrl;
+    private SimpleMemberDto profileMember;
     private List<SimpleMemberGameDto> simpleMemberGames;
     private Page<ProfileCommentDto> profileCommentPage;
 
     public static ProfileDto of(Member member, List<SimpleMemberGameDto> simpleMemberGames, Page<ProfileCommentDto> profileCommentPage) {
         return ProfileDto.builder()
-                .id(member.getId())
-                .nickName(member.getNickname())
-                .avatarUrl(member.getAvatarUrl())
+                .profileMember(SimpleMemberDto.from(member))
                 .simpleMemberGames(simpleMemberGames)
                 .profileCommentPage(profileCommentPage)
                 .build();

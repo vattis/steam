@@ -11,6 +11,7 @@ import lombok.Getter;
 public class SimpleMemberDto {
     private Long id;
     private String nickname;
+    private String avatarUrl;
 
     public static SimpleMemberDto from(Member member){
         return SimpleMemberDto.builder()

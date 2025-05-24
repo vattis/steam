@@ -13,10 +13,14 @@ import org.springframework.data.repository.query.Param;
 public interface ProfileCommentRepository extends JpaRepository<ProfileComment, Long> {
     Page<ProfileComment> findAllByProfileMemberId(Long profileMemberId, PageRequest pageRequest);
 
-    @Query("SELECT new com.example.steam.module.comment.dto.ProfileCommentDto(c.id, m.nickName, c.content, c.createdAt)" +
-            "FROM ProfileComment c" +
-            "JOIN c.member m" +
-            "WHERE c.profileMember = :profileMember" +
-            "ORDER BY c.createdTime DESC")
+    @Query("""
+        SELECT new com.example.steam.module.comment.dto.ProfileCommentDto(
+        c.id, m.nickname, c.content, c.createdTime
+        )
+        FROM ProfileComment c
+        JOIN c.member m
+        WHERE c.profileMember =:profileMember
+        ORDER BY c.createdTime DESC
+""")
     Page<ProfileCommentDto> findDtoByProfileMember(@Param("profileMember")Member profileMember, Pageable pageable);
 }
