@@ -1,12 +1,21 @@
 package com.example.steam.module.member.application;
 
+import com.example.steam.module.comment.dto.ProfileCommentDto;
+import com.example.steam.module.comment.repository.ProfileCommentRepository;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.domain.MemberGame;
+import com.example.steam.module.member.dto.ProfileDto;
 import com.example.steam.module.member.dto.SignUpForm;
+import com.example.steam.module.member.dto.SimpleMemberGameDto;
+import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
@@ -15,7 +24,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-
+    private final MemberGameRepository memberGameRepository;
+    private final ProfileCommentRepository profileCommentRepository;
     //회원가입 서비스
     public Member addMember(SignUpForm signUpForm){
         if(!isValid(signUpForm)){
@@ -50,4 +60,10 @@ public class MemberService {
         return random.nextInt(900000)+100000;
     }
 
+    public ProfileDto getProfile(Long profileMemberId, PageRequest pageRequest){
+        Member profileMember = memberRepository.findById(profileMemberId).orElseThrow(NoSuchElementException::new);
+        List<SimpleMemberGameDto> memberGames = memberGameRepository.findTop5ByMemberOrderByLastPlayedTimeDesc(profileMember).stream().map(SimpleMemberGameDto::from).toList();
+        Page<ProfileCommentDto> profileCommentPage = profileCommentRepository.findDtoByProfileMember(profileMember, pageRequest);
+        return ProfileDto.of(profileMember, memberGames, profileCommentPage);
+    }
 }

@@ -32,7 +32,9 @@
     </span>
 
     <span sec:authorize="isAuthenticated()">
-      <a href="/mypage" style="margin-left: 40px; color: #3ecf8e; font-weight: bold;">마이페이지</a>
+      <a th:href="@{/mypage/{id}(id=${currentUser.id})}"
+         style="margin-left: 40px; color: #3ecf8e; font-weight: bold;"
+         th:text="${currentUser.nickName}">마이페이지</a>
       <a href="/log-out" style="margin-left: 20px; color: #ff6961; font-weight: bold; text-decoration: none;">로그아웃</a>
     </span>
 

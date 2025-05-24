@@ -1,5 +1,6 @@
 package com.example.steam.module.member.presentation;
 
+import com.example.steam.core.utils.SecurityUtil;
 import com.example.steam.module.email.application.EmailService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
@@ -65,5 +66,11 @@ public class MemberController {
             model.addAttribute("selectedGame", selectedGame);
         }
         return "/library";
+    }
+
+    @GetMapping("/mypage/{memberId}")
+    public String gotoMyPage(@PathVariable Long memberId, Model model) {
+
+        return "/mypage";
     }
 }

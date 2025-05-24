@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Steam 프로필</title>
+    <style>
+        body {
+            background-color: #171a21;
+            color: #c7d5e0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #1b2838;
+            border-radius: 10px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+
+        .username {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .details {
+            margin-top: 20px;
+        }
+
+        .details p {
+            margin: 8px 0;
+        }
+
+        .recent-games {
+            margin-top: 30px;
+        }
+
+        .game {
+            background-color: #2a475e;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .playtime {
+            font-size: 14px;
+            color: #acb2b8;
+        }
+    </style>
+</head>
+<body>
+<div class="profile-container" style="display: flex; gap: 30px;">
+    <!-- 좌측: 프로필 및 게임, 댓글 -->
+    <div style="flex: 3;">
+        <div class="header">
+            <img class="avatar"
+                 th:src="${#strings.isEmpty(user.avatarUrl)} ? '/images/profile-image.jpg' : ${user.avatarUrl}"
+                 alt="프로필 이미지">
+            <div class="username" th:text="${user.username}">사용자 이름</div>
+        </div>
+
+        <div class="details">
+            <p>보유 게임 수: <span th:text="${user.totalGames}">0</span></p>
+            <p>친구 수: <span th:text="${user.friendCount}">0</span></p>
+            <p>Steam 가입일: <span th:text="${user.joinDate}">2023-01-01</span></p>
+        </div>
+
+        <div class="recent-games">
+            <h3>최근 플레이한 게임</h3>
+            <div th:each="game : ${user.recentGames}">
+                <div class="game" style="display: flex; gap: 15px; align-items: center;">
+                    <img th:src="${#strings.isEmpty(game.gameImageUrl)} ? '/images/game-placeholder.jpg' : ${game.gameImageUrl}"
+                         alt="게임 이미지"
+                         style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
+
+                    <div>
+                        <div class="game-title" th:text="${game.gameName}">게임 제목</div>
+                        <div class="playtime" th:text="|플레이 시간: ${game.playTime}|">플레이 시간</div>
+                        <div class="playtime" th:text="|마지막 플레이: ${#temporals.format(game.lastPlayTime, 'yyyy-MM-dd HH:mm')}|">마지막 플레이</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comments" style="margin-top: 40px;">
+            <h3>프로필 댓글</h3>
+
+            <div th:each="comment : ${user.comments}">
+                <div style="background-color: #2a475e; margin-bottom: 10px; padding: 10px; border-radius: 8px;">
+                    <strong th:text="${comment.author}">작성자</strong>
+                    <p th:text="${comment.content}" style="margin: 5px 0 0 0;">댓글 내용</p>
+                    <small th:text="${comment.date}">2025-05-23</small>
+                </div>
+            </div>
+
+            <form th:action="@{/profile/comment}" method="post" style="margin-top: 20px;">
+                <input type="hidden" name="userId" th:value="${user.id}" />
+                <textarea name="content" placeholder="댓글을 입력하세요" rows="3" style="width: 100%; border-radius: 6px; border: none; padding: 10px;"></textarea>
+                <button type="submit" style="margin-top: 10px; padding: 8px 16px; background-color: #66c0f4; color: white; border: none; border-radius: 6px;">댓글 작성</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 우측: 친구 목록 -->
+    <div class="friend-list" style="flex: 1; background-color: #2a475e; padding: 15px; border-radius: 8px; height: fit-content;">
+        <h3>친구 목록</h3>
+        <div th:each="friend : ${user.friends}">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <img th:src="${#strings.isEmpty(friend.avatarUrl)} ? '/images/profile-image.jpg' : ${friend.avatarUrl}"
+                     alt="친구 이미지"
+                     style="width: 40px; height: 40px; border-radius: 6px; margin-right: 10px;" />
+                <div th:text="${friend.nickname}">친구 닉네임</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface MemberGameRepository extends JpaRepository<MemberGame, Long> {
     List<MemberGame> findAllByMember(Member member);
+    List<MemberGame> findTop5ByMemberOrderByLastPlayedTimeDesc(Member member);
 }

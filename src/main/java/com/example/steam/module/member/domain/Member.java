@@ -37,6 +37,9 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    @Column
+    private String avatarUrl;
+
     @OneToMany(mappedBy="member", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Article> articles = new ArrayList<>();
