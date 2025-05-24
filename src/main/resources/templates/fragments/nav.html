@@ -32,9 +32,9 @@
     </span>
 
     <span sec:authorize="isAuthenticated()">
-      <a th:href="@{/mypage/{id}(id=${currentUser.id})}"
+      <a th:href="@{/profile/{memberId}/{commentPageNum}(memberId=${currentUser.id}, commentPageNum=1)}"
          style="margin-left: 40px; color: #3ecf8e; font-weight: bold;"
-         th:text="${currentUser.nickName}">마이페이지</a>
+         th:text="${currentUser.nickName}">프로필</a>
       <a href="/log-out" style="margin-left: 20px; color: #ff6961; font-weight: bold; text-decoration: none;">로그아웃</a>
     </span>
 
