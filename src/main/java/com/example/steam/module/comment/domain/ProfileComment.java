@@ -32,4 +32,7 @@ public class ProfileComment extends Comment{
                 .createdTime(LocalDateTime.now())
                 .build();
     }
+    public static ProfileComment makeSample(int i, Member member, Member profileMember){
+        return ProfileComment.of(member, "content"+i, profileMember);
+    }
 }

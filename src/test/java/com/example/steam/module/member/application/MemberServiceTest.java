@@ -1,15 +1,32 @@
 package com.example.steam.module.member.application;
 
+import com.example.steam.core.utils.page.PageConst;
+import com.example.steam.module.comment.domain.ProfileComment;
+import com.example.steam.module.comment.dto.ProfileCommentDto;
+import com.example.steam.module.comment.repository.ProfileCommentRepository;
+import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.domain.MemberGame;
+import com.example.steam.module.member.dto.ProfileDto;
 import com.example.steam.module.member.dto.SignUpForm;
+import com.example.steam.module.member.dto.SimpleMemberDto;
+import com.example.steam.module.member.dto.SimpleMemberGameDto;
+import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
+import com.example.steam.module.product.domain.Product;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +37,8 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
     @Mock MemberRepository memberRepository;
+    @Mock MemberGameRepository memberGameRepository;
+    @Mock ProfileCommentRepository profileCommentRepository;
     @InjectMocks MemberService memberService;
 
     @Test
@@ -84,5 +103,36 @@ class MemberServiceTest {
         assertThat(result1).isTrue();
         assertThat(result2).isFalse();
         assertThat(result3).isFalse();
+    }
+
+    @Test
+    @DisplayName("프로필 dto 불러오기 테스트")
+    void getProfileTest(){
+        //given
+        Long profileMemberId = 2L;
+        PageRequest pageRequest = PageRequest.of(1, PageConst.PROFILE_COMMENT_PAGE_SIZE);
+        Member profileMember = Member.makeSample(2);
+        Member member1 = Member.makeSample(4);
+        List<MemberGame> memberGames = new ArrayList<>();
+        List<ProfileCommentDto> profileCommentDtos = new ArrayList<>();
+
+        for(int i = 1; i <= 5; i++){
+            memberGames.add(MemberGame.of(Product.makeSample(i, Company.makeSample(i)), profileMember));
+        }
+        for(int i = 1; i <= 10; i++){
+            profileCommentDtos.add(ProfileCommentDto.from(ProfileComment.makeSample(i, member1, profileMember)));
+        }
+        PageImpl<ProfileCommentDto> profileCommentDtoPage = new PageImpl<>(profileCommentDtos);
+        given(memberRepository.findById(profileMemberId)).willReturn(Optional.of(profileMember));
+        given(memberGameRepository.findTop5ByMemberOrderByLastPlayedTimeDesc(profileMember)).willReturn(memberGames);
+        given(profileCommentRepository.findDtoByProfileMember(profileMember, pageRequest)).willReturn(profileCommentDtoPage);
+
+        //when
+        ProfileDto profileDto = memberService.getProfile(profileMemberId, pageRequest);
+
+        //then
+        assertThat(profileDto.getProfileMember().getId()).isEqualTo(profileMember.getId());
+        assertThat(profileDto.getProfileCommentPage().getTotalElements()).isEqualTo(10);
+        assertThat(profileDto.getSimpleMemberGames().size()).isEqualTo(memberGames.size());
     }
 }

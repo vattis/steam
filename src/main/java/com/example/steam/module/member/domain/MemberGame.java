@@ -65,8 +65,10 @@ public class MemberGame {
 
     private void play(){ //플레이 시간을 재는건 로컬 컴퓨터에서 하도록 하는 것이 맞을듯
         playing = true;
+        lastPlayedTime = LocalDateTime.now();
     }
     private void exitGame(){
         playing = false;
     }
+
 }
