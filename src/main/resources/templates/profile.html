@@ -21,11 +21,17 @@
             border-radius: 10px;
             display: grid;
             grid-template-columns: 3fr 1fr;
+            grid-template-rows: auto auto auto;
+            grid-template-areas:
+                "header friend"
+                "games friend"
+                "comments friend";
             gap: 30px;
             align-items: start;
         }
 
-        .header {
+        .profile-header {
+            grid-area: header;
             display: flex;
             align-items: center;
         }
@@ -42,15 +48,8 @@
             font-weight: bold;
         }
 
-        .details {
-            margin-top: 20px;
-        }
-
-        .details p {
-            margin: 8px 0;
-        }
-
         .recent-games {
+            grid-area: games;
             margin-top: 30px;
         }
 
@@ -75,6 +74,7 @@
         }
 
         .comments {
+            grid-area: comments;
             margin-top: 40px;
         }
 
@@ -104,10 +104,10 @@
         }
 
         .friend-list {
+            grid-area: friend;
             background-color: #2a475e;
             padding: 15px;
             border-radius: 8px;
-            height: 100%;
         }
 
         .friend {
@@ -126,65 +126,68 @@
 </head>
 <body>
 <div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
-<div class="profile-container">
-    <!-- 좌측: 프로필, 게임, 댓글 -->
-    <div th:with="profile=${profileDto}">
-        <div class="header">
-            <img class="avatar"
-                 th:src="${#strings.isEmpty(profile.profileMember.avatarUrl)} ? '/images/profile-image.jpg' : ${profile.profileMember.avatarUrl}"
-                 alt="프로필 이미지">
-            <div class="username" th:text="${profile.profileMember.nickname}">사용자 이름</div>
-        </div>
+<div class="profile-container" th:with="profile=${profileDto}">
 
-        <div class="recent-games">
-            <h3>최근 플레이한 게임</h3>
-            <div th:each="game : ${profile.simpleMemberGames}">
-                <div class="game">
-                    <img th:src="${#strings.isEmpty(game.gameImageUrl) ? '/images/game-image.jpeg' : game.gameImageUrl}"
-                         alt="Game Image"
-                         style="max-width: 250px; width: 100%; border-radius: 8px;">
-                    <div>
-                        <div class="game-title" th:text="${game.gameName}">게임 제목</div>
-                        <div class="playtime" th:text="|플레이 시간: ${game.playTime}|">플레이 시간</div>
-                        <div class="playtime" th:text="|마지막 플레이: ${#temporals.format(game.lastPlayTime, 'yyyy-MM-dd HH:mm')}|">마지막 플레이</div>
+    <!-- 프로필 헤더 -->
+    <div class="profile-header">
+        <img class="avatar"
+             th:src="${#strings.isEmpty(profile.profileMember.avatarUrl)} ? '/images/profile-image.jpg' : ${profile.profileMember.avatarUrl}"
+             alt="프로필 이미지">
+        <div class="username" th:text="${profile.profileMember.nickname}">사용자 이름</div>
+    </div>
+
+    <!-- 최근 게임 -->
+    <div class="recent-games">
+        <h3>최근 플레이한 게임</h3>
+        <div th:each="game : ${profile.simpleMemberGames}">
+            <div class="game">
+                <img th:src="${#strings.isEmpty(game.gameImageUrl) ? '/images/game-image.jpeg' : game.gameImageUrl}"
+                     alt="Game Image"
+                     style="max-width: 250px; width: 100%; border-radius: 8px;">
+                <div>
+                    <div class="game-title" th:text="${game.gameName}">게임 제목</div>
+                    <div class="playtime" th:text="|플레이 시간: ${game.playTime}|">플레이 시간</div>
+                    <div class="playtime"
+                         th:text="|마지막 플레이: ${#temporals.format(game.lastPlayTime, 'yyyy-MM-dd HH:mm')}|">
+                        마지막 플레이
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="comments">
-            <h3>프로필 댓글</h3>
-            <div th:each="comment : ${profile.getProfileCommentPage().getContent()}">
-                <div class="comment-box">
-                    <strong th:text="${comment.nickname}">작성자</strong>
-                    <p th:text="${comment.content}" style="margin: 5px 0 0 0;">댓글 내용</p>
-                    <small th:text="${#temporals.format(comment.createdTime, 'yyyy-MM-dd HH:mm')}"
-                           style="display: block; text-align: right;">2025-05-23</small>
-                </div>
-            </div>
-
-            <form class="comment-form" th:action="@{/profile/comment}" method="post">
-                <input type="hidden" name="memberId" th:value="${currentUser.id}" />
-                <input type="hidden" name="profileId" th:value="${profile.profileMember.id}" />
-                <textarea name="content" placeholder="댓글을 입력하세요" rows="3"></textarea>
-                <button type="submit">댓글 작성</button>
-            </form>
-        </div>
     </div>
 
-    <!-- 우측: 친구 목록 -->
-    <!---
+    <!-- 댓글 -->
+    <div class="comments">
+        <h3>프로필 댓글</h3>
+        <div th:each="comment : ${profile.getProfileCommentPage().getContent()}">
+            <div class="comment-box">
+                <strong th:text="${comment.nickname}">작성자</strong>
+                <p th:text="${comment.content}" style="margin: 5px 0 0 0;">댓글 내용</p>
+                <small th:text="${#temporals.format(comment.createdTime, 'yyyy-MM-dd HH:mm')}"
+                       style="display: block; text-align: right;">2025-05-23</small>
+            </div>
+        </div>
+
+        <form class="comment-form" th:action="@{/profile/comment}" method="post">
+            <input type="hidden" name="memberId" th:value="${currentUser.id}" />
+            <input type="hidden" name="profileId" th:value="${profile.profileMember.id}" />
+            <textarea name="content" placeholder="댓글을 입력하세요" rows="3"></textarea>
+            <button type="submit">댓글 작성</button>
+        </form>
+    </div>
+
+    <!-- 친구 목록 (우측) -->
     <div class="friend-list">
         <h3>친구 목록</h3>
-        <div th:each="friend : ${user.friends}">
+        <div th:each="friend : ${profileDto.getFriendships()}">
             <div class="friend">
-                <img th:src="${#strings.isEmpty(friend.avatarUrl)} ? '/images/profile-image.jpg' : ${friend.avatarUrl}"
+                <img th:src="${#strings.isEmpty(friend.getToMember().avatarUrl)} ? '/images/profile-image.jpg' : ${friend.avatarUrl}"
                      alt="친구 이미지" />
-                <div th:text="${friend.nickname}">친구 닉네임</div>
+                <div th:text="${friend.getToMember().getNickname()}">친구 닉네임</div>
             </div>
         </div>
     </div>
-    --->
+
 </div>
 </body>
 </html>

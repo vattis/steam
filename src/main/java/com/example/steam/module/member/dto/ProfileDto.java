@@ -1,6 +1,7 @@
 package com.example.steam.module.member.dto;
 
 import com.example.steam.module.comment.dto.ProfileCommentDto;
+import com.example.steam.module.friendship.dto.SimpleFriendshipDto;
 import com.example.steam.module.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,12 +19,14 @@ public class ProfileDto {
     private SimpleMemberDto profileMember;
     private List<SimpleMemberGameDto> simpleMemberGames;
     private Page<ProfileCommentDto> profileCommentPage;
+    private List<SimpleFriendshipDto> friendships;
 
-    public static ProfileDto of(Member member, List<SimpleMemberGameDto> simpleMemberGames, Page<ProfileCommentDto> profileCommentPage) {
+    public static ProfileDto of(Member member, List<SimpleMemberGameDto> simpleMemberGames, Page<ProfileCommentDto> profileCommentPage, List<SimpleFriendshipDto> friendships) {
         return ProfileDto.builder()
                 .profileMember(SimpleMemberDto.from(member))
                 .simpleMemberGames(simpleMemberGames)
                 .profileCommentPage(profileCommentPage)
+                .friendships(friendships)
                 .build();
     }
 }

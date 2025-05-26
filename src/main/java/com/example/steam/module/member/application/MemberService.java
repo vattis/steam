@@ -2,6 +2,8 @@ package com.example.steam.module.member.application;
 
 import com.example.steam.module.comment.dto.ProfileCommentDto;
 import com.example.steam.module.comment.repository.ProfileCommentRepository;
+import com.example.steam.module.friendship.dto.SimpleFriendshipDto;
+import com.example.steam.module.friendship.repository.FriendshipRepository;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.member.dto.ProfileDto;
@@ -26,6 +28,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberGameRepository memberGameRepository;
     private final ProfileCommentRepository profileCommentRepository;
+    private final FriendshipRepository friendshipRepository;
     //회원가입 서비스
     public Member addMember(SignUpForm signUpForm){
         if(!isValid(signUpForm)){
@@ -64,6 +67,7 @@ public class MemberService {
         Member profileMember = memberRepository.findById(profileMemberId).orElseThrow(NoSuchElementException::new);
         List<SimpleMemberGameDto> memberGames = memberGameRepository.findTop5ByMemberOrderByLastPlayedTimeDesc(profileMember).stream().map(SimpleMemberGameDto::from).toList();
         Page<ProfileCommentDto> profileCommentPage = profileCommentRepository.findDtoByProfileMember(profileMember, pageRequest);
-        return ProfileDto.of(profileMember, memberGames, profileCommentPage);
+        List<SimpleFriendshipDto> friendships = friendshipRepository.findAllByFromMemberId(profileMemberId).stream().map(SimpleFriendshipDto::from).toList();
+        return ProfileDto.of(profileMember, memberGames, profileCommentPage, friendships);
     }
 }

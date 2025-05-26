@@ -50,6 +50,10 @@ public class PostInit {
             Friendship friendship = friendshipService.inviteFriend(members.get(i).getId(), members.get(i+1).getId());
             friendshipService.acceptFriend(friendship.getFromMember().getId(), friendship.getToMember().getId());
         }
+        for(int i = 0; i < 8; i++){
+            Friendship friendship = friendshipService.inviteFriend(members.get(i).getId(), members.get(i+2).getId());
+            friendshipService.acceptFriend(friendship.getFromMember().getId(), friendship.getToMember().getId());
+        }
 
     }
 
