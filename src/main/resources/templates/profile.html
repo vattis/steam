@@ -140,9 +140,9 @@
             <h3>최근 플레이한 게임</h3>
             <div th:each="game : ${profile.simpleMemberGames}">
                 <div class="game">
-                    <img th:src="${#strings.isEmpty(game.gameImageUrl)} ? '/images/game-placeholder.jpg' : ${game.gameImageUrl}"
-                         alt="게임 이미지"
-                         style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
+                    <img th:src="${#strings.isEmpty(game.gameImageUrl) ? '/images/game-image.jpeg' : game.gameImageUrl}"
+                         alt="Game Image"
+                         style="max-width: 250px; width: 100%; border-radius: 8px;">
                     <div>
                         <div class="game-title" th:text="${game.gameName}">게임 제목</div>
                         <div class="playtime" th:text="|플레이 시간: ${game.playTime}|">플레이 시간</div>
@@ -154,16 +154,18 @@
 
         <div class="comments">
             <h3>프로필 댓글</h3>
-            <div th:each="comment : ${profile.getProfileCommentPage()}">
+            <div th:each="comment : ${profile.getProfileCommentPage().getContent()}">
                 <div class="comment-box">
                     <strong th:text="${comment.nickname}">작성자</strong>
                     <p th:text="${comment.content}" style="margin: 5px 0 0 0;">댓글 내용</p>
-                    <small th:text="${comment.createdTime}">2025-05-23</small>
+                    <small th:text="${#temporals.format(comment.createdTime, 'yyyy-MM-dd HH:mm')}"
+                           style="display: block; text-align: right;">2025-05-23</small>
                 </div>
             </div>
 
             <form class="comment-form" th:action="@{/profile/comment}" method="post">
-                <input type="hidden" name="userId" th:value="${currentUser.id}" />
+                <input type="hidden" name="memberId" th:value="${currentUser.id}" />
+                <input type="hidden" name="profileId" th:value="${profile.profileMember.id}" />
                 <textarea name="content" placeholder="댓글을 입력하세요" rows="3"></textarea>
                 <button type="submit">댓글 작성</button>
             </form>
