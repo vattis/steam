@@ -55,4 +55,8 @@ public class Friendship {
     public static Friendship createReverseFriendship(Friendship friendship){
         return Friendship.of(friendship.toMember, friendship.fromMember, friendship.accepted);
     }
+    public Friendship acceptFriendship(){
+        accepted = true;
+        return this;
+    }
 }

@@ -2,7 +2,8 @@ package com.example.steam.core.init;
 
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.company.repository.CompanyRepository;
-import com.example.steam.module.member.application.MemberService;
+import com.example.steam.module.friendship.application.FriendshipService;
+import com.example.steam.module.friendship.domain.Friendship;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.member.repository.MemberGameRepository;
@@ -23,11 +24,13 @@ public class PostInit {
     private final MemberGameRepository memberGameRepository;
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository;
+    private final FriendshipService friendshipService;
 
     @PostConstruct
     public void init(){
         List<Company> companies = new ArrayList<>();
         List<Product> products = new ArrayList<>();
+        List<Member> members = new ArrayList<>();
         for(int i = 1; i <= 5; i++){
             companies.add(Company.makeSample(i));
         }
@@ -38,9 +41,14 @@ public class PostInit {
         products = productRepository.saveAll(products);
         for(int i = 1; i <= 10; i++){
             Member member = memberRepository.save(Member.makeSample(i));
+            members.add(member);
             for(int j = 1;  j <= 4; j++){
                 memberGameRepository.save(MemberGame.of(products.get(i*j/2), member));
             }
+        }
+        for(int i = 0; i < 9; i++){
+            Friendship friendship = friendshipService.inviteFriend(members.get(i).getId(), members.get(i+1).getId());
+            friendshipService.acceptFriend(friendship.getFromMember().getId(), friendship.getToMember().getId());
         }
 
     }
