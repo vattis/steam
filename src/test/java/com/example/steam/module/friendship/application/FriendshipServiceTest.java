@@ -142,6 +142,52 @@ class FriendshipServiceTest {
     }
 
     @Test
+    @DisplayName("친구 수락 테스트")
+    void acceptFriendTest(){
+        //given
+        Long fromMemberId = 1L;
+        Long toMemberId = 2L;
+        Member fromMember = Member.makeSample(Math.toIntExact(fromMemberId));
+        Member toMember = Member.makeSample(Math.toIntExact(toMemberId));
+        ReflectionTestUtils.setField(fromMember, "id", fromMemberId);
+        ReflectionTestUtils.setField(toMember, "id", toMemberId);
+        Optional<Member> optionalFromMember = Optional.of(fromMember);
+        Optional<Member> optionalToMember = Optional.of(toMember);
+        Friendship friendship = Friendship.of(fromMember, toMember, false);
+        given(memberRepository.findById(toMemberId)).willReturn(Optional.of(toMember));
+        given(friendshipRepository.findByFromMemberIdAndToMemberId(fromMemberId, toMemberId)).willReturn(friendship);
+
+        //when
+        friendshipService.acceptFriend(fromMemberId, toMemberId);
+
+        //then
+        assertThat(toMember.getFriendships().get(0).getToMember()).isEqualTo(fromMember);
+    }
+
+    @Test
+    @DisplayName("이미 수락된 친구 관계에 수락 요청을 할 경우")
+    void acceptFriendTest2(){
+        //given
+        Long fromMemberId = 1L;
+        Long toMemberId = 2L;
+        Member fromMember = Member.makeSample(Math.toIntExact(fromMemberId));
+        Member toMember = Member.makeSample(Math.toIntExact(toMemberId));
+        ReflectionTestUtils.setField(fromMember, "id", fromMemberId);
+        ReflectionTestUtils.setField(toMember, "id", toMemberId);
+        Optional<Member> optionalFromMember = Optional.of(fromMember);
+        Optional<Member> optionalToMember = Optional.of(toMember);
+        Friendship friendship = Friendship.of(fromMember, toMember, true);
+        given(memberRepository.findById(toMemberId)).willReturn(Optional.of(toMember));
+        given(friendshipRepository.findByFromMemberIdAndToMemberId(fromMemberId, toMemberId)).willReturn(friendship);
+
+        //when
+        friendshipService.acceptFriend(fromMemberId, toMemberId);
+
+        //then
+        verify(friendshipRepository, times(0)).save(any(Friendship.class));
+    }
+
+    @Test
     void removeFriendship() {
         //given
         Member friendMember1 = Member.makeSample(1);

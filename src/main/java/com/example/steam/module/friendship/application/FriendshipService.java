@@ -46,7 +46,7 @@ public class FriendshipService {
     //친구 수락
     public void acceptFriend(Long fromMemberId, Long toMemberId){
         Member toMember = memberRepository.findById(toMemberId).orElseThrow(NoSuchElementException::new);
-        Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NoSuchElementException::new);
+        //Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NoSuchElementException::new);
         Friendship friendship = friendshipRepository.findByFromMemberIdAndToMemberId(fromMemberId, toMemberId);
         if(friendship.getAccepted()){
             log.info("이미 수락된 친구 관계 수락 요청  fromId:{} toId:{}", fromMemberId, toMemberId);
