@@ -53,13 +53,12 @@ class FriendshipRepositoryTest {
     @Test
     void findAllByFromMemberId() {
         //given
-        PageRequest pageable = PageRequest.of(0, PageConst.FRIENDS_PAGE_SIZE);
 
         //when
-        Page<Friendship> friendshipPage1 = friendshipRepository.findAllByFromMemberId(members.get(0).getId(), pageable);
+        List<Friendship> friendshipPage1 = friendshipRepository.findAllByFromMemberId(members.get(0).getId());
 
         //then
-        assertThat(friendshipPage1.getTotalElements()).isEqualTo(2);
+        assertThat(friendshipPage1.size()).isEqualTo(2);
         friendshipPage1.forEach(a->assertThat(a.getFromMember()).isEqualTo(members.get(0)));
     }
 

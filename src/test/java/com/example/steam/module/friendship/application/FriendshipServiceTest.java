@@ -17,10 +17,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -34,15 +34,14 @@ class FriendshipServiceTest {
     @Test
     void getFriends() {
         //given
-        PageRequest pageRequest = PageRequest.of(0, PageConst.FRIENDS_PAGE_SIZE);
-        Page<Friendship> friendshipPage = new PageImpl<Friendship>(new ArrayList<Friendship>());
-        given(friendshipRepository.findAllByFromMemberId(1L, pageRequest)).willReturn(friendshipPage);
+        List<Friendship> friendships = new ArrayList<>();
+        given(friendshipRepository.findAllByFromMemberId(1L)).willReturn(friendships);
 
         //when
-        Page<Friendship> friendshipPageResult = friendshipService.getFriends(1L, pageRequest);
+        List<Friendship> friendshipPageResult = friendshipService.getFriends(1L);
 
         //then
-        assertThat(friendshipPageResult).isEqualTo(friendshipPage);
+        assertThat(friendshipPageResult).isEqualTo(friendships);
     }
 
     @Test
@@ -58,7 +57,7 @@ class FriendshipServiceTest {
         given(friendshipRepository.findByFromMemberIdAndToMemberId(friendMember1.getId(), friendMember2.getId())).willReturn(Friendship.of(friendMember1, friendMember2, true));
 
         //when
-        friendshipService.addFriend(friendMember1.getId(), friendMember2.getId());
+        friendshipService.inviteFriend(friendMember1.getId(), friendMember2.getId());
 
         //then
         verify(memberRepository, never()).findById(any(Long.class));
@@ -67,29 +66,44 @@ class FriendshipServiceTest {
 
     @Test
     @DisplayName("친구 관계가 아닌 경우의 친구 신청")
-    void addFriend2(){
+    void inviteFriend1(){
         //given
-        Member nonFriendMember1 = Member.makeSample(3);
-        Member nonFriendMember2 = Member.makeSample(4);
-        ReflectionTestUtils.setField(nonFriendMember1, "id", 3L);
-        ReflectionTestUtils.setField(nonFriendMember2, "id", 4L);
-        Optional<Member> optionalMember1 = Optional.of(nonFriendMember1); //미리 생성해두는게 핵심
-        Optional<Member> optionalMember2 = Optional.of(nonFriendMember2);
+        Long fromMemberId = 1L;
+        Long toMemberId = 2L;
+        Member fromMember = Member.makeSample(Math.toIntExact(fromMemberId));
+        Member toMember = Member.makeSample(Math.toIntExact(toMemberId));
+        ReflectionTestUtils.setField(fromMember, "id", fromMemberId);
+        ReflectionTestUtils.setField(toMember, "id", toMemberId);
+        Optional<Member> optionalFromMember = Optional.of(fromMember); //미리 생성해두는게 핵심
+        Optional<Member> optionalToMember = Optional.of(toMember);
 
-        given(friendshipRepository.existsByFromMemberIdAndToMemberId(nonFriendMember1.getId(), nonFriendMember2.getId())).willReturn(false);
+        given(friendshipRepository.existsByFromMemberIdAndToMemberId(fromMember.getId(), toMember.getId())).willReturn(false);
         //미리 만들어둔 인스턴스를 테스트 메서드 내부로 넣기
-        given(memberRepository.findById(nonFriendMember1.getId())).willReturn(optionalMember1);
-        given(memberRepository.findById(nonFriendMember2.getId())).willReturn(optionalMember2);
+        given(memberRepository.findById(fromMember.getId())).willReturn(optionalFromMember);
+        given(memberRepository.findById(toMember.getId())).willReturn(optionalToMember);
+
+        Friendship friendship = Friendship.of(fromMember, toMember, false);
+        given(friendshipRepository.save(any(Friendship.class))).willReturn(friendship);
 
         //when
-        friendshipService.addFriend(nonFriendMember1.getId(), nonFriendMember2.getId());
+        Friendship resultFriendship = friendshipService.inviteFriend(fromMember.getId(), toMember.getId());
 
         //then
         //만들어둔 인스턴스를 통해 서로 친구관계 교환이 됐나 확인
-        assertThat(optionalMember1.get().getFriendships().get(0).getToMember().getId()).isEqualTo(nonFriendMember2.getId());
-        assertThat(optionalMember2.get().getFriendships().get(0).getToMember().getId()).isEqualTo(nonFriendMember1.getId());
-        //save()가 2번 호출 되었는지 확인
-        verify(friendshipRepository, times(2)).save(any(Friendship.class));
+        assertThat(resultFriendship.getFromMember()).isEqualTo(optionalFromMember.get());
+        assertThat(resultFriendship.getToMember()).isEqualTo(optionalToMember.get());
+        assertThat(optionalFromMember.get().getFriendships().get(0).getToMember().getId()).isEqualTo(toMemberId);
+        //save()가 1번 호출 되었는지 확인
+        verify(friendshipRepository, times(1)).save(any(Friendship.class));
+    }
+
+    @Test
+    @DisplayName("이미 친구 관계인 경우 null 반환")
+    void inviteFriend2() {
+        Long fromMemberId = 1L;
+        Long toMemberId = 2L;
+
+
     }
 
     @Test
