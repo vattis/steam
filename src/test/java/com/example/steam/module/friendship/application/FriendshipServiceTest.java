@@ -18,6 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,10 +101,49 @@ class FriendshipServiceTest {
     @Test
     @DisplayName("이미 친구 관계인 경우 null 반환")
     void inviteFriend2() {
+        //given
         Long fromMemberId = 1L;
         Long toMemberId = 2L;
+        Member fromMember = Member.makeSample(Math.toIntExact(fromMemberId));
+        Member toMember = Member.makeSample(Math.toIntExact(toMemberId));
+        ReflectionTestUtils.setField(fromMember, "id", fromMemberId);
+        ReflectionTestUtils.setField(toMember, "id", toMemberId);
+        Optional<Member> optionalFromMember = Optional.of(fromMember); //미리 생성해두는게 핵심
+        Optional<Member> optionalToMember = Optional.of(toMember);
+        Friendship friendship = Friendship.of(fromMember, toMember, true);
 
+        given(friendshipRepository.existsByFromMemberIdAndToMemberId(fromMemberId, toMemberId)).willReturn(true);
+        given(friendshipRepository.findByFromMemberIdAndToMemberId(fromMemberId, toMemberId)).willReturn(friendship);
 
+        //when
+        Friendship resultFriendship = friendshipService.inviteFriend(fromMemberId, toMemberId);
+
+        //then
+        assertThat(resultFriendship).isNull();
+    }
+
+    @Test
+    @DisplayName("중복으로 친구 신청을 한 경우 null 반환")
+    void inviteFriend3() {
+        //given
+        Long fromMemberId = 1L;
+        Long toMemberId = 2L;
+        Member fromMember = Member.makeSample(Math.toIntExact(fromMemberId));
+        Member toMember = Member.makeSample(Math.toIntExact(toMemberId));
+        ReflectionTestUtils.setField(fromMember, "id", fromMemberId);
+        ReflectionTestUtils.setField(toMember, "id", toMemberId);
+        Optional<Member> optionalFromMember = Optional.of(fromMember); //미리 생성해두는게 핵심
+        Optional<Member> optionalToMember = Optional.of(toMember);
+        Friendship friendship = Friendship.of(fromMember, toMember, false);
+
+        given(friendshipRepository.existsByFromMemberIdAndToMemberId(fromMemberId, toMemberId)).willReturn(true);
+        given(friendshipRepository.findByFromMemberIdAndToMemberId(fromMemberId, toMemberId)).willReturn(friendship);
+
+        //when
+        Friendship resultFriendship = friendshipService.inviteFriend(fromMemberId, toMemberId);
+
+        //then
+        assertThat(resultFriendship).isNull();
     }
 
     @Test
