@@ -7,8 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByOrderByDownloadNum(Pageable pageable);
+
+    List<Product> findAllByOrderByDownloadNum();
+
 
     Page<Product> findAllByNameContaining(String searchWord, Pageable pageable);
 
@@ -18,4 +23,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByNameOrCompanyNameContaining(@Param("searchWord") String searchWord, Pageable pageable);
 
     Page<Product> findAllByCompanyId(Long companyId, Pageable pageable);
+
+
+
 }
