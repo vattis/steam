@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Steam 상점</title>
+    <style>
+        body {
+            background-color: #1b2838;
+            color: #c7d5e0;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: #171a21;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: #c7d5e0;
+            margin-right: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            color: #66c0f4;
+        }
+
+        .banner {
+            background-image: url('/images/banner-default.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            display: flex;
+            align-items: flex-end;
+            padding: 30px;
+        }
+
+        .banner-title {
+            font-size: 36px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .section {
+            padding: 40px;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background-color: #2a475e;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .game-card:hover {
+            transform: scale(1.03);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .game-card .info {
+            padding: 10px;
+        }
+
+        .game-card .title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .game-card .price {
+            color: #66c0f4;
+            font-size: 14px;
+        }
+
+        .footer {
+            background-color: #171a21;
+            text-align: center;
+            color: #808080;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 네비게이션 바 -->
+<div class="navbar">
+    <div>
+        <a th:href="@{/}">상점</a>
+        <a th:href="@{/categories}">카테고리</a>
+        <a th:href="@{/top-sellers}">인기 게임</a>
+        <a th:href="@{/new-releases}">신규 출시</a>
+    </div>
+    <div>
+        <a th:href="@{/login}">로그인</a>
+        <a th:href="@{/signup}">회원가입</a>
+    </div>
+</div>
+
+<!-- 추천 배너 -->
+<div class="banner" th:style="'background-image: url(' + ${banner.imageUrl} + ')'">
+    <div class="banner-title" th:text="${banner.title}">배너 타이틀</div>
+</div>
+
+<!-- 할인 게임 -->
+<div class="section">
+    <h2>할인 중인 게임</h2>
+    <div class="game-grid">
+        <div class="game-card" th:each="game : ${discountedGames}">
+            <a th:href="@{'/games/' + ${game.id}}">
+                <img th:src="${game.imageUrl}" alt="게임 이미지">
+                <div class="info">
+                    <div class="title" th:text="${game.name}">게임 이름</div>
+                    <div class="price" th:text="'₩ ' + ${game.discountedPrice}">₩ 9900</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 인기 카테고리 -->
+<div class="section">
+    <h2>인기 게임</h2>
+    <div class="game-grid">
+        <div class="game-card" th:each="category : ${topCategories}">
+            <a th:href="@{'/categories/' + ${category.id}}">
+                <img th:src="${category.imageUrl}" alt="카테고리 이미지">
+                <div class="info">
+                    <div class="title" th:text="${category.name}">액션</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 푸터 -->
+<div class="footer">
+    © 2025 Steam Clone. All rights reserved.
+</div>
+
+</body>
+</html>
