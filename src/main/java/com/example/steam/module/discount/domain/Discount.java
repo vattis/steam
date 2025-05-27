@@ -58,4 +58,8 @@ public class Discount {
         Random random = new Random();
         return Discount.of(LocalDateTime.now(), LocalDateTime.now().plusDays(num), random.nextInt(100), num);
     }
+    public boolean isValid(){
+        LocalDateTime now = LocalDateTime.now();
+        return startTime.isAfter(now) && endTime.isBefore(now);
+    }
 }
