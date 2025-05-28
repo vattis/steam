@@ -2,6 +2,7 @@ package com.example.steam.module.product.domain;
 
 import com.example.steam.module.comment.domain.ProductComment;
 import com.example.steam.module.company.domain.Company;
+import com.example.steam.module.discount.domain.Discount;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,6 +41,9 @@ public class Product {
     @Builder.Default
     private List<ProductComment> productComments = new ArrayList<>();
 
+    @OneToOne(mappedBy="product")
+    private Discount discount;
+
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default
@@ -61,6 +65,7 @@ public class Product {
                 .price(price)
                 .company(company)
                 .downloadNum(0)
+                .discount(null)
                 .build();
         company.addProduct(product);
         return product;
@@ -75,6 +80,18 @@ public class Product {
             rate = (rate*size+comment.getRate())/(size+1);
         }
         productComments.add(comment);
+    }
+
+    public void assignDiscount(Discount discount){
+        removeDiscount();
+        this.discount = discount;
+    }
+
+    private void removeDiscount(){
+        if(this.discount != null){
+            this.discount.assignProduct(null);
+            this.discount = null;
+        }
     }
 
 }

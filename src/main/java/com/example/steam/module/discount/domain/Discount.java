@@ -24,6 +24,7 @@ public class Discount {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name= "product_id")
     private Product product;
 
     @Column
@@ -46,20 +47,26 @@ public class Discount {
     @Builder.Default
     private Boolean deleted = false;
 
-    public static Discount of(LocalDateTime startTime, LocalDateTime endTime, int discountRate, int discountPrice){
-        return Discount.builder()
+    public static Discount of(Product product, LocalDateTime startTime, LocalDateTime endTime, int discountRate, int discountPrice){
+        Discount discount = Discount.builder()
                 .startTime(startTime)
                 .endTime(endTime)
                 .discountRate(discountRate)
                 .discountPrice(discountPrice).build();
+        product.assignDiscount(discount);
+        return discount;
     }
 
-    public static Discount makeSample(int num){
+    public static Discount makeSample(int num, Product product){
         Random random = new Random();
-        return Discount.of(LocalDateTime.now(), LocalDateTime.now().plusDays(num), random.nextInt(100), num);
+        return Discount.of(product, LocalDateTime.now(), LocalDateTime.now().plusDays(num), random.nextInt(100), num);
     }
     public boolean isValid(){
         LocalDateTime now = LocalDateTime.now();
         return startTime.isAfter(now) && endTime.isBefore(now);
+    }
+    public void assignProduct(Product product){
+        product.assignDiscount(this);
+        this.product = product;
     }
 }

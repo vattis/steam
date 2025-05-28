@@ -13,6 +13,6 @@ import java.time.LocalDateTime;
 @Slf4j
 public class DiscountService {
     public Discount makeDiscount(Product product, LocalDateTime startTime, LocalDateTime endTime, int discountRate, int discountPrice){
-        return Discount.of(startTime, endTime, discountRate, discountPrice);
+        return Discount.of(product, startTime, endTime, discountRate, discountPrice);
     }
 }
