@@ -22,6 +22,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "select distinct p from Product p join p.company c where p.name like concat('%', :searchWord, '%') or c.name like concat('%', :searchWord, '%')")
     Page<Product> findAllByNameOrCompanyNameContaining(@Param("searchWord") String searchWord, Pageable pageable);
 
+    @Query(value = "select distinct p from Product p join p.discount d where d.active = true order by d.discountRate desc")
+    Page<Product> findDiscountProduct(Pageable pageable);
+
+
     Page<Product> findAllByCompanyId(Long companyId, Pageable pageable);
 
 
