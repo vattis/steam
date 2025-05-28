@@ -4,6 +4,7 @@ import com.example.steam.module.product.domain.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
@@ -14,6 +15,7 @@ import java.util.Random;
 
 @Entity
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE discount SET deleted = true WHERE id=?")
@@ -66,7 +68,6 @@ public class Discount {
         return startTime.isAfter(now) && endTime.isBefore(now);
     }
     public void assignProduct(Product product){
-        product.assignDiscount(this);
         this.product = product;
     }
 }

@@ -42,8 +42,10 @@ public class MemberGame {
     private LocalDateTime lastPlayedTime;
 
     @Column(nullable = true)
+    @Builder.Default
     private String imageUrl = null;
 
+    @Builder.Default
     private boolean playing = false;
 
     @Column(name="deleted", nullable = false)

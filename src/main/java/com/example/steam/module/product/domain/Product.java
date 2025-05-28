@@ -85,6 +85,7 @@ public class Product {
     public void assignDiscount(Discount discount){
         removeDiscount();
         this.discount = discount;
+        discount.assignProduct(this);
     }
 
     private void removeDiscount(){
