@@ -15,6 +15,6 @@ public class ProductController {
     @GetMapping("/shop/product")
     String gotoShop(){
 
-        return "/main";
+        return "/shop";
     }
 }
