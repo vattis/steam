@@ -5,6 +5,7 @@ import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.domain.ProductSearch;
 import com.example.steam.module.product.domain.ProductSearchTag;
+import com.example.steam.module.product.dto.SimpleProductBannerDto;
 import com.example.steam.module.product.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,16 +79,17 @@ class ProductServiceTest {
             }
             productList.add(product);
         }
-        given(productRepository.findAllByOrderByDownloadNum(pageRequest)).willReturn(new PageImpl<>(productList, pageRequest, 100));
+        List<SimpleProductBannerDto> productBannerDtos = productList.stream().map(SimpleProductBannerDto::from).toList();
+        given(productRepository.findAllByOrderByDownloadNum(pageRequest)).willReturn(new PageImpl<>(productBannerDtos, pageRequest, 100));
         given(productRepository.findAllByNameContaining(nameSearch.getSearchWord(), pageRequest)).willReturn(new PageImpl<>(productList1));
         given(productRepository.findAllByCompanyNameContaining(companySearch.getSearchWord(), pageRequest)).willReturn(new PageImpl<>(productList2));
         given(productRepository.findAllByNameOrCompanyNameContaining(allSearch1.getSearchWord(), pageRequest)).willReturn(new PageImpl<>(productList3));
 
         //when
-        Page<Product> pageResult1 = productService.search(search);
-        Page<Product> pageResult2 = productService.search(nameSearch);
-        Page<Product> pageResult3 = productService.search(companySearch);
-        Page<Product> pageResult4 = productService.search(allSearch1);
+        Page<SimpleProductBannerDto> pageResult1 = productService.search(search);
+        Page<SimpleProductBannerDto> pageResult2 = productService.search(nameSearch);
+        Page<SimpleProductBannerDto> pageResult3 = productService.search(companySearch);
+        Page<SimpleProductBannerDto> pageResult4 = productService.search(allSearch1);
 
 
         //then

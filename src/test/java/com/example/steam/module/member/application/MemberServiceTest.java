@@ -5,6 +5,7 @@ import com.example.steam.module.comment.domain.ProfileComment;
 import com.example.steam.module.comment.dto.ProfileCommentDto;
 import com.example.steam.module.comment.repository.ProfileCommentRepository;
 import com.example.steam.module.company.domain.Company;
+import com.example.steam.module.friendship.repository.FriendshipRepository;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.member.dto.ProfileDto;
@@ -36,6 +37,7 @@ class MemberServiceTest {
     @Mock MemberRepository memberRepository;
     @Mock MemberGameRepository memberGameRepository;
     @Mock ProfileCommentRepository profileCommentRepository;
+    @Mock FriendshipRepository friendshipRepository;
     @InjectMocks MemberService memberService;
 
     @Test

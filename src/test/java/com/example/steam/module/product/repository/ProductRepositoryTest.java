@@ -4,6 +4,7 @@ import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.company.repository.CompanyRepository;
 import com.example.steam.module.product.domain.Product;
+import com.example.steam.module.product.dto.SimpleProductBannerDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ class ProductRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_PAGE_SIZE);
 
         //when
-        Page<Product> productPage1 = productRepository.findAllByOrderByDownloadNum(pageRequest);
+        Page<SimpleProductBannerDto> productPage1 = productRepository.findAllByOrderByDownloadNum(pageRequest);
 
         //then
         assertThat(productPage1.getTotalElements()).isEqualTo(100);

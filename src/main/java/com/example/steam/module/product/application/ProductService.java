@@ -5,11 +5,14 @@ import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.domain.ProductSearch;
 import com.example.steam.module.product.domain.ProductSearchTag;
+import com.example.steam.module.product.dto.SimpleProductBannerDto;
 import com.example.steam.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +32,16 @@ public class ProductService {
     }
 
     //전체 조회 및 검색
-    public Page<Product> search(ProductSearch productSearch){//정렬 기능 추가 예정
+    public Page<SimpleProductBannerDto> search(ProductSearch productSearch){//정렬 기능 추가 예정
         PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_PAGE_SIZE);
         if(productSearch.getSearchWord() == null || productSearch.getSearchWord().isEmpty()){ //전체 조회
             return productRepository.findAllByOrderByDownloadNum(pageRequest);
         }else if(productSearch.getSearchTag() == ProductSearchTag.NAME){ //게임 이름 조회
-            return productRepository.findAllByNameContaining(productSearch.getSearchWord(), pageRequest);
+            return productRepository.findAllByNameContaining(productSearch.getSearchWord(), pageRequest).map(SimpleProductBannerDto::from);
         }else if(productSearch.getSearchTag() == ProductSearchTag.COMPANY){ //게임 개발사 조회
-            return productRepository.findAllByCompanyNameContaining(productSearch.getSearchWord(), pageRequest);
+            return productRepository.findAllByCompanyNameContaining(productSearch.getSearchWord(), pageRequest).map(SimpleProductBannerDto::from);
         }else if(productSearch.getSearchTag() == ProductSearchTag.ALL){ //게임 이름 또는 개발사 조회
-            return productRepository.findAllByNameOrCompanyNameContaining(productSearch.getSearchWord(), pageRequest);
+            return productRepository.findAllByNameOrCompanyNameContaining(productSearch.getSearchWord(), pageRequest).map(SimpleProductBannerDto::from);
         }
         return null;
     }
@@ -49,9 +52,20 @@ public class ProductService {
         return productRepository.findAllByCompanyId(companyId, pageRequest);
     }
 
+
     //게임 한개 조회
     public Product findById(Long id){
         return productRepository.findById(id).orElseThrow(NoSuchElementException::new);
+    }
+
+    //할인된 게임 조회
+    public Page<SimpleProductBannerDto> findDiscountProductBanner(Pageable pageable){
+        return productRepository.findDiscountProductBanner(pageable);
+    }
+
+    //다운로드가 많이된 게임 찾기
+    public Page<SimpleProductBannerDto> findPopularProductBanner(Pageable pageable){
+        return productRepository.findAllByOrderByDownloadNum(pageable);
     }
 
     //게임 삭제

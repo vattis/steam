@@ -25,7 +25,7 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -43,6 +43,9 @@ public class Product {
 
     @OneToOne(mappedBy="product")
     private Discount discount;
+
+    @Column
+    private String imageUrl;
 
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")

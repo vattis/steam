@@ -110,7 +110,7 @@
 <div class="section">
     <h2>할인 중인 게임</h2>
     <div class="game-grid">
-        <div class="game-card" th:each="game : ${discountedGames}">
+        <div class="game-card" th:each="game : ${discountProducts}">
             <a th:href="@{'/games/' + ${game.id}}">
                 <img th:src="${game.imageUrl}" alt="게임 이미지">
                 <div class="info">
@@ -118,11 +118,11 @@
 
                     <div class="price">
                         <span style="text-decoration: line-through; color: #888;"
-                              th:text="'₩ ' + ${game.originalPrice}">₩ 19800</span>
+                              th:text="'₩ ' + ${game.price}">₩ 19800</span>
                         <span style="color: #66c0f4; font-weight: bold; margin-left: 8px;"
-                              th:text="'₩ ' + ${game.discountedPrice}">₩ 9900</span>
+                              th:text="'₩ ' + ${game.getDiscountPrice()}">₩ 9900</span>
                         <span style="color: #ff6868; margin-left: 6px; font-size: 13px;"
-                              th:text="'(-' + ${game.discountRate} + '%)'">(-50%)</span>
+                              th:text="'(-' + ${game.discount.discountRate} + '%)'">(-50%)</span>
                     </div>
 
                 </div>
@@ -135,7 +135,7 @@
 <div class="section">
     <h2>인기 게임</h2>
     <div class="game-grid">
-        <div class="game-card" th:each="game : ${topGames}">
+        <div class="game-card" th:each="game : ${popularProducts}">
             <a th:href="@{'/games/' + ${game.id}}"> <!-- 게임 상세로 이동 -->
                 <img th:src="${game.imageUrl}" alt="게임 이미지">
                 <div class="info">
