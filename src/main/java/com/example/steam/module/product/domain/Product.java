@@ -68,6 +68,7 @@ public class Product {
                 .price(price)
                 .company(company)
                 .downloadNum(0)
+                .imageUrl(null)
                 .discount(null)
                 .build();
         company.addProduct(product);

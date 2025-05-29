@@ -24,7 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         d.discountRate,
         d.active)
         FROM Product p
-        JOIN p.discount d
+        LEFT JOIN p.discount d
         ORDER BY p.downloadNum DESC
     """)
     Page<SimpleProductBannerDto> findAllByOrderByDownloadNum(Pageable pageable);
