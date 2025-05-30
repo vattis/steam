@@ -57,6 +57,6 @@ public class SimpleProductBannerDto {
         return SimpleProductBannerDto.of(product.getId(), product.getName(), product.getPrice(), product.getImageUrl(), discount.getId(), discount.getStartTime(), discount.getEndTime(), discount.getDiscountRate(), discount.isActive());
     }
     public int getDiscountPrice() {
-        return price*((100-this.discountRate)/100);
+        return price*((100-this.discountRate))/100;
     }
 }

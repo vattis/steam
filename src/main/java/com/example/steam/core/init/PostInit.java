@@ -2,6 +2,8 @@ package com.example.steam.core.init;
 
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.company.repository.CompanyRepository;
+import com.example.steam.module.discount.domain.Discount;
+import com.example.steam.module.discount.repository.DiscountRepository;
 import com.example.steam.module.friendship.application.FriendshipService;
 import com.example.steam.module.friendship.domain.Friendship;
 import com.example.steam.module.member.domain.Member;
@@ -25,20 +27,29 @@ public class PostInit {
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository;
     private final FriendshipService friendshipService;
-
+    private final DiscountRepository discountRepository;
     @PostConstruct
     public void init(){
         List<Company> companies = new ArrayList<>();
         List<Product> products = new ArrayList<>();
         List<Member> members = new ArrayList<>();
+        //List<Product> discountProducts = new ArrayList<>();
+        List<Discount> discounts = new ArrayList<>();
         for(int i = 1; i <= 5; i++){
             companies.add(Company.makeSample(i));
         }
         companies = companyRepository.saveAll(companies);
         for(int i = 1; i <= 21; i++){
             products.add(Product.makeSample(i, companies.get(i%5)));
+            Product product = Product.makeSample(i+22, companies.get(i%5));
+            productRepository.save(product);
+            Discount discount = Discount.makeSample(i, product);
+            discount.activeDiscount();
+            //discountProducts.add(product);
+            discounts.add(discount);
         }
         products = productRepository.saveAll(products);
+        discounts = discountRepository.saveAll(discounts);
         for(int i = 1; i <= 10; i++){
             Member member = memberRepository.save(Member.makeSample(i));
             members.add(member);

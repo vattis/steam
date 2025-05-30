@@ -11,7 +11,7 @@
 <!-- fragments/navbar.html -->
 <div class="navbar">
   <div>
-    <a th:href="@{/}">상점</a>
+    <a th:href="@{/shop/product}">상점</a>
     <a th:href="@{/categories}">카테고리</a>
     <a th:href="@{/top-sellers}">인기 게임</a>
     <a th:href="@{/new-releases}">신규 출시</a>
@@ -33,7 +33,7 @@
   <!-- 오른쪽: 메뉴 -->
   <nav style="display: flex; align-items: center; margin-left: auto;">
 
-    <a href="#" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">상점</a>
+    <a href="/shop/product" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">상점</a>
 
     <!-- currentUser가 null이 아닐 때만 라이브러리 링크 출력 -->
     <a th:if="${currentUser != null}"

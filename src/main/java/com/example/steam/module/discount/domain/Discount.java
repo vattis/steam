@@ -61,11 +61,18 @@ public class Discount {
 
     public static Discount makeSample(int num, Product product){
         Random random = new Random();
-        return Discount.of(product, LocalDateTime.now(), LocalDateTime.now().plusDays(num), random.nextInt(100), num);
+        return Discount.of(product, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(num), random.nextInt(100), num);
     }
     public boolean isValid(){
         LocalDateTime now = LocalDateTime.now();
-        return startTime.isAfter(now) && endTime.isBefore(now);
+        return startTime.isBefore(now) && endTime.isAfter(now);
+    }
+    public boolean activeDiscount(){
+        if(isValid()){
+            active = true;
+            return true;
+        }
+        return false;
     }
     public void assignProduct(Product product){
         this.product = product;
