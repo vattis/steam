@@ -100,6 +100,7 @@ public class JwtProvider {
             log.info("Invalid JWT token", e.getMessage());
         }catch (ExpiredJwtException e){
             log.info("Expired JWT token", e.getMessage());
+            throw e;
         }catch (UnsupportedJwtException e){
             log.info("Unsupported JWT token", e.getMessage());
         }catch (IllegalArgumentException e){
