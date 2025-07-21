@@ -2,6 +2,7 @@ package com.example.steam.core.config;
 
 import com.example.steam.core.filter.JwtAuthenticationFilter;
 import com.example.steam.core.security.jwt.JwtProvider;
+import com.example.steam.module.login.application.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
+    private final LoginService loginService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtProvider jwtProvider) throws Exception {
@@ -34,6 +36,6 @@ public class SecurityConfig {
                         .requestMatchers("/library/**", "/logout").authenticated()
                         .anyRequest().authenticated())
                 .exceptionHandling(a->a.accessDeniedPage("/noAuthorities"))
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class).build();
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, loginService), UsernamePasswordAuthenticationFilter.class).build();
     }
 }

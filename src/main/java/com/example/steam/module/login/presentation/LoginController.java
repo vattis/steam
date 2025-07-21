@@ -7,6 +7,7 @@ import com.example.steam.core.security.jwt.JwtToken;
 import com.example.steam.module.login.application.LoginService;
 import com.example.steam.module.login.dto.LoginForm;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
