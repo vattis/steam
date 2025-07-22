@@ -3,6 +3,7 @@ package com.example.steam.module.product.presentation;
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.member.repository.MemberRepository;
 import com.example.steam.module.product.application.ProductService;
+import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.domain.ProductSearch;
 import com.example.steam.module.product.domain.ProductSearchTag;
 import com.example.steam.module.product.dto.SimpleProductBannerDto;
@@ -36,7 +37,9 @@ public class ProductController {
         return "/shop";
     }
     @GetMapping("/product/{productId}")
-    String gotoProduct(Model model, @PathVariable("productId") int productId){
+    String gotoProduct(Model model, @PathVariable("productId") Long productId){
+        Product product = productService.findById(productId);
+        model.addAttribute("game", product);
         return "/product";
     }
     @GetMapping("/product/search")
