@@ -29,6 +29,7 @@
         .navbar a:hover {
             color: #66c0f4;
         }
+
         .search-bar {
             background-color: #1b2838;
             padding: 20px 40px;
@@ -82,23 +83,6 @@
 
         .search-bar button:hover {
             background-color: #417a9b;
-        }
-
-        .banner {
-            background-image: url('/images/banner-default.jpg');
-            background-size: cover;
-            background-position: center;
-            height: 400px;
-            display: flex;
-            align-items: flex-end;
-            padding: 30px;
-        }
-
-        .banner-title {
-            font-size: 36px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px;
-            border-radius: 8px;
         }
 
         .section {
@@ -159,47 +143,40 @@
 
 <!-- 네비게이션 바 -->
 <div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
+
 <!-- 검색창 -->
 <div th:replace="~{fragments/searchbar :: searchBar}"></div>
 
-<!-- 할인 게임 -->
+<!-- 검색 결과 -->
 <div class="section">
-    <h2>할인 중인 게임</h2>
-    <div class="game-grid">
-        <div class="game-card" th:each="game : ${discountProducts}">
-            <a th:href="@{'/games/' + ${game.id}}">
-                <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
-                <div class="info">
-                    <div class="title" th:text="${game.name}">게임 이름</div>
+    <h2>검색 결과</h2>
 
-                    <div class="price">
-                        <span style="text-decoration: line-through; color: #888;"
-                              th:text="'₩ ' + ${game.price}">₩ 19800</span>
-                        <span style="color: #66c0f4; font-weight: bold; margin-left: 8px;"
-                              th:text="'₩ ' + ${game.getDiscountPrice()}">₩ 9900</span>
-                        <span style="color: #ff6868; margin-left: 6px; font-size: 13px;"
-                              th:text="'(-' + ${game.discountRate} + '%)'">(-50%)</span>
+    <div th:if="${searchResults != null and !searchResults.isEmpty()}">
+        <div class="game-grid">
+            <div class="game-card" th:each="game : ${searchResults}">
+                <a th:href="@{'/games/' + ${game.id}}">
+                    <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
+                    <div class="info">
+                        <div class="title" th:text="${game.name}">게임 이름</div>
+
+                        <div class="price" th:if="${game.discountRate != null}">
+                            <span style="text-decoration: line-through; color: #888;"
+                                  th:text="'₩ ' + ${game.price}">₩ 19800</span>
+                            <span style="color: #66c0f4; font-weight: bold; margin-left: 8px;"
+                                  th:text="'₩ ' + ${game.getDiscountPrice()}">₩ 9900</span>
+                            <span style="color: #ff6868; margin-left: 6px; font-size: 13px;"
+                                  th:text="'(-' + ${game.discountRate} + '%)'">(-50%)</span>
+                        </div>
+                        <div class="price" th:unless="${game.discountRate != null}"
+                             th:text="'₩ ' + ${game.price}">₩ 19800</div>
                     </div>
-
-                </div>
-            </a>
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- 인기 카테고리 -->
-<div class="section">
-    <h2>인기 게임</h2>
-    <div class="game-grid">
-        <div class="game-card" th:each="game : ${popularProducts}">
-            <a th:href="@{'/games/' + ${game.id}}"> <!-- 게임 상세로 이동 -->
-                <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
-                <div class="info">
-                    <div class="title" th:text="${game.name}">게임 이름</div>
-                    <div class="price" th:text="'₩ ' + ${game.price}">₩ 19800</div>
-                </div>
-            </a>
-        </div>
+    <div th:if="${searchResults == null or searchResults.isEmpty()}" style="text-align: center; color: #8f98a0; margin-top: 40px;">
+        검색 결과가 없습니다.
     </div>
 </div>
 

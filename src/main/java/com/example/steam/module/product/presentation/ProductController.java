@@ -3,6 +3,8 @@ package com.example.steam.module.product.presentation;
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.member.repository.MemberRepository;
 import com.example.steam.module.product.application.ProductService;
+import com.example.steam.module.product.domain.ProductSearch;
+import com.example.steam.module.product.domain.ProductSearchTag;
 import com.example.steam.module.product.dto.SimpleProductBannerDto;
 import com.example.steam.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -35,5 +38,13 @@ public class ProductController {
     @GetMapping("/product/{productId}")
     String gotoProduct(Model model, @PathVariable("productId") int productId){
         return "/product";
+    }
+    @GetMapping("/product/search")
+    String searchProduct(Model model, @RequestParam("tag") String searchTag, @RequestParam("searchWord") String searchWord){
+        log.info("controller: search tag={}, searchWord={}", searchTag, searchWord);
+        ProductSearch productSearch = ProductSearch.of(ProductSearchTag.makeTag(searchTag), searchWord);
+        Page<SimpleProductBannerDto> products = productService.search(productSearch);
+        model.addAttribute("searchResults", products);
+        return "/searchProduct";
     }
 }
