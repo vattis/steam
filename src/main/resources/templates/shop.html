@@ -167,7 +167,7 @@
     <h2>할인 중인 게임</h2>
     <div class="game-grid">
         <div class="game-card" th:each="game : ${discountProducts}">
-            <a th:href="@{'/games/' + ${game.id}}">
+            <a th:href="@{'/product/' + ${game.id}}">
                 <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
                 <div class="info">
                     <div class="title" th:text="${game.name}">게임 이름</div>
@@ -192,7 +192,7 @@
     <h2>인기 게임</h2>
     <div class="game-grid">
         <div class="game-card" th:each="game : ${popularProducts}">
-            <a th:href="@{'/games/' + ${game.id}}"> <!-- 게임 상세로 이동 -->
+            <a th:href="@{'/product/' + ${game.getId()}}"> <!-- 게임 상세로 이동 -->
                 <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
                 <div class="info">
                     <div class="title" th:text="${game.name}">게임 이름</div>

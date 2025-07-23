@@ -1,11 +1,15 @@
 package com.example.steam.module.product.presentation;
 
 import com.example.steam.core.utils.page.PageConst;
+import com.example.steam.module.comment.application.ProductCommentService;
+import com.example.steam.module.comment.dto.ProductCommentDto;
 import com.example.steam.module.member.repository.MemberRepository;
 import com.example.steam.module.product.application.ProductService;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.domain.ProductSearch;
 import com.example.steam.module.product.domain.ProductSearchTag;
+import com.example.steam.module.product.dto.DetailProductDto;
+import com.example.steam.module.product.dto.ProductWithCommentDto;
 import com.example.steam.module.product.dto.SimpleProductBannerDto;
 import com.example.steam.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,7 @@ public class ProductController {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final ProductService productService;
+    private final ProductCommentService productCommentService;
 
     @GetMapping("/shop/product")
     String gotoShop(Model model){
@@ -36,12 +41,17 @@ public class ProductController {
         model.addAttribute("popularProducts", popularProducts);
         return "/shop";
     }
+
     @GetMapping("/product/{productId}")
-    String gotoProduct(Model model, @PathVariable("productId") Long productId){
-        Product product = productService.findById(productId);
-        model.addAttribute("game", product);
+    String gotoProduct(Model model, @PathVariable("productId") Long productId, @RequestParam(defaultValue = "0") int pageNo){
+        DetailProductDto productDto = DetailProductDto.from(productService.findById(productId));
+        Page<ProductCommentDto> productCommentDtoPage = productCommentService.findProductCommentByProductId(productId, pageNo).map(ProductCommentDto::from);
+        model.addAttribute("product", productDto);
+        model.addAttribute("productCommentDtoPage", productCommentDtoPage);
+        model.addAttribute("productWithComment", new ProductWithCommentDto(productDto, productCommentDtoPage));
         return "/product";
     }
+
     @GetMapping("/product/search")
     String searchProduct(Model model, @RequestParam("tag") String searchTag, @RequestParam("searchWord") String searchWord){
         log.info("controller: search tag={}, searchWord={}", searchTag, searchWord);

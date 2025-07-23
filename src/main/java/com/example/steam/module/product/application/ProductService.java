@@ -5,6 +5,7 @@ import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.domain.ProductSearch;
 import com.example.steam.module.product.domain.ProductSearchTag;
+import com.example.steam.module.product.dto.DetailProductDto;
 import com.example.steam.module.product.dto.SimpleProductBannerDto;
 import com.example.steam.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,12 @@ public class ProductService {
     //게임 한개 조회
     public Product findById(Long id){
         return productRepository.findById(id).orElseThrow(NoSuchElementException::new);
+    }
+
+    //게임 한개 조회 후 dto로 반환
+    public DetailProductDto findDetailProductById(Long id){
+        Product product = findById(id);
+        return DetailProductDto.from(product);
     }
 
     //할인된 게임 조회
