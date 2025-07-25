@@ -3,6 +3,7 @@ package com.example.steam.module.product.domain;
 import com.example.steam.module.comment.domain.ProductComment;
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.discount.domain.Discount;
+import com.example.steam.module.gallery.domain.Gallery;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +37,9 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Company company;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Gallery gallery;
 
     @OneToMany(mappedBy="product", cascade = CascadeType.ALL)
     @Builder.Default

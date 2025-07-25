@@ -4,6 +4,8 @@ import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.article.domain.Article;
 import com.example.steam.module.article.repository.ArticleRepository;
 import com.example.steam.module.comment.domain.ArticleComment;
+import com.example.steam.module.gallery.domain.Gallery;
+import com.example.steam.module.gallery.repository.GalleryRepository;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
@@ -31,6 +33,8 @@ class ArticleCommentRepositoryTest {
     @Autowired
     private ArticleCommentRepository articleCommentRepository;
     @Autowired
+    private GalleryRepository galleryRepository;
+    @Autowired
     EntityManager em;
 
     @BeforeEach
@@ -42,7 +46,7 @@ class ArticleCommentRepositoryTest {
             members.add(Member.makeSample(i));
         }
         for(int i = 1; i <= 10; i++){
-            articles.add(Article.makeSample(i, members.get(i-1)));
+            articles.add(Article.makeSample(i, galleryRepository.save(Gallery.makeSample()), members.get(i-1)));
         }
         memberRepository.saveAll(members);
         articleRepository.saveAll(articles);

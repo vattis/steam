@@ -2,6 +2,8 @@ package com.example.steam.module.article.repository;
 
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.article.domain.Article;
+import com.example.steam.module.gallery.domain.Gallery;
+import com.example.steam.module.gallery.repository.GalleryRepository;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
@@ -21,13 +23,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ArticleRepositoryTest {
     @Autowired private MemberRepository memberRepository;
     @Autowired private ArticleRepository articleRepository;
+    @Autowired private GalleryRepository galleryRepository;
     @Autowired EntityManager entityManager;
 
     @Test
     void saveTest(){
         //given
         Member member = Member.makeSample(1);
-        Article article = Article.makeSample(1, member);
+        Gallery gallery = galleryRepository.save(Gallery.makeSample());
+        Article article = Article.makeSample(1, gallery, member);
         memberRepository.save(member);
 
         //when
@@ -44,7 +48,7 @@ class ArticleRepositoryTest {
     void findTest(){
         //given
         Member member = Member.makeSample(1);
-        Article article = Article.makeSample(1, member);
+        Article article = Article.makeSample(1, galleryRepository.save(Gallery.makeSample()), member);
         memberRepository.save(member);
 
         //when
@@ -60,7 +64,7 @@ class ArticleRepositoryTest {
     void deleteTest1(){
         //given
         Member member = Member.makeSample(1);
-        Article article = Article.makeSample(1, member);
+        Article article = Article.makeSample(1, galleryRepository.save(Gallery.makeSample()), member);
         memberRepository.save(member);
         articleRepository.save(article);
         entityManager.flush();
@@ -78,7 +82,7 @@ class ArticleRepositoryTest {
     void deleteTest2(){
         //given
         Member member = Member.makeSample(1);
-        Article article = Article.makeSample(1, member);
+        Article article = Article.makeSample(1, galleryRepository.save(Gallery.makeSample()), member);
         memberRepository.save(member);
         Article article1 = articleRepository.save(article);
         entityManager.flush();
@@ -101,12 +105,13 @@ class ArticleRepositoryTest {
         }
         memberRepository.saveAll(members);
         List<Article> articles = new ArrayList<>();
-        articles.add(Article.makeSample(111111, members.get(0)));
+        Gallery gallery = galleryRepository.save(Gallery.makeSample());
+        articles.add(Article.makeSample(111111, gallery, members.get(0)));
         articleRepository.save(articles.get(0));
         for(int i = 0; i < 10; i++){
                 Member member = members.get(i);
             for(int j = 1; j <= 10; j++){
-                articles.add(Article.makeSample(i*10+j, member));
+                articles.add(Article.makeSample(i*10+j, galleryRepository.save(Gallery.makeSample()), member));
             }
         }
         articleRepository.saveAll(articles);

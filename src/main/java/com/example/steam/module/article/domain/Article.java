@@ -1,6 +1,7 @@
 package com.example.steam.module.article.domain;
 
 import com.example.steam.module.comment.domain.ArticleComment;
+import com.example.steam.module.gallery.domain.Gallery;
 import com.example.steam.module.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,9 @@ public class Article {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Gallery gallery;
 
     @Column(nullable = false)
     private String title;
@@ -73,8 +77,9 @@ public class Article {
         member.getArticles().add(article);
         return article;
     }
-    public static Article makeSample(int i, Member member){
+    public static Article makeSample(int i, Gallery gallery, Member member){
         Article article = Article.builder()
+                                .gallery(gallery)
                                 .member(member)
                                 .title("title"+i)
                                 .content("content"+i)
