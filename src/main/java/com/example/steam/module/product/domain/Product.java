@@ -38,9 +38,6 @@ public class Product {
     @JoinColumn(nullable = false)
     private Company company;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Gallery gallery;
-
     @OneToMany(mappedBy="product", cascade = CascadeType.ALL)
     @Builder.Default
     private List<ProductComment> productComments = new ArrayList<>();

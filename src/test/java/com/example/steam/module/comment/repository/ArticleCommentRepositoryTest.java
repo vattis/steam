@@ -4,10 +4,14 @@ import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.article.domain.Article;
 import com.example.steam.module.article.repository.ArticleRepository;
 import com.example.steam.module.comment.domain.ArticleComment;
+import com.example.steam.module.company.domain.Company;
+import com.example.steam.module.company.repository.CompanyRepository;
 import com.example.steam.module.gallery.domain.Gallery;
 import com.example.steam.module.gallery.repository.GalleryRepository;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
+import com.example.steam.module.product.domain.Product;
+import com.example.steam.module.product.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,17 +40,26 @@ class ArticleCommentRepositoryTest {
     private GalleryRepository galleryRepository;
     @Autowired
     EntityManager em;
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     @BeforeEach
     void init(){
         List<Member> members = new ArrayList<>();
         List<Article> articles = new ArrayList<>();
         List<ArticleComment> articleComments = new ArrayList<>();
+        Company company = Company.makeSample(1);
+        Product product = Product.makeSample(1, company);
+        companyRepository.save(company);
+        productRepository.save(product);
+        Gallery gallery = galleryRepository.save(Gallery.makeSample(product));
         for(int i = 1; i <= 10; i++){
             members.add(Member.makeSample(i));
         }
         for(int i = 1; i <= 10; i++){
-            articles.add(Article.makeSample(i, galleryRepository.save(Gallery.makeSample()), members.get(i-1)));
+            articles.add(Article.makeSample(i, gallery, members.get(i-1)));
         }
         memberRepository.saveAll(members);
         articleRepository.saveAll(articles);

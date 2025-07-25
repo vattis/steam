@@ -15,8 +15,12 @@ public class Gallery {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public static Gallery makeSample(){
+    @OneToOne(fetch = FetchType.LAZY)
+    private Product product;
+
+    public static Gallery makeSample(Product product){
         return Gallery.builder()
+                .product(product)
                 .build();
     }
 }
