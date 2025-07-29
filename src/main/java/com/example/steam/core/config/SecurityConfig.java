@@ -31,7 +31,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests((authorizeRequest)->authorizeRequest
-                        .requestMatchers("/", "/login", "/sign-up", "/sign-in", "/articles", "/auth/**", "/favicon.ico", "/error", "/.well-known/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/static/**", "/login", "/sign-up", "/sign-in", "/shop/**", "/product/**", "/articles", "/auth/**", "/favicon.ico", "/error", "/.well-known/**").permitAll()
                         .requestMatchers("/login/test").hasRole("USER")
                         .requestMatchers("/library/**", "/logout").authenticated()
                         .anyRequest().authenticated())

@@ -6,11 +6,12 @@
     <link rel="stylesheet" th:href="@{/css/product-info.css}">
 </head>
 <body>
-
+<!-- 네비게이션 바  -->
+<div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
 <div class="container">
     <!-- 게임 헤더 -->
     <div class="game-header">
-        <img th:src="${product.imageUrl}" alt="게임 이미지" class="game-image"/>
+        <img th:src="${product.imageUrl != null and product.imageUrl != '' ? product.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
         <div class="game-info">
             <h1 th:text="${product.name}">게임 이름</h1>
             <p><strong>평점:</strong> <span th:text="${product.rate}">4.8</span>/5</p>
@@ -52,7 +53,8 @@
                 </div>
             </form>
         </div>
-        <div class="review-form" th:unless="${!isLogin}">
+        <!-- 리뷰 입력폼, 비로그인 시 -->
+        <div class="review-form" th:unless="${isLogin}">
             <a th:href="@{/login}" class="login-link">로그인 후 리뷰 작성</a>
         </div>
 
