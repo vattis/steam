@@ -57,8 +57,9 @@ public class Article {
     @Column(nullable = false)
     private LocalDateTime created;
 
-    public static Article of(Member member, String title, String content) {
+    public static Article of(Gallery gallery, Member member, String title, String content) {
         return Article.builder()
+                .gallery(gallery)
                 .member(member)
                 .title(title)
                 .content(content)
