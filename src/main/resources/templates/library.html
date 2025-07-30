@@ -72,7 +72,7 @@
 <aside>
   <h2>라이브러리</h2>
   <div class="game-list">
-    <a th:each="game : ${games}" th:href="@{/library/{memberId}/{selectedGameId}(memberId=${memberId}, selectedGameId=${game.id})}" th:text="${game.name}">게임 이름</a>
+    <a th:each="game : ${games}" th:href="@{/library/{memberId}/{selectedGameId}(memberId=${memberId}, selectedGameId=${game.gameId})}" th:text="${game.gameName}">게임 이름</a>
   </div>
 </aside>
 
@@ -85,10 +85,10 @@
 
   <!-- games가 있고, selectedGame이 있을 경우 -->
   <div class="game-details" th:if="${!#lists.isEmpty(games)} and ${selectedGame != null}">
-    <img th:src="${selectedGame.imageUrl != null and selectedGame.imageUrl != '' ? selectedGame.imageUrl : '/images/game-image.jpeg'}"
+    <img th:src="${selectedGame.gameImageUrl != null and selectedGame.gameImageUrl != '' ? selectedGame.gameImageUrl : '/images/game-image.jpeg'}"
          alt="Game Image"
          style="max-width: 500px; width: 100%; border-radius: 8px;">
-    <h1 th:text="${selectedGame.name}">게임 이름</h1>
+    <h1 th:text="${selectedGame.gameName}">게임 이름</h1>
   </div>
 
   <!-- games가 있고, selectedGame이 없을 경우 -->

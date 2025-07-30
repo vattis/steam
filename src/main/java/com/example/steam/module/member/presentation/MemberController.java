@@ -5,6 +5,7 @@ import com.example.steam.module.email.application.EmailService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
+import com.example.steam.module.member.dto.MemberGameDto;
 import com.example.steam.module.member.dto.ProfileDto;
 import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
@@ -60,12 +61,12 @@ public class MemberController {
             log.info("[MemberController] 일치하지 않은 유저의 라이브러리 접근 확인");
             return "redirect:/";
         }
-        model.addAttribute("games", member.getMemberGames());
+        model.addAttribute("games", member.getMemberGames().stream().map(MemberGameDto::from).toList());
         if(selectedGameId == null){
             model.addAttribute("selectedGame", null);
         }else{
             MemberGame selectedGame = memberGameRepository.findById(selectedGameId).orElseThrow(NoSuchElementException::new);
-            model.addAttribute("selectedGame", selectedGame);
+            model.addAttribute("selectedGame", MemberGameDto.from(selectedGame));
         }
         return "/library";
     }
