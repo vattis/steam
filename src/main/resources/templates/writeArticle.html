@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>새 글 작성 | Steam 커뮤니티</title>
+    <title>글 작성 | Steam 커뮤니티</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
         body {
@@ -61,15 +61,14 @@
 </head>
 <body>
 <header>
-    <h1>새 글 작성</h1>
+    <h1>글 작성</h1>
 </header>
 
 <main>
-    <h2>게시글을 작성하세요</h2>
-    <form th:action="@{/community/post}" method="post">
-        <input type="text" name="title" placeholder="제목을 입력하세요" required />
-        <input type="text" name="author" placeholder="작성자 이름" required />
-        <textarea name="content" rows="8" placeholder="내용을 입력하세요" required></textarea>
+    <h2 th:text="'[' + ${articleWriteForm.galleryId} + '] 게시글 작성'"></h2>
+    <form th:action="@{'/article/' + ${articleWriteForm.galleryId} + '/write'}" method="post" th:object="${articleWriteForm}">
+        <input type="text" th:field="*{title}" placeholder="제목을 입력하세요" required />
+        <textarea th:field="*{content}" rows="10" placeholder="내용을 입력하세요" required></textarea>
         <button type="submit">작성 완료</button>
     </form>
 </main>
