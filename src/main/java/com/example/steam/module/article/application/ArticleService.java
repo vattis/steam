@@ -36,8 +36,8 @@ public class ArticleService {
     }
 
     //게시판 별 게시물 전체 찾기
-    public Page<Article> findAllByGalleryId(Long galleryId){
-        Pageable pageable = PageRequest.of(0, PageConst.ARTICLE_PAGE_SIZE);
+    public Page<Article> findAllByGalleryId(Long galleryId, int pageNum){
+        Pageable pageable = PageRequest.of(pageNum, PageConst.ARTICLE_PAGE_SIZE);
         return articleRepository.findAllByGalleryId(galleryId, pageable);
     }
 
