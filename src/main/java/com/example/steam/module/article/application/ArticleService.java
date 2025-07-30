@@ -67,9 +67,8 @@ public class ArticleService {
     }
 
     //article 저장
-    public Article saveArticle(ArticleWriteForm articleWriteForm){
+    public Article saveArticle(ArticleWriteForm articleWriteForm, Member member){
         Gallery gallery = galleryRepository.findById(articleWriteForm.getGalleryId()).orElseThrow(NoSuchElementException::new);
-        Member member = memberRepository.findById(articleWriteForm.getMemberDto().getId()).orElseThrow(NoSuchElementException::new);
         Article article = Article.of(gallery, member, articleWriteForm.getTitle(), articleWriteForm.getContent());
         return articleRepository.save(article);
     }

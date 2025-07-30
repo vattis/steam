@@ -3,18 +3,24 @@ package com.example.steam.module.article.presentation;
 import com.example.steam.module.article.application.ArticleService;
 import com.example.steam.module.article.dto.ArticleDto;
 import com.example.steam.module.article.dto.ArticleWriteForm;
+import com.example.steam.module.member.application.MemberService;
+import com.example.steam.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 public class ArticleController {
     private final ArticleService articleService;
+    private final MemberService memberService;
 
     @GetMapping("/article/{galleryId}")
     public String gotoGallery(@PathVariable long galleryId,
@@ -33,8 +39,12 @@ public class ArticleController {
 
     //개시물 작성
     @PostMapping("article/{galleryId}/write")
-    public String postArticle(@ModelAttribute ArticleWriteForm articleWriteForm){
-        articleService.saveArticle(articleWriteForm);
+    public String postArticle(@ModelAttribute ArticleWriteForm articleWriteForm, Principal principal){
+        if(principal == null){ //비로그인 시 로그인 화면으로
+            return "redirect:/login";
+        }
+        Member member = memberService.findMemberByEmail(principal.getName());
+        articleService.saveArticle(articleWriteForm, member);
         return "redirect:/article/"+ articleWriteForm.getGalleryId();
     }
 

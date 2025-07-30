@@ -17,11 +17,11 @@ import java.util.List;
 @NoArgsConstructor
 public class ProfileDto {
     private SimpleMemberDto profileMember;
-    private List<SimpleMemberGameDto> simpleMemberGames;
+    private List<MemberGameDto> simpleMemberGames;
     private Page<ProfileCommentDto> profileCommentPage;
     private List<SimpleFriendshipDto> friendships;
 
-    public static ProfileDto of(Member member, List<SimpleMemberGameDto> simpleMemberGames, Page<ProfileCommentDto> profileCommentPage, List<SimpleFriendshipDto> friendships) {
+    public static ProfileDto of(Member member, List<MemberGameDto> simpleMemberGames, Page<ProfileCommentDto> profileCommentPage, List<SimpleFriendshipDto> friendships) {
         return ProfileDto.builder()
                 .profileMember(SimpleMemberDto.from(member))
                 .simpleMemberGames(simpleMemberGames)

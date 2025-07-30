@@ -5,10 +5,9 @@ import com.example.steam.module.comment.repository.ProfileCommentRepository;
 import com.example.steam.module.friendship.dto.SimpleFriendshipDto;
 import com.example.steam.module.friendship.repository.FriendshipRepository;
 import com.example.steam.module.member.domain.Member;
-import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.member.dto.ProfileDto;
 import com.example.steam.module.member.dto.SignUpForm;
-import com.example.steam.module.member.dto.SimpleMemberGameDto;
+import com.example.steam.module.member.dto.MemberGameDto;
 import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +51,9 @@ public class MemberService {
         return memberRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
+    //이메일을 통한 회원 검색
+    public Member findMemberByEmail(String email){ return memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new); }
+
     //회원가입 유효성 검증
     public boolean isValid(SignUpForm signUpForm){
         return signUpForm.isValid() && !memberRepository.existsByEmail(signUpForm.getEmail());
@@ -63,9 +65,10 @@ public class MemberService {
         return random.nextInt(900000)+100000;
     }
 
+    //프로필 정보 검색 및 dto 생성
     public ProfileDto getProfile(Long profileMemberId, PageRequest pageRequest){
         Member profileMember = memberRepository.findById(profileMemberId).orElseThrow(NoSuchElementException::new);
-        List<SimpleMemberGameDto> memberGames = memberGameRepository.findTop5ByMemberOrderByLastPlayedTimeDesc(profileMember).stream().map(SimpleMemberGameDto::from).toList();
+        List<MemberGameDto> memberGames = memberGameRepository.findTop5ByMemberOrderByLastPlayedTimeDesc(profileMember).stream().map(MemberGameDto::from).toList();
         Page<ProfileCommentDto> profileCommentPage = profileCommentRepository.findDtoByProfileMember(profileMember, pageRequest);
         List<SimpleFriendshipDto> friendships = friendshipRepository.findAllByFromMemberId(profileMemberId).stream().map(SimpleFriendshipDto::from).toList();
         return ProfileDto.of(profileMember, memberGames, profileCommentPage, friendships);
