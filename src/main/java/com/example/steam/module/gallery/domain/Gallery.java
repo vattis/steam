@@ -25,4 +25,10 @@ public class Gallery {
                 .product(product)
                 .build();
     }
+
+    public static Gallery of(Product product){
+        return Gallery.builder()
+                .product(product)
+                .build();
+    }
 }

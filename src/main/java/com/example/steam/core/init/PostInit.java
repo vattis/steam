@@ -6,6 +6,7 @@ import com.example.steam.module.discount.domain.Discount;
 import com.example.steam.module.discount.repository.DiscountRepository;
 import com.example.steam.module.friendship.application.FriendshipService;
 import com.example.steam.module.friendship.domain.Friendship;
+import com.example.steam.module.gallery.application.GalleryService;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.member.repository.MemberGameRepository;
@@ -28,6 +29,8 @@ public class PostInit {
     private final CompanyRepository companyRepository;
     private final FriendshipService friendshipService;
     private final DiscountRepository discountRepository;
+    private final GalleryService galleryService;
+
     @PostConstruct
     public void init(){
         List<Company> companies = new ArrayList<>();
@@ -42,7 +45,8 @@ public class PostInit {
         for(int i = 1; i <= 21; i++){
             products.add(Product.makeSample(i, companies.get(i%5)));
             Product product = Product.makeSample(i+22, companies.get(i%5));
-            productRepository.save(product);
+            product = productRepository.save(product);
+            galleryService.createGallery(product);
             Discount discount = Discount.makeSample(i, product);
             discount.activeDiscount();
             //discountProducts.add(product);

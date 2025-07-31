@@ -103,19 +103,19 @@
   </style>
 </head>
 <body>
-
+<div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
 <main>
   <form th:action="@{/community/search}" method="get" class="search-box">
     <input type="text" name="keyword" placeholder="커뮤니티 검색" />
     <button type="submit">검색</button>
   </form>
-  <div th:if="${games != null && !games.isEmpty()}">
+  <div th:if="${ownedGalleries != null && !ownedGalleries.isEmpty()}">
     <div class="section-title">내가 등록한 커뮤니티</div>
     <div class="gallery-list">
-      <a th:each="game : ${games}"
-         th:href="@{'/community/' + ${game.gallery.id}}"
+      <a th:each="gallery : ${ownedGalleries}"
+         th:href="@{'/community/' + ${gallery.galleryName}}"
          class="gallery-card">
-        <div class="gallery-title" th:text="${game.gallery.name}">커뮤니티 제목</div>
+        <div class="gallery-title" th:text="${gallery.galleryName}">커뮤니티 제목</div>
       </a>
     </div>
   </div>
@@ -123,9 +123,9 @@
   <div class="section-title">전체 커뮤니티</div>
   <div class="gallery-list">
     <a th:each="gallery : ${galleries}"
-       th:href="@{'/community/' + ${gallery.id}}"
+       th:href="@{'/community/' + ${gallery.galleryName}}"
        class="gallery-card">
-      <div class="gallery-title" th:text="${gallery.name}">커뮤니티 제목</div>
+      <div class="gallery-title" th:text="${gallery.galleryName}">커뮤니티 제목</div>
     </a>
   </div>
 </main>
