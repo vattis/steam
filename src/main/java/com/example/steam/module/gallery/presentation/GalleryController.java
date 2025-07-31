@@ -9,9 +9,11 @@ import com.example.steam.module.member.dto.SimpleMemberGameDto;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.List;
@@ -24,6 +26,8 @@ public class GalleryController {
     private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final GalleryService galleryService;
+
+    //갤러리 목록으로 이동
     @GetMapping("/galleries")
     public String togoGalleryList(Model model, Principal principal){
         if(principal != null){
@@ -35,5 +39,15 @@ public class GalleryController {
             model.addAttribute("galleries", galleries);
         }
         return "/gallery-list";
+    }
+
+    //갤러리 검색
+    @GetMapping("/gallery/search")
+    public String search(@RequestParam("searchWord") String searchWord, Model model){
+        Page<SimpleGalleryDto> galleryDtos = galleryService.search(searchWord).map(SimpleGalleryDto::from);
+        System.out.println(galleryDtos.getTotalElements() + "@@@@@@@@@@@@@@@@@@@@@@@");
+        model.addAttribute("galleries", galleryDtos);
+        model.addAttribute("searchWord", searchWord);
+        return "/gallery-search";
     }
 }

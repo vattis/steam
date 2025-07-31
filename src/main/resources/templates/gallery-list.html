@@ -105,8 +105,8 @@
 <body>
 <div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
 <main>
-  <form th:action="@{/community/search}" method="get" class="search-box">
-    <input type="text" name="keyword" placeholder="커뮤니티 검색" />
+  <form th:action="@{/gallery/search}" method="get" class="search-box">
+    <input type="text" name="searchWord" placeholder="커뮤니티 검색" />
     <button type="submit">검색</button>
   </form>
   <div th:if="${ownedGalleries != null && !ownedGalleries.isEmpty()}">

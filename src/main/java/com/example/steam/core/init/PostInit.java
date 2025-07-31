@@ -11,6 +11,7 @@ import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
+import com.example.steam.module.product.application.ProductService;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
@@ -30,6 +31,7 @@ public class PostInit {
     private final FriendshipService friendshipService;
     private final DiscountRepository discountRepository;
     private final GalleryService galleryService;
+    private final ProductService productService;
 
     @PostConstruct
     public void init(){
@@ -43,16 +45,23 @@ public class PostInit {
         }
         companies = companyRepository.saveAll(companies);
         for(int i = 1; i <= 21; i++){
-            products.add(Product.makeSample(i, companies.get(i%5)));
-            Product product = Product.makeSample(i+22, companies.get(i%5));
-            product = productRepository.save(product);
-            galleryService.createGallery(product);
-            Discount discount = Discount.makeSample(i, product);
+            Product product1 = Product.makeSample(i, companies.get(i%5));
+            product1 = productRepository.save(product1);
+            products.add(product1);
+            Product product2 = Product.makeSample(i+22, companies.get(i%5));
+            product2 = productRepository.save(product2);
+            products.add(product2);
+            galleryService.createGallery(product1);
+            galleryService.createGallery(product2);
+
+            Discount discount = Discount.makeSample(i, product1);
             discount.activeDiscount();
-            //discountProducts.add(product);
             discounts.add(discount);
+            Discount discount2 = Discount.makeSample(i+22, product2);
+            discount2 = discountRepository.save(discount2);
+            discounts.add(discount2);
         }
-        products = productRepository.saveAll(products);
+        //products = productRepository.saveAll(products);
         discounts = discountRepository.saveAll(discounts);
         for(int i = 1; i <= 10; i++){
             Member member = memberRepository.save(Member.makeSample(i));

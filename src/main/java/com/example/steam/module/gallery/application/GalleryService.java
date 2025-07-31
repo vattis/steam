@@ -1,10 +1,14 @@
 package com.example.steam.module.gallery.application;
 
+import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.gallery.domain.Gallery;
 import com.example.steam.module.gallery.repository.GalleryRepository;
 import com.example.steam.module.product.domain.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,5 +28,11 @@ public class GalleryService {
     //갤러리 전체 찾기
     public List<Gallery> findAllGallery(){
         return galleryRepository.findAll();
+    }
+
+    //갤러리 검색
+    public Page<Gallery> search(String searchWord){
+        Pageable pageable = PageRequest.of(0, PageConst.GALLERY_LIST_PAGE_SIZE);
+        return galleryRepository.findByProduct_NameContaining(searchWord, pageable);
     }
 }
