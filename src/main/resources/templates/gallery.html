@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Steam 커뮤니티</title>
+    <title th:text="${galleryName} + ' 커뮤니티'">Steam 커뮤니티</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
         body {
@@ -13,42 +13,24 @@
             color: #c7d5e0;
         }
 
-        nav {
-            background-color: #121417;
-            padding: 1rem 2rem;
-        }
-
-        nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .community-header {
             display: flex;
-            gap: 1rem;
-        }
-
-        nav ul li a {
-            color: #c7d5e0;
-            text-decoration: none;
-        }
-
-        nav ul li a:hover {
-            color: #66c0f4;
-        }
-
-        .page-header {
-            background-color: #171a21;
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto 1.5rem auto;
+            padding: 0 2rem 0.75rem 2rem;
+            border-bottom: 1px solid #66c0f4;
         }
 
-        .page-header h1 {
+        .community-header h1 {
             color: #66c0f4;
             margin: 0;
+            text-align: left;
         }
 
-        .page-header .new-post-button {
+        .new-post-button {
             background-color: #66c0f4;
             color: white;
             border: none;
@@ -58,13 +40,13 @@
             font-weight: bold;
         }
 
-        .page-header .new-post-button:hover {
+        .new-post-button:hover {
             background-color: #417a9b;
         }
 
         main {
             max-width: 800px;
-            margin: 2rem auto;
+            margin: 0 auto 2rem auto;
             padding: 1rem;
             background-color: #2a475e;
             border-radius: 8px;
@@ -102,16 +84,17 @@
 </head>
 <body>
 <div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
-<div class="page-header">
-    <h1>Steam 커뮤니티</h1>
+
+<div class="community-header">
+    <h1 th:text="${galleryName} + ' 커뮤니티'">Steam 커뮤니티</h1>
     <a href="/community/write" target="_blank" class="new-post-button">새 글 작성</a>
 </div>
 
 <main>
-    <div th:each="post : ${posts}" class="post">
-        <h3 th:text="${post.title}">게시글 제목</h3>
-        <div class="meta" th:text="'작성자: ' + ${post.author} + ' | ' + ${post.date}">작성자: 홍길동 | 2025-07-30</div>
-        <div class="content" th:text="${post.content}">게시글 내용입니다.</div>
+    <div th:each="article : ${articleDto}" class="post">
+        <h3 th:text="${article.title}">게시글 제목</h3>
+        <div class="meta" th:text="'작성자: ' + ${article.member.nickname} + ' | ' + ${article.createdDate}">작성자: 홍길동 | 2025-07-30</div>
+        <div class="content" th:text="${article.content}">게시글 내용입니다.</div>
     </div>
 </main>
 
