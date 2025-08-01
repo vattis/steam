@@ -12,7 +12,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findAllByGalleryIdAndTitleContaining(Long galleryId, String searchWord, Pageable pageable);
     Page<Article> findAllByGalleryIdAndContentContaining(Long galleryId, String searchWord, Pageable pageable);
     Page<Article> findAllByGalleryIdAndMemberNicknameContaining(Long galleryId, String searchWord, Pageable pageable);
-
     @Query("""
         select distinct a
         from Article a

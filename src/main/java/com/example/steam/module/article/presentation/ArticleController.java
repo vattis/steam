@@ -3,6 +3,8 @@ package com.example.steam.module.article.presentation;
 import com.example.steam.module.article.application.ArticleService;
 import com.example.steam.module.article.dto.ArticleDto;
 import com.example.steam.module.article.dto.ArticleWriteForm;
+import com.example.steam.module.gallery.application.GalleryService;
+import com.example.steam.module.gallery.domain.Gallery;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +23,16 @@ import java.security.Principal;
 public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
+    private final GalleryService galleryService;
 
-    @GetMapping("/article/{galleryId}")
-    public String gotoGallery(@PathVariable long galleryId,
+    //해당 갤러리로 이동
+    @GetMapping("/article/{galleryName}")
+    public String gotoGallery(@PathVariable String galleryName,
                               @RequestParam(required = false, defaultValue = "0") int pageNo,
                               Model model) {
-        Page<ArticleDto> articlePage = articleService.findAllByGalleryId(galleryId, pageNo).map(ArticleDto::from);
-        model.addAttribute("articlePage", articlePage);
+        Gallery gallery = galleryService.findGalleryWithProductName(galleryName);
+        Page<ArticleDto> articlePage = articleService.findAllByGalleryId(gallery.getId(), pageNo).map(ArticleDto::from);
+        model.addAttribute("articleDto", articlePage);
         return "/gallery";
     }
 
@@ -47,6 +52,7 @@ public class ArticleController {
         articleService.saveArticle(articleWriteForm, member);
         return "redirect:/article/"+ articleWriteForm.getGalleryId();
     }
+
 
 
 }

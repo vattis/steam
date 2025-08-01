@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Slf4j
@@ -23,6 +24,11 @@ public class GalleryService {
     public Gallery createGallery(Product product){
         Gallery gallery = Gallery.of(product);
         return galleryRepository.save(gallery);
+    }
+
+    //이름으로 갤러리 찾기
+    public Gallery findGalleryWithProductName(String name){
+        return galleryRepository.findByProduct_Name(name).orElseThrow(NoSuchElementException::new);
     }
 
     //갤러리 전체 찾기
