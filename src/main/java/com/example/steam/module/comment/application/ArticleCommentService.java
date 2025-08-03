@@ -28,9 +28,7 @@ public class ArticleCommentService {
     private final ArticleRepository articleRepository;
 
     //댓글 달기
-    public ArticleComment makeArticleComment(Long memberId, Long articleId, String content){
-        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
-        Article article = articleRepository.findById(articleId).orElseThrow(NoSuchElementException::new);
+    public ArticleComment makeArticleComment(Member member, Article article, String content){
         ArticleComment articleComment = ArticleComment.of(member, article, content);
         return articleCommentRepository.save(articleComment);
     }
