@@ -2,6 +2,8 @@ package com.example.steam.core.init;
 
 import com.example.steam.module.article.domain.Article;
 import com.example.steam.module.article.repository.ArticleRepository;
+import com.example.steam.module.comment.domain.ArticleComment;
+import com.example.steam.module.comment.repository.ArticleCommentRepository;
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.company.repository.CompanyRepository;
 import com.example.steam.module.discount.domain.Discount;
@@ -36,6 +38,7 @@ public class PostInit {
     private final GalleryService galleryService;
     private final ProductService productService;
     private final ArticleRepository articleRepository;
+    private final ArticleCommentRepository articleCommentRepository;
 
     @PostConstruct
     public void init(){
@@ -49,25 +52,7 @@ public class PostInit {
             companies.add(Company.makeSample(i));
         }
         companies = companyRepository.saveAll(companies);
-        /*
-        for(int i = 1; i <= 21; i++){
-            Product product1 = Product.makeSample(i, companies.get(i%5));
-            product1 = productRepository.save(product1);
-            products.add(product1);
-            Product product2 = Product.makeSample(i+22, companies.get(i%5));
-            product2 = productRepository.save(product2);
-            products.add(product2);
-            galleryService.createGallery(product1);
-            galleryService.createGallery(product2);
 
-            Discount discount = Discount.makeSample(i, product1);
-            discount.activeDiscount();
-            discounts.add(discount);
-            Discount discount2 = Discount.makeSample(i+22, product2);
-            discount2 = discountRepository.save(discount2);
-            discounts.add(discount2);
-        }
-        */
         for(int i = 1; i <= 44; i++){
             Product product = Product.makeSample(i, companies.get(i%5));
             product = productRepository.save(product);
@@ -76,8 +61,7 @@ public class PostInit {
             discountRepository.save(discount);
             galleries.add(galleryService.createGallery(product));
         }
-        //products = productRepository.saveAll(products);
-        //discounts = discountRepository.saveAll(discounts);
+
         for(int i = 1; i <= 10; i++){
             Member member = memberRepository.save(Member.makeSample(i));
             members.add(member);
@@ -96,7 +80,11 @@ public class PostInit {
         for(int i = 0; i <= 10; i++){
             for(int j = 0; j <= 50; j++){
                 Article article = Article.makeSample(i*100+j, galleries.get(i), members.get((i+j)%10));
-                articleRepository.save(article);
+                article = articleRepository.save(article);
+                for(int k = 1; k <= 5; k++){
+                    ArticleComment articleComment = ArticleComment.makeSample(members.get((i+j+k)%10), article, (i*1000+j*10+k));
+                    articleCommentRepository.save(articleComment);
+                }
             }
         }
 
