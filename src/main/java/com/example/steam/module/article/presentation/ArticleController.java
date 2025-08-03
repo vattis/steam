@@ -1,8 +1,13 @@
 package com.example.steam.module.article.presentation;
 
 import com.example.steam.module.article.application.ArticleService;
+import com.example.steam.module.article.domain.Article;
 import com.example.steam.module.article.dto.ArticleDto;
 import com.example.steam.module.article.dto.ArticleWriteForm;
+import com.example.steam.module.article.dto.DetailArticleDto;
+import com.example.steam.module.article.dto.DetailArticleWithCommentDto;
+import com.example.steam.module.comment.application.ArticleCommentService;
+import com.example.steam.module.comment.dto.ArticleCommentDto;
 import com.example.steam.module.gallery.application.GalleryService;
 import com.example.steam.module.gallery.domain.Gallery;
 import com.example.steam.module.member.application.MemberService;
@@ -10,7 +15,6 @@ import com.example.steam.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +28,10 @@ public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
     private final GalleryService galleryService;
+    private final ArticleCommentService articleCommentService;
 
     //해당 갤러리로 이동
-    @GetMapping("/article/{galleryName}")
+    @GetMapping("/articles/{galleryName}")
     public String gotoGallery(@PathVariable String galleryName,
                               @RequestParam(required = false, defaultValue = "0") int pageNo,
                               Model model) {
@@ -53,6 +58,18 @@ public class ArticleController {
         return "redirect:/article/"+ articleWriteForm.getGalleryId();
     }
 
+    //게시물 화면 이동
+    @GetMapping("/article/{articleId}")
+    public String gotoArticle(@PathVariable("articleId") Long articleId, @PathVariable(name = "pageNo", required = false) Integer pageNo, Model model){
+        if(pageNo == null){
+            pageNo = 0;
+        }
+        Article article = articleService.findArticle(articleId);
+        Page<ArticleCommentDto> articleCommentDtoPage = articleCommentService.findArticleCommentByArticleId(articleId, pageNo).map(ArticleCommentDto::from);
+        DetailArticleWithCommentDto detailArticleWithCommentDto = DetailArticleWithCommentDto.of(DetailArticleDto.from(article), articleCommentDtoPage);
+        model.addAttribute("articleCommentDto", detailArticleWithCommentDto);
+        return "/article";
+    }
 
 
 }

@@ -67,7 +67,15 @@
 
         .post h3 {
             margin: 0;
+        }
+
+        .post h3 a {
             color: #ffffff;
+            text-decoration: none;
+        }
+
+        .post h3 a:hover {
+            text-decoration: underline;
         }
 
         .post .meta {
@@ -92,9 +100,10 @@
 
 <main>
     <div th:each="article : ${articleDto}" class="post">
-        <h3 th:text="${article.title}">게시글 제목</h3>
+        <h3>
+            <a th:href="@{'/article/' + ${article.id}}" th:text="${article.title}">게시글 제목</a>
+        </h3>
         <div class="meta" th:text="'작성자: ' + ${article.member.nickname} + ' | ' + ${article.createdDate}">작성자: 홍길동 | 2025-07-30</div>
-        <div class="content" th:text="${article.content}">게시글 내용입니다.</div>
     </div>
 </main>
 
