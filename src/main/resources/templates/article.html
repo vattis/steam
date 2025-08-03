@@ -146,7 +146,7 @@
 
     <div class="comment-section">
         <h2>댓글</h2>
-        <div th:if="${articleCommentDto.commentDtoPage.empty}">댓글이 없습니다.</div>
+        <div th:if="${articleCommentDto.commentDtoPage.isEmpty()}">댓글이 없습니다.</div>
         <div th:each="comment : ${articleCommentDto.commentDtoPage.content}" class="comment">
             <div class="meta"
                  th:text="${comment.memberDto.nickname} + ' | ' + ${#temporals.format(comment.createdTime, 'yyyy-MM-dd HH:mm')}">
