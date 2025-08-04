@@ -108,7 +108,7 @@
     <div class="section-title" th:text="'검색 결과: ' + ${searchWord}">검색 결과</div>
     <div class="gallery-list">
         <a th:each="gallery : ${galleries}"
-           th:href="@{'/articles/' + ${gallery.galleryName}}"
+           th:href="@{'/gallery/' + ${gallery.galleryName}}"
            class="gallery-card">
             <div class="gallery-title" th:text="${gallery.galleryName}">커뮤니티 제목</div>
         </a>
