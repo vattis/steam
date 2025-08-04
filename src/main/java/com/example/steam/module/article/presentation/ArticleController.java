@@ -2,6 +2,8 @@ package com.example.steam.module.article.presentation;
 
 import com.example.steam.module.article.application.ArticleService;
 import com.example.steam.module.article.domain.Article;
+import com.example.steam.module.article.domain.ArticleSearch;
+import com.example.steam.module.article.domain.ArticleSearchTag;
 import com.example.steam.module.article.dto.ArticleDto;
 import com.example.steam.module.article.dto.ArticleWriteForm;
 import com.example.steam.module.article.dto.DetailArticleDto;
@@ -31,13 +33,14 @@ public class ArticleController {
     private final ArticleCommentService articleCommentService;
 
     //해당 갤러리로 이동
-    @GetMapping("/articles/{galleryName}")
+    @GetMapping("/gallery/{galleryName}")
     public String gotoGallery(@PathVariable String galleryName,
                               @RequestParam(required = false, defaultValue = "0") int pageNo,
                               Model model) {
         Gallery gallery = galleryService.findGalleryWithProductName(galleryName);
         Page<ArticleDto> articlePage = articleService.findAllByGalleryId(gallery.getId(), pageNo).map(ArticleDto::from);
         model.addAttribute("articleDto", articlePage);
+        model.addAttribute("galleryId", gallery.getId());
         return "/gallery";
     }
 
@@ -69,6 +72,35 @@ public class ArticleController {
         DetailArticleWithCommentDto detailArticleWithCommentDto = DetailArticleWithCommentDto.of(DetailArticleDto.from(article), articleCommentDtoPage);
         model.addAttribute("articleCommentDto", detailArticleWithCommentDto);
         return "/article";
+    }
+
+    //게시물 검색
+    @GetMapping("/gallery/{galleryId}/articles")
+    public String searchArticles(@PathVariable("galleryId")Long galleryId,
+                                 @RequestParam("tag") String tag,
+                                 @RequestParam("searchWord") String searchWord,
+                                 @RequestParam(required = false, defaultValue = "0") int pageNo,
+                                 Model model){
+        ArticleSearchTag articleSearchTag;
+        if(tag.equals("ALL")){
+            articleSearchTag = ArticleSearchTag.ALL;
+        } else if(tag.equals("TITLE")){
+            articleSearchTag = ArticleSearchTag.TITLE;
+        } else if (tag.equals("CONTENT")) {
+            articleSearchTag = ArticleSearchTag.CONTENT;
+        } else if (tag.equals("MEMBER")) {
+            articleSearchTag = ArticleSearchTag.NICKNAME;
+        } else if (tag.equals("COMMENT")) {
+            articleSearchTag = ArticleSearchTag.COMMENT;
+        } else{
+            articleSearchTag = null;
+        }
+        ArticleSearch articleSearch = ArticleSearch.of(articleSearchTag, searchWord);
+        Page<ArticleDto> articleDtos = articleService.findAllBySearchWord(galleryId, articleSearch).map(ArticleDto::from);
+        model.addAttribute("articleDtos", articleDtos);
+        model.addAttribute("galleryId", galleryId);
+        model.addAttribute("searchWord", searchWord);
+        return "search-article";
     }
 
 

@@ -46,7 +46,6 @@ public class PostInit {
         List<Product> products = new ArrayList<>();
         List<Member> members = new ArrayList<>();
         List<Gallery> galleries = new ArrayList<>();
-        //List<Product> discountProducts = new ArrayList<>();
         List<Discount> discounts = new ArrayList<>();
         for(int i = 1; i <= 5; i++){
             companies.add(Company.makeSample(i));

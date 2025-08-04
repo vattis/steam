@@ -26,6 +26,14 @@
       margin: 0;
     }
 
+    .search-container {
+      display: flex;
+      justify-content: flex-end;
+      max-width: 900px;
+      margin: 1rem auto 0 auto;
+      padding: 0 1rem;
+    }
+
     .search-box {
       display: flex;
       align-items: center;
@@ -37,6 +45,12 @@
       border: none;
       outline: none;
       font-size: 0.95rem;
+      background-color: #2a475e;
+      color: #c7d5e0;
+    }
+
+    .search-box input[type="text"]::placeholder {
+      color: #8f98a0;
     }
 
     .search-box button {
@@ -104,11 +118,15 @@
 </head>
 <body>
 <div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
-<main>
+
+<div class="search-container">
   <form th:action="@{/gallery/search}" method="get" class="search-box">
     <input type="text" name="searchWord" placeholder="커뮤니티 검색" />
     <button type="submit">검색</button>
   </form>
+</div>
+
+<main>
   <div th:if="${ownedGalleries != null && !ownedGalleries.isEmpty()}">
     <div class="section-title">내가 등록한 커뮤니티</div>
     <div class="gallery-list">

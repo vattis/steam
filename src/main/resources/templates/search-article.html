@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${galleryName} + ' 커뮤니티'">Steam 커뮤니티</title>
+    <title th:text="'검색 결과 - ' + ${galleryName}">검색 결과</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
         body {
@@ -17,7 +17,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
             max-width: 1200px;
             margin: 2rem auto 1.5rem auto;
             padding: 0 2rem 0.75rem 2rem;
@@ -27,7 +26,6 @@
         .community-header h1 {
             color: #66c0f4;
             margin: 0;
-            text-align: left;
         }
 
         .new-post-button {
@@ -58,7 +56,8 @@
             margin-bottom: 1.5rem;
         }
 
-        .search-form select {
+        .search-form select,
+        .search-form input[type="text"] {
             padding: 0.5rem;
             border-radius: 4px;
             border: none;
@@ -68,12 +67,6 @@
         }
 
         .search-form input[type="text"] {
-            padding: 0.5rem;
-            border-radius: 4px;
-            border: none;
-            background-color: #2f3b4c;
-            color: #ffffff;
-            font-size: 0.9rem;
             width: 250px;
         }
 
@@ -93,6 +86,12 @@
 
         .search-form button:hover {
             background-color: #417a9b;
+        }
+
+        .result-info {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #a0b4c4;
         }
 
         main {
@@ -138,47 +137,11 @@
             line-height: 1.5;
         }
 
-        .comment-form {
-            margin-top: 2rem;
-            background-color: #324861;
-            padding: 1rem;
-            border-radius: 8px;
-        }
-
-        .comment-form textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border-radius: 4px;
-            border: none;
-            resize: vertical;
-            font-size: 0.9rem;
-            font-family: 'Roboto', sans-serif;
-            margin-bottom: 0.5rem;
-            background-color: #1b2838;
+        .no-result {
             color: #ffffff;
-        }
-
-        .comment-form textarea::placeholder {
-            color: #a0b4c4;
-        }
-
-        .comment-form .submit-button-wrapper {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .comment-form button {
-            background-color: #66c0f4;
-            color: white;
-            border: none;
-            padding: 0.45rem 1rem;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .comment-form button:hover {
-            background-color: #417a9b;
+            font-size: 1.1rem;
+            text-align: center;
+            padding: 2rem;
         }
     </style>
 </head>
@@ -186,29 +149,38 @@
 <div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
 
 <div class="community-header">
-    <h1 th:text="${galleryName} + ' 커뮤니티'">Steam 커뮤니티</h1>
+    <h1>검색 결과</h1>
     <a href="/community/write" target="_blank" class="new-post-button">새 글 작성</a>
 </div>
 
 <div class="content-wrapper">
+
+    <!-- ✅ 검색 폼 -->
     <form th:action="@{'/gallery/' + ${galleryId} + '/articles'}" method="get" class="search-form">
         <select name="tag">
-            <option value="ALL">전체</option>
-            <option value="TITLE">제목</option>
-            <option value="CONTENT">내용</option>
-            <option value="MEMBER">글쓴이</option>
-            <option value="COMMENT">댓글</option>
+            <option value="ALL" th:selected="${searchTag == 'ALL'}">전체</option>
+            <option value="TITLE" th:selected="${searchTag == 'TITLE'}">제목</option>
+            <option value="CONTENT" th:selected="${searchTag == 'CONTENT'}">내용</option>
+            <option value="MEMBER" th:selected="${searchTag == 'MEMBER'}">글쓴이</option>
+            <option value="COMMENT" th:selected="${searchTag == 'COMMENT'}">댓글</option>
         </select>
-        <input type="text" name="searchWord" placeholder="검색어를 입력하세요" />
+        <input type="text" name="searchWord" placeholder="검색어를 입력하세요" th:value="${searchWord}" />
         <button type="submit">검색</button>
     </form>
 
+    <!-- ✅ 검색 결과 정보 -->
+    <div class="result-info" th:text="'검색어: ' + ${searchWord}">검색어: test</div>
+
+    <!-- ✅ 게시글 리스트 -->
     <main>
-        <div th:each="article : ${articleDto}" class="post">
+        <div th:if="${articleDtos.isEmpty()}" class="no-result">검색 결과가 없습니다.</div>
+
+        <div th:each="article : ${articleDtos}" class="post">
             <h3>
                 <a th:href="@{'/article/' + ${article.id}}" th:text="${article.title}">게시글 제목</a>
             </h3>
             <div class="meta" th:text="'작성자: ' + ${article.member.nickname} + ' | ' + ${article.createdDate}">작성자: 홍길동 | 2025-07-30</div>
+            <div class="content" th:text="${article.content}">게시글 내용 요약</div>
         </div>
     </main>
 </div>
