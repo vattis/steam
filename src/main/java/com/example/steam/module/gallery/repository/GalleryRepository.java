@@ -9,6 +9,5 @@ import java.util.Optional;
 
 public interface GalleryRepository extends JpaRepository<Gallery, Long> {
     Page<Gallery> findByProduct_NameContaining(String searchWord, Pageable pageable);
-
     Optional<Gallery> findByProduct_Name(String productName);
 }

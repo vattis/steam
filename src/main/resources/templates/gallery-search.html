@@ -108,6 +108,37 @@
             margin-bottom: 0.5rem;
             color: #ffffff;
         }
+
+        .pagination {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            gap: 0.5rem;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pagination a {
+            padding: 0.4rem 0.7rem;
+            border-radius: 4px;
+            background-color: #2f3b4c;
+            color: #c7d5e0;
+            text-decoration: none;
+        }
+
+        .pagination a:hover {
+            background-color: #417a9b;
+        }
+
+        .active-page {
+            background-color: #66c0f4 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -117,28 +148,47 @@
     <h1>커뮤니티 검색 결과</h1>
 </header>
 
-<!-- ✅ 검색창 (header 아래 위치, 오른쪽 정렬) -->
 <div class="search-container">
     <form th:action="@{/gallery/search}" method="get" class="search-box">
-        <input type="text" name="keyword" th:value="${searchWord}" placeholder="커뮤니티 검색" />
+        <input type="text" name="searchWord" th:value="${searchWord}" placeholder="커뮤니티 검색" />
+        <input type="hidden" name="tag" value="ALL"/>
         <button type="submit">검색</button>
     </form>
 </div>
 
 <main>
     <div class="section-title" th:text="'검색 결과: ' + ${searchWord}">검색 결과</div>
+
+    <div th:if="${galleries == null or #lists.isEmpty(galleries.content)}">
+        <p style="color: #c7d5e0; font-size: 1rem; margin-top: 1rem;">검색 결과가 없습니다.</p>
+    </div>
+
     <div class="gallery-list">
-        <a th:each="gallery : ${galleries}"
+        <a th:each="gallery : ${galleries.content}"
            th:href="@{'/gallery/' + ${gallery.galleryName}}"
            class="gallery-card">
             <div class="gallery-title" th:text="${gallery.galleryName}">커뮤니티 제목</div>
         </a>
     </div>
 
-    <div th:if="${galleries == null or #lists.isEmpty(galleries)}">
-        <p style="color: #c7d5e0; font-size: 1rem; margin-top: 1rem;">검색 결과가 없습니다.</p>
+    <!-- ✅ 페이지네이션 -->
+    <div class="pagination" th:if="${galleries.totalPages > 1}">
+        <ul>
+            <li th:if="${galleries.hasPrevious()}">
+                <a th:href="@{/gallery/search(tag='ALL', searchWord=${searchWord}, pageNo=${galleries.number - 1})}">&laquo; 이전</a>
+            </li>
+            <li th:each="page : ${#numbers.sequence(0, galleries.totalPages - 1)}">
+                <a th:href="@{/gallery/search(tag='ALL', searchWord=${searchWord}, pageNo=${page})}"
+                   th:text="${page + 1}"
+                   th:classappend="${page == galleries.number} ? 'active-page' : ''"></a>
+            </li>
+            <li th:if="${galleries.hasNext()}">
+                <a th:href="@{/gallery/search(tag='ALL', searchWord=${searchWord}, pageNo=${galleries.number + 1})}">다음 &raquo;</a>
+            </li>
+        </ul>
     </div>
 </main>
 </body>
 </html>
+
 

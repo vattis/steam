@@ -15,7 +15,7 @@ public interface ProfileCommentRepository extends JpaRepository<ProfileComment, 
 
     @Query("""
         SELECT new com.example.steam.module.comment.dto.ProfileCommentDto(
-        c.id, m.nickname, c.content, c.createdTime
+        c.id, m.id, m.nickname, m.avatarUrl, c.content, c.createdTime
         )
         FROM ProfileComment c
         JOIN c.member m

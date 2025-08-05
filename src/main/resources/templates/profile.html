@@ -80,9 +80,13 @@
 
         .comment-box {
             background-color: #2a475e;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 8px;
+            margin-bottom: 6px;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .comment-form {
+            margin-top: 2rem;
         }
 
         .comment-form textarea {
@@ -123,7 +127,6 @@
             margin-right: 10px;
         }
 
-        /* 링크 효과 */
         a.link {
             color: #c7d5e0;
             text-decoration: none;
@@ -143,10 +146,42 @@
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(102, 192, 244, 0.5);
         }
+
+        .pagination {
+            text-align: center;
+            margin: 1.5rem 0 2rem 0;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            gap: 0.5rem;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pagination a {
+            padding: 0.4rem 0.7rem;
+            border-radius: 4px;
+            background-color: #2f3b4c;
+            color: #c7d5e0;
+            text-decoration: none;
+        }
+
+        .pagination a:hover {
+            background-color: #417a9b;
+        }
+
+        .active-page {
+            background-color: #66c0f4 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 <div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
+
 <div class="profile-container" th:with="profile=${profileDto}">
 
     <!-- 프로필 헤더 -->
@@ -184,13 +219,39 @@
     <!-- 댓글 -->
     <div class="comments">
         <h3>프로필 댓글</h3>
-        <div th:each="comment : ${profile.getProfileCommentPage().getContent()}">
+        <div th:each="comment : ${profile.profileCommentPage.content}">
             <div class="comment-box">
-                <strong th:text="${comment.nickname}">작성자</strong>
-                <p th:text="${comment.content}" style="margin: 5px 0 0 0;">댓글 내용</p>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <a th:href="@{'/profile/' + ${comment.memberId} + '/0'}" class="image-link">
+                        <img style="width: 36px; height: 36px; border-radius: 6px;"
+                             th:src="${#strings.isEmpty(comment.avatarUrl)} ? '/images/profile-image.jpg' : ${comment.avatarUrl}"
+                             alt="작성자 아바타" />
+                    </a>
+                    <a th:href="@{'/profile/' + ${comment.memberId} + '/0'}" class="link">
+                        <strong th:text="${comment.nickname}">작성자</strong>
+                    </a>
+                </div>
+                <p th:text="${comment.content}" style="margin: 8px 0 0 0;">댓글 내용</p>
                 <small th:text="${#temporals.format(comment.createdTime, 'yyyy-MM-dd HH:mm')}"
                        style="display: block; text-align: right;">2025-05-23</small>
             </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination" th:if="${profile.profileCommentPage.totalPages > 0}">
+            <ul>
+                <li th:if="${profile.profileCommentPage.hasPrevious()}">
+                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '/0?pageNo=' + (${profile.profileCommentPage.number} - 1)}">&laquo; 이전</a>
+                </li>
+                <li th:each="page : ${#numbers.sequence(0, profile.profileCommentPage.totalPages - 1)}">
+                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '/0?pageNo=' + ${page}}"
+                       th:text="${page + 1}"
+                       th:classappend="${page == profile.profileCommentPage.number} ? 'active-page' : ''"></a>
+                </li>
+                <li th:if="${profile.profileCommentPage.hasNext()}">
+                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '/0?pageNo=' + (${profile.profileCommentPage.number} + 1)}">다음 &raquo;</a>
+                </li>
+            </ul>
         </div>
 
         <form class="comment-form" th:action="@{/profile/comment}" method="post">
@@ -204,14 +265,14 @@
     <!-- 친구 목록 -->
     <div class="friend-list">
         <h3>친구 목록</h3>
-        <div th:each="friend : ${profileDto.getFriendships()}">
+        <div th:each="friend : ${profileDto.friendships}">
             <div class="friend">
                 <a th:href="@{'/profile/' + ${friend.toMember.id} + '/0'}" class="image-link">
                     <img th:src="${#strings.isEmpty(friend.getToMember().avatarUrl)} ? '/images/profile-image.jpg' : ${friend.avatarUrl}"
                          alt="친구 이미지" />
                 </a>
                 <a th:href="@{'/profile/' + ${friend.toMember.id} + '/0'}" class="link">
-                    <div th:text="${friend.getToMember().getNickname()}">친구 닉네임</div>
+                    <div th:text="${friend.getToMember().nickname}">친구 닉네임</div>
                 </a>
             </div>
         </div>

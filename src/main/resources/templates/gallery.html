@@ -94,8 +94,8 @@
 
         .post {
             background-color: #1b2838;
-            padding: 0.75rem 1rem;        /* 게시물 박스 padding 줄임 */
-            margin-bottom: 0.75rem;       /* 간격 축소 */
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
             border-radius: 6px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -107,7 +107,7 @@
 
         .post h3 {
             margin: 0;
-            font-size: 1rem;              /* 제목 글자 줄임 */
+            font-size: 1rem;
         }
 
         .post h3 a {
@@ -120,9 +120,9 @@
         }
 
         .post .meta {
-            font-size: 0.75rem;           /* 작성자 정보 글자 크기 축소 */
+            font-size: 0.75rem;
             color: #c7d5e0;
-            margin-top: 0.4rem;           /* 제목과 간격 확보 */
+            margin-top: 0.4rem;
             margin-bottom: 0.4rem;
             display: flex;
             align-items: center;
@@ -141,47 +141,35 @@
             line-height: 1.5;
         }
 
-        .comment-form {
-            margin-top: 2rem;
-            background-color: #324861;
-            padding: 1rem;
-            border-radius: 8px;
+        .pagination {
+            text-align: center;
+            margin-top: 1.5rem;
         }
 
-        .comment-form textarea {
-            width: 100%;
-            padding: 0.5rem;
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            gap: 0.5rem;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pagination a {
+            padding: 0.4rem 0.7rem;
             border-radius: 4px;
-            border: none;
-            resize: vertical;
-            font-size: 0.9rem;
-            font-family: 'Roboto', sans-serif;
-            margin-bottom: 0.5rem;
-            background-color: #1b2838;
-            color: #ffffff;
+            background-color: #2f3b4c;
+            color: #c7d5e0;
+            text-decoration: none;
         }
 
-        .comment-form textarea::placeholder {
-            color: #a0b4c4;
-        }
-
-        .comment-form .submit-button-wrapper {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .comment-form button {
-            background-color: #66c0f4;
-            color: white;
-            border: none;
-            padding: 0.45rem 1rem;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .comment-form button:hover {
+        .pagination a:hover {
             background-color: #417a9b;
+        }
+
+        .active-page {
+            background-color: #66c0f4 !important;
+            color: #ffffff !important;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -207,7 +195,7 @@
     </form>
 
     <main>
-        <div th:each="article : ${articleDto}" class="post">
+        <div th:each="article : ${articleDto.content}" class="post">
             <h3>
                 <a th:href="@{'/article/' + ${article.id}}" th:text="${article.title}">게시글 제목</a>
             </h3>
@@ -226,6 +214,23 @@
             </div>
         </div>
     </main>
+
+    <!-- 페이지네이션 -->
+    <div class="pagination">
+        <ul>
+            <li th:if="${articleDto.hasPrevious()}">
+                <a th:href="@{'/gallery/' + ${galleryName} + '?pageNo=' + (${articleDto.number} - 1)}">&laquo; 이전</a>
+            </li>
+            <li th:each="page : ${#numbers.sequence(0, articleDto.totalPages - 1)}">
+                <a th:href="@{'/gallery/' + ${galleryName} + '?pageNo=' + ${page}}"
+                   th:text="${page + 1}"
+                   th:classappend="${page == articleDto.number} ? 'active-page' : ''"></a>
+            </li>
+            <li th:if="${articleDto.hasNext()}">
+                <a th:href="@{'/gallery/' + ${galleryName} + '?pageNo=' + (${articleDto.number} + 1)}">다음 &raquo;</a>
+            </li>
+        </ul>
+    </div>
 </div>
 
 </body>

@@ -63,10 +63,9 @@ public class ArticleController {
 
     //게시물 화면 이동
     @GetMapping("/article/{articleId}")
-    public String gotoArticle(@PathVariable("articleId") Long articleId, @PathVariable(name = "pageNo", required = false) Integer pageNo, Model model){
-        if(pageNo == null){
-            pageNo = 0;
-        }
+    public String gotoArticle(@PathVariable("articleId") Long articleId,
+                              @RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo,
+                              Model model){
         Article article = articleService.findArticle(articleId);
         Page<ArticleCommentDto> articleCommentDtoPage = articleCommentService.findArticleCommentByArticleId(articleId, pageNo).map(ArticleCommentDto::from);
         DetailArticleWithCommentDto detailArticleWithCommentDto = DetailArticleWithCommentDto.of(DetailArticleDto.from(article), articleCommentDtoPage);

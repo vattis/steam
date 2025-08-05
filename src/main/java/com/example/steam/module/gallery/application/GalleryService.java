@@ -32,13 +32,14 @@ public class GalleryService {
     }
 
     //갤러리 전체 찾기
-    public List<Gallery> findAllGallery(){
-        return galleryRepository.findAll();
+    public Page<Gallery> findAllGallery(){
+        Pageable pageable = PageRequest.of(0, PageConst.GALLERY_LIST_PAGE_SIZE);
+        return galleryRepository.findAll(pageable);
     }
 
     //갤러리 검색
-    public Page<Gallery> search(String searchWord){
-        Pageable pageable = PageRequest.of(0, PageConst.GALLERY_LIST_PAGE_SIZE);
+    public Page<Gallery> search(String searchWord, int pageNo){
+        Pageable pageable = PageRequest.of(pageNo, PageConst.GALLERY_LIST_PAGE_SIZE);
         return galleryRepository.findByProduct_NameContaining(searchWord, pageable);
     }
 }

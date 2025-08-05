@@ -3,7 +3,9 @@ package com.example.steam.core.init;
 import com.example.steam.module.article.domain.Article;
 import com.example.steam.module.article.repository.ArticleRepository;
 import com.example.steam.module.comment.domain.ArticleComment;
+import com.example.steam.module.comment.domain.ProfileComment;
 import com.example.steam.module.comment.repository.ArticleCommentRepository;
+import com.example.steam.module.comment.repository.ProfileCommentRepository;
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.company.repository.CompanyRepository;
 import com.example.steam.module.discount.domain.Discount;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
@@ -39,6 +42,8 @@ public class PostInit {
     private final ProductService productService;
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    private final ProfileCommentRepository profileCommentRepository;
+    private Random random = new Random();
 
     @PostConstruct
     public void init(){
@@ -67,6 +72,14 @@ public class PostInit {
             members.add(member);
             for(int j = 1;  j <= 4; j++){
                 memberGameRepository.save(MemberGame.of(products.get(i*j/2), member));
+            }
+        }
+        for(int i = 1; i <= 10; i++){
+            Member profileMember = members.get(i-1);
+            for(int j = 1; j <= 5; j++){
+                Member member = members.get(random.nextInt(10));
+                ProfileComment profileComment = ProfileComment.makeSample(i*10+j, member, profileMember);
+                profileCommentRepository.save(profileComment);
             }
         }
         for(int i = 0; i < 9; i++){

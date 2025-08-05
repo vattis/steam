@@ -33,7 +33,7 @@ public class GalleryController {
         if(principal != null){
             Member member = memberService.findMemberByEmail(principal.getName());
             List<SimpleGalleryDto> ownedGalleries = member.getMemberGames().stream().map(SimpleGalleryDto::makeDtoWithMemberGame).toList();
-            List<SimpleGalleryDto> galleries = galleryService.findAllGallery().stream().map(SimpleGalleryDto::from).toList();
+            Page<SimpleGalleryDto> galleries = galleryService.findAllGallery().map(SimpleGalleryDto::from);
 
             model.addAttribute("ownedGalleries", ownedGalleries);
             model.addAttribute("galleries", galleries);
@@ -43,8 +43,10 @@ public class GalleryController {
 
     //갤러리 검색
     @GetMapping("/gallery/search")
-    public String search(@RequestParam("searchWord") String searchWord, Model model){
-        Page<SimpleGalleryDto> galleryDtos = galleryService.search(searchWord).map(SimpleGalleryDto::from);
+    public String search(@RequestParam("searchWord") String searchWord,
+                         @RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo,
+                         Model model){
+        Page<SimpleGalleryDto> galleryDtos = galleryService.search(searchWord, pageNo).map(SimpleGalleryDto::from);
         System.out.println(galleryDtos.getTotalElements() + "@@@@@@@@@@@@@@@@@@@@@@@");
         model.addAttribute("galleries", galleryDtos);
         model.addAttribute("searchWord", searchWord);
