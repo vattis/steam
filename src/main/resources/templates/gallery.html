@@ -58,15 +58,7 @@
             margin-bottom: 1.5rem;
         }
 
-        .search-form select {
-            padding: 0.5rem;
-            border-radius: 4px;
-            border: none;
-            background-color: #2f3b4c;
-            color: #ffffff;
-            font-size: 0.9rem;
-        }
-
+        .search-form select,
         .search-form input[type="text"] {
             padding: 0.5rem;
             border-radius: 4px;
@@ -74,7 +66,6 @@
             background-color: #2f3b4c;
             color: #ffffff;
             font-size: 0.9rem;
-            width: 250px;
         }
 
         .search-form input::placeholder {
@@ -103,8 +94,8 @@
 
         .post {
             background-color: #1b2838;
-            padding: 1rem;
-            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;        /* 게시물 박스 padding 줄임 */
+            margin-bottom: 0.75rem;       /* 간격 축소 */
             border-radius: 6px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -116,6 +107,7 @@
 
         .post h3 {
             margin: 0;
+            font-size: 1rem;              /* 제목 글자 줄임 */
         }
 
         .post h3 a {
@@ -128,13 +120,24 @@
         }
 
         .post .meta {
-            font-size: 0.8rem;
+            font-size: 0.75rem;           /* 작성자 정보 글자 크기 축소 */
             color: #c7d5e0;
-            margin-bottom: 0.5rem;
+            margin-top: 0.4rem;           /* 제목과 간격 확보 */
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.4rem;
         }
 
         .post .content {
-            font-size: 1rem;
+            font-size: 0.95rem;
             line-height: 1.5;
         }
 
@@ -208,7 +211,19 @@
             <h3>
                 <a th:href="@{'/article/' + ${article.id}}" th:text="${article.title}">게시글 제목</a>
             </h3>
-            <div class="meta" th:text="'작성자: ' + ${article.member.nickname} + ' | ' + ${article.createdDate}">작성자: 홍길동 | 2025-07-30</div>
+            <div class="meta">
+                <a th:href="@{'/profile/' + ${article.member.id} + '/0'}">
+                    <img class="avatar"
+                         th:src="${article.member.avatarUrl != null} ? ${article.member.avatarUrl} : '/images/profile-image.jpg'"
+                         alt="작성자 아바타" />
+                </a>
+                <a th:href="@{'/profile/' + ${article.member.id} + '/0'}"
+                   style="color: inherit; text-decoration: none;">
+                    <span th:text="'작성자: ' + ${article.member.nickname} + ' | ' + ${article.createdDate}">
+                        작성자: 홍길동 | 2025-07-30
+                    </span>
+                </a>
+            </div>
         </div>
     </main>
 </div>

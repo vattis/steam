@@ -81,26 +81,24 @@ public class ArticleController {
                                  @RequestParam("searchWord") String searchWord,
                                  @RequestParam(required = false, defaultValue = "0") int pageNo,
                                  Model model){
-        ArticleSearchTag articleSearchTag;
-        if(tag.equals("ALL")){
-            articleSearchTag = ArticleSearchTag.ALL;
-        } else if(tag.equals("TITLE")){
-            articleSearchTag = ArticleSearchTag.TITLE;
-        } else if (tag.equals("CONTENT")) {
-            articleSearchTag = ArticleSearchTag.CONTENT;
-        } else if (tag.equals("MEMBER")) {
-            articleSearchTag = ArticleSearchTag.NICKNAME;
-        } else if (tag.equals("COMMENT")) {
-            articleSearchTag = ArticleSearchTag.COMMENT;
-        } else{
-            articleSearchTag = null;
-        }
+        ArticleSearchTag articleSearchTag = getArticleSearchTag(tag);
         ArticleSearch articleSearch = ArticleSearch.of(articleSearchTag, searchWord);
         Page<ArticleDto> articleDtos = articleService.findAllBySearchWord(galleryId, articleSearch).map(ArticleDto::from);
         model.addAttribute("articleDtos", articleDtos);
         model.addAttribute("galleryId", galleryId);
         model.addAttribute("searchWord", searchWord);
         return "search-article";
+    }
+
+    private static ArticleSearchTag getArticleSearchTag(String tag) {
+        return switch (tag) {
+            case "ALL" -> ArticleSearchTag.ALL;
+            case "TITLE" -> ArticleSearchTag.TITLE;
+            case "CONTENT" -> ArticleSearchTag.CONTENT;
+            case "MEMBER" -> ArticleSearchTag.NICKNAME;
+            case "COMMENT" -> ArticleSearchTag.COMMENT;
+            default -> null;
+        };
     }
 
 

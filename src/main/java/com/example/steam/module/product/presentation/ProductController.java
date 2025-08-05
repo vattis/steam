@@ -32,6 +32,7 @@ public class ProductController {
     private final ProductService productService;
     private final ProductCommentService productCommentService;
 
+    //상점 메인
     @GetMapping("/shop/product")
     String gotoShop(Model model){
         Pageable pageable = PageRequest.of(0, PageConst.PRODUCTS_BANNER_SIZE);

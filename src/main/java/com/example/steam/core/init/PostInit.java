@@ -57,6 +57,7 @@ public class PostInit {
             product = productRepository.save(product);
             products.add(product);
             Discount discount = Discount.makeSample(i, product);
+            discount.activeDiscount();
             discountRepository.save(discount);
             galleries.add(galleryService.createGallery(product));
         }
