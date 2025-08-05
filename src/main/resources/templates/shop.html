@@ -29,6 +29,7 @@
         .navbar a:hover {
             color: #66c0f4;
         }
+
         .search-bar {
             background-color: #1b2838;
             padding: 20px 40px;
@@ -84,29 +85,36 @@
             background-color: #417a9b;
         }
 
-        .banner {
-            background-image: url('/images/banner-default.jpg');
-            background-size: cover;
-            background-position: center;
-            height: 400px;
-            display: flex;
-            align-items: flex-end;
-            padding: 30px;
-        }
-
-        .banner-title {
-            font-size: 36px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px;
-            border-radius: 8px;
-        }
-
         .section {
             padding: 40px;
         }
 
-        .section h2 {
+        .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .section h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #ffffff;
+        }
+
+        .more-link {
+            font-size: 0.95rem;
+            color: #66c0f4;
+            text-decoration: none;
+        }
+
+        .more-link:hover {
+            text-decoration: underline;
         }
 
         .game-grid {
@@ -132,16 +140,16 @@
             object-fit: cover;
         }
 
-        .game-card .info {
+        .info {
             padding: 10px;
         }
 
-        .game-card .title {
+        .title {
             font-weight: bold;
             margin-bottom: 5px;
         }
 
-        .game-card .price {
+        .price {
             color: #66c0f4;
             font-size: 14px;
         }
@@ -159,46 +167,52 @@
 
 <!-- 네비게이션 바 -->
 <div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
+
 <!-- 검색창 -->
 <div th:replace="~{fragments/searchbar :: searchBar}"></div>
 
 <!-- 할인 게임 -->
 <div class="section">
-    <h2>할인 중인 게임</h2>
-    <div class="game-grid">
-        <div class="game-card" th:each="game : ${discountProducts}">
-            <a th:href="@{'/product/' + ${game.id}}">
-                <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
-                <div class="info">
-                    <div class="title" th:text="${game.name}">게임 이름</div>
-
-                    <div class="price">
-                        <span style="text-decoration: line-through; color: #888;"
-                              th:text="'₩ ' + ${game.price}">₩ 19800</span>
-                        <span style="color: #66c0f4; font-weight: bold; margin-left: 8px;"
-                              th:text="'₩ ' + ${game.getDiscountPrice()}">₩ 9900</span>
-                        <span style="color: #ff6868; margin-left: 6px; font-size: 13px;"
-                              th:text="'(-' + ${game.discountRate} + '%)'">(-50%)</span>
+    <div class="section-inner">
+        <div class="section-header">
+            <h2>할인 중인 게임</h2>
+            <a class="more-link" th:href="@{'/shop/product?filter=discount'}">전체 보기 &raquo;</a>
+        </div>
+        <div class="game-grid">
+            <div class="game-card" th:each="game : ${discountProducts}">
+                <a th:href="@{'/product/' + ${game.id}}">
+                    <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
+                    <div class="info">
+                        <div class="title" th:text="${game.name}">게임 이름</div>
+                        <div class="price">
+                            <span style="text-decoration: line-through; color: #888;" th:text="'₩ ' + ${game.price}">₩ 19800</span>
+                            <span style="color: #66c0f4; font-weight: bold; margin-left: 8px;" th:text="'₩ ' + ${game.getDiscountPrice()}">₩ 9900</span>
+                            <span style="color: #ff6868; margin-left: 6px; font-size: 13px;" th:text="'(-' + ${game.discountRate} + '%)'">(-50%)</span>
+                        </div>
                     </div>
-
-                </div>
-            </a>
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- 인기 카테고리 -->
+<!-- 인기 게임 -->
 <div class="section">
-    <h2>인기 게임</h2>
-    <div class="game-grid">
-        <div class="game-card" th:each="game : ${popularProducts}">
-            <a th:href="@{'/product/' + ${game.getId()}}"> <!-- 게임 상세로 이동 -->
-                <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
-                <div class="info">
-                    <div class="title" th:text="${game.name}">게임 이름</div>
-                    <div class="price" th:text="'₩ ' + ${game.price}">₩ 19800</div>
-                </div>
-            </a>
+    <div class="section-inner">
+        <div class="section-header">
+            <h2>인기 게임</h2>
+            <a class="more-link" th:href="@{'/shop/product?filter=popular'}">전체 보기 &raquo;</a>
+        </div>
+        <div class="game-grid">
+            <div class="game-card" th:each="game : ${popularProducts}">
+                <a th:href="@{'/product/' + ${game.id}}">
+                    <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
+                    <div class="info">
+                        <div class="title" th:text="${game.name}">게임 이름</div>
+                        <div class="price" th:text="'₩ ' + ${game.price}">₩ 19800</div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </div>

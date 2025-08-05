@@ -34,13 +34,29 @@ public class ProductController {
 
     //상점 메인
     @GetMapping("/shop/product")
-    String gotoShop(Model model){
-        Pageable pageable = PageRequest.of(0, PageConst.PRODUCTS_BANNER_SIZE);
+    String gotoShop(@RequestParam (name="filter", required = false) String filter,
+                    @RequestParam (name="pageNo", required = false, defaultValue = "0") Integer pageNo,
+                    Model model){
+        String html;
+        Pageable pageable;
+        if(filter == null){
+            pageable = PageRequest.of(pageNo, PageConst.PRODUCTS_BANNER_SIZE);
+            html = "/shop";
+        } else if(filter.equals("popular")){
+            pageable = PageRequest.of(pageNo, PageConst.PRODUCT_PAGE_SIZE);
+            html = "/popular-product";
+        } else if(filter.equals("discount")){
+            pageable = PageRequest.of(pageNo, PageConst.PRODUCT_PAGE_SIZE);
+            html = "/discount-product";
+        } else{
+            pageable = PageRequest.of(pageNo, PageConst.PRODUCTS_BANNER_SIZE);
+            html = "/shop";
+        }
         Page<SimpleProductBannerDto> discountProducts = productService.findDiscountProductBanner(pageable);
         Page<SimpleProductBannerDto> popularProducts = productService.findPopularProductBanner(pageable);
         model.addAttribute("discountProducts", discountProducts);
         model.addAttribute("popularProducts", popularProducts);
-        return "/shop";
+        return html;
     }
 
     @GetMapping("/product/{productId}")
@@ -61,4 +77,5 @@ public class ProductController {
         model.addAttribute("searchResults", products);
         return "/searchProduct";
     }
+
 }
