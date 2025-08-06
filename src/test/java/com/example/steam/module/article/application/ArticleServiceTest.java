@@ -4,6 +4,7 @@ import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.article.domain.Article;
 import com.example.steam.module.article.domain.ArticleSearch;
 import com.example.steam.module.article.domain.ArticleSearchTag;
+import com.example.steam.module.article.dto.ArticleWriteForm;
 import com.example.steam.module.article.repository.ArticleRepository;
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.gallery.domain.Gallery;
@@ -140,6 +141,31 @@ class ArticleServiceTest {
         assertThat(nicknameArticlePageResult.toList().get(0).getTitle()).isEqualTo(articles3.get(0).getTitle());
         assertThat(commentContentArticlePageResult.toList().get(0).getTitle()).isEqualTo(articles4.get(0).getTitle());
         assertThat(allArticlePageResult.toList().get(0).getTitle()).isEqualTo(articles5.get(0).getTitle());
+    }
 
+    @Test
+    void saveArticleTest(){
+        //given
+        int sampleNum = 1;
+        Long galleryId = 1L;
+        String title = "title";
+        String content = "content";
+        ArticleWriteForm articleWriteForm = ArticleWriteForm.of(galleryId, title, content);
+        Product product = Product.makeSample(sampleNum, Company.makeSample(sampleNum));
+        Gallery gallery = Gallery.makeSample(product);
+        Member member = Member.makeSample(sampleNum);
+        Article article = Article.of(gallery, member, title, content);
+        given(galleryRepository.findById(galleryId)).willReturn(Optional.of(gallery));
+        given(articleRepository.save(any(Article.class))).willReturn(article);
+
+        //when
+        Article articleResult = articleService.saveArticle(articleWriteForm, member);
+
+        //then
+        assertThat(articleResult.getContent()).isEqualTo(article.getContent());
+        assertThat(articleResult.getTitle()).isEqualTo(article.getTitle());
+
+        verify(galleryRepository).findById(galleryId);
+        verify(articleRepository).save(any(Article.class));
     }
 }
