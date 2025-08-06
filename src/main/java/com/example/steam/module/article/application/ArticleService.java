@@ -30,14 +30,14 @@ public class ArticleService {
     private final GalleryRepository galleryRepository;
 
     //게시판 통합 탐색, page 로 반환, 날짜 최신순
-    public Page<Article> findAllPage(){
-        Pageable pageable = PageRequest.of(0, PageConst.ARTICLE_PAGE_SIZE);
+    public Page<Article> findAllPage(int pageNum){
+        Pageable pageable = PageRequest.of(pageNum, PageConst.ARTICLE_PAGE_SIZE);
         return articleRepository.findAllByOrderByCreated(pageable);
     }
 
     //게시판 별 게시물 전체 찾기
-    public Page<Article> findAllByGalleryId(Long galleryId, int pageNum){
-        Pageable pageable = PageRequest.of(pageNum, PageConst.ARTICLE_PAGE_SIZE);
+    public Page<Article> findAllByGalleryId(Long galleryId, int pageNo){
+        Pageable pageable = PageRequest.of(pageNo, PageConst.ARTICLE_PAGE_SIZE);
         return articleRepository.findAllByGalleryId(galleryId, pageable);
     }
 
