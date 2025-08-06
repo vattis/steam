@@ -67,15 +67,16 @@ class ArticleRepositoryTest {
         companyRepository.save(company);
         productRepository.save(product);
         galleryRepository.save(gallery);
-
-        //when
         articleRepository.save(article);
 
+        //when
+        Article articleResult = articleRepository.findById(article.getId()).orElseThrow();
+
         //then
-        assertThat(article.getId()).isNotNull();
-        assertThat(article.getTitle()).isEqualTo("title1");
-        assertThat(article.getContent()).isEqualTo("content1");
-        assertThat(article.getLikes()).isEqualTo(0);
+        assertThat(articleResult.getId()).isNotNull();
+        assertThat(articleResult.getTitle()).isEqualTo(article.getTitle());
+        assertThat(articleResult.getContent()).isEqualTo(article.getContent());
+        assertThat(articleResult.getLikes()).isEqualTo(article.getLikes());
     }
     @Test
     void deleteTest1(){
