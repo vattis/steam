@@ -70,10 +70,15 @@ public class ProductController {
     }
 
     @GetMapping("/product/search")
-    String searchProduct(Model model, @RequestParam("tag") String searchTag, @RequestParam("searchWord") String searchWord){
+    String searchProduct(Model model,
+                         @RequestParam(name = "tag", required = false) String searchTag,
+                         @RequestParam(name = "searchWord", required = false) String searchWord,
+                         @RequestParam(name = "pageNo", defaultValue = "0", required = false) int pageNo){
         log.info("controller: search tag={}, searchWord={}", searchTag, searchWord);
         ProductSearch productSearch = ProductSearch.of(ProductSearchTag.makeTag(searchTag), searchWord);
-        Page<SimpleProductBannerDto> products = productService.search(productSearch);
+        Page<SimpleProductBannerDto> products = productService.search(productSearch, pageNo);
+        model.addAttribute("searchWord", searchWord);
+        model.addAttribute("searchTag", searchTag);
         model.addAttribute("searchResults", products);
         return "/searchProduct";
     }

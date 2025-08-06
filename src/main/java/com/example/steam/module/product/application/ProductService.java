@@ -33,8 +33,8 @@ public class ProductService {
     }
 
     //전체 조회 및 검색
-    public Page<SimpleProductBannerDto> search(ProductSearch productSearch){//정렬 기능 추가 예정
-        PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_PAGE_SIZE);
+    public Page<SimpleProductBannerDto> search(ProductSearch productSearch, int pageNo){//정렬 기능 추가 예정
+        PageRequest pageRequest = PageRequest.of(pageNo, PageConst.PRODUCT_PAGE_SIZE);
         if(productSearch.getSearchWord() == null || productSearch.getSearchWord().isEmpty()){ //전체 조회
             return productRepository.findAllByOrderByDownloadNum(pageRequest);
         }else if(productSearch.getSearchTag() == ProductSearchTag.NAME){ //게임 이름 조회

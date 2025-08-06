@@ -45,20 +45,8 @@
             background-color: #2a475e;
         }
 
-        .search-bar select {
-            padding: 10px 12px;
-            font-size: 14px;
-            border: none;
-            background-color: #2a475e;
-            color: #c7d5e0;
-            outline: none;
-            appearance: none;
-            border-right: 1px solid #1b2838;
-            cursor: pointer;
-        }
-
+        .search-bar select,
         .search-bar input[type="text"] {
-            width: 200px;
             padding: 10px 12px;
             font-size: 14px;
             border: none;
@@ -67,7 +55,7 @@
             outline: none;
         }
 
-        .search-bar input[type="text"]::placeholder {
+        .search-bar input::placeholder {
             color: #8f98a0;
         }
 
@@ -78,7 +66,6 @@
             background-color: #66c0f4;
             color: #fff;
             cursor: pointer;
-            transition: background-color 0.2s ease;
         }
 
         .search-bar button:hover {
@@ -137,6 +124,37 @@
             padding: 20px;
             margin-top: 40px;
         }
+
+        .pagination {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            gap: 0.5rem;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pagination a {
+            padding: 0.4rem 0.7rem;
+            background-color: #2f3b4c;
+            border-radius: 4px;
+            color: #c7d5e0;
+            text-decoration: none;
+        }
+
+        .pagination a:hover {
+            background-color: #417a9b;
+        }
+
+        .active-page {
+            background-color: #66c0f4 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -153,7 +171,7 @@
 
     <div th:if="${searchResults != null and !searchResults.isEmpty()}">
         <div class="game-grid">
-            <div class="game-card" th:each="game : ${searchResults}">
+            <div class="game-card" th:each="game : ${searchResults.content}">
                 <a th:href="@{'/games/' + ${game.id}}">
                     <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
                     <div class="info">
@@ -173,6 +191,30 @@
                 </a>
             </div>
         </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination" th:if="${searchResults.totalPages > 0}">
+            <ul>
+                <li th:if="${searchResults.hasPrevious()}">
+                    <a th:href="@{'/product/search?tag=' + ${searchTag} + '&searchWord=' + ${searchWord} + '&pageNo=' + ${searchResults.number - 1}}">
+                        &laquo; 이전
+                    </a>
+                </li>
+
+                <li th:each="page : ${#numbers.sequence(0, searchResults.totalPages - 1)}">
+                    <a th:href="@{'/product/search?tag=' + ${searchTag} + '&searchWord=' + ${searchWord} + '&pageNo=' + ${page}}"
+                       th:text="${page + 1}"
+                       th:classappend="${page == searchResults.number} ? 'active-page' : ''"></a>
+                </li>
+
+                <li th:if="${searchResults.hasNext()}">
+                    <a th:href="@{'/product/search?tag=' + ${searchTag} + '&searchWord=' + ${searchWord} + '&pageNo=' + ${searchResults.number + 1}}">
+                        다음 &raquo;
+                    </a>
+                </li>
+            </ul>
+        </div>
+
     </div>
 
     <div th:if="${searchResults == null or searchResults.isEmpty()}" style="text-align: center; color: #8f98a0; margin-top: 40px;">

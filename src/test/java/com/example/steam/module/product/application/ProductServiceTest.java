@@ -58,6 +58,7 @@ class ProductServiceTest {
         ProductSearch nameSearch = ProductSearch.of(ProductSearchTag.NAME, "name3");
         ProductSearch companySearch = ProductSearch.of(ProductSearchTag.COMPANY, "companyName4");
         ProductSearch allSearch1 = ProductSearch.of(ProductSearchTag.ALL, "ame3");
+        int pageNo = 0;
         List<Company> companyList = new ArrayList<>();
         for(int i = 1; i <= 10; i++){
             companyList.add(Company.makeSample(i));
@@ -86,10 +87,10 @@ class ProductServiceTest {
         given(productRepository.findAllByNameOrCompanyNameContaining(allSearch1.getSearchWord(), pageRequest)).willReturn(new PageImpl<>(productList3));
 
         //when
-        Page<SimpleProductBannerDto> pageResult1 = productService.search(search);
-        Page<SimpleProductBannerDto> pageResult2 = productService.search(nameSearch);
-        Page<SimpleProductBannerDto> pageResult3 = productService.search(companySearch);
-        Page<SimpleProductBannerDto> pageResult4 = productService.search(allSearch1);
+        Page<SimpleProductBannerDto> pageResult1 = productService.search(search, pageNo);
+        Page<SimpleProductBannerDto> pageResult2 = productService.search(nameSearch, pageNo);
+        Page<SimpleProductBannerDto> pageResult3 = productService.search(companySearch, pageNo);
+        Page<SimpleProductBannerDto> pageResult4 = productService.search(allSearch1, pageNo);
 
 
         //then
