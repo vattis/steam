@@ -40,9 +40,9 @@ public class ArticleCommentService {
     }
 
     //댓글 삭제
-    public boolean deleteArticleComment(Long articleCommentId, Long memberId){
+    public boolean deleteArticleComment(Long articleCommentId, Member member){
         ArticleComment articleComment = articleCommentRepository.findById(articleCommentId).orElseThrow(NoSuchElementException::new);
-        if(articleComment.getMember().getId() != memberId){
+        if(articleComment.getMember().getId() != member.getId()){
             log.info("잘못된 ArticleComment 삭제:: 회원 불일치");
             return false;
         }
