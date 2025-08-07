@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +40,6 @@ class ArticleCommentServiceTest {
     @Mock MemberRepository memberRepository;
     @Mock ArticleRepository articleRepository;
     @Mock ArticleCommentRepository articleCommentRepository;
-
 
     private Member member;
     private Product product;
@@ -63,7 +63,7 @@ class ArticleCommentServiceTest {
     }
 
     @Test
-    void makeArticleComment() {
+    void makeArticleCommentTest() {
         //given
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
 
@@ -77,7 +77,7 @@ class ArticleCommentServiceTest {
     }
 
     @Test
-    void findArticleCommentByArticleId() {
+    void findArticleCommentByArticleIdTest() {
         //given
         List<ArticleComment> articleCommentList = new ArrayList<>();
         int sampleNum2 = 2;
@@ -100,7 +100,7 @@ class ArticleCommentServiceTest {
 
     @Test
     @DisplayName("댓글 삭제가 성공적으로 이루어지는 경우")
-    void deleteArticleComment() {
+    void deleteArticleCommentTest1() {
         //given
         given(articleCommentRepository.findById(articleComment.getId())).willReturn(Optional.of(articleComment));
 
@@ -112,5 +112,22 @@ class ArticleCommentServiceTest {
         assertThat(result).isTrue();
         assertThat(article.getComments()).doesNotContain(articleComment);
         verify(articleCommentRepository).delete(articleComment);
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 요청자와 댓글 소유자가 다른 경우 실패")
+    void deleteArticleCommentTest2(){
+        //given
+        int otherSampleNum = 5;
+        Member requestMember = Member.makeSample(otherSampleNum);
+        ReflectionTestUtils.setField(requestMember, "id", 5L);
+        given(articleCommentRepository.findById(articleComment.getId())).willReturn(Optional.of(articleComment));
+
+        //when
+        Boolean result = articleCommentService.deleteArticleComment(articleComment.getId(), requestMember);
+
+        //then
+        assertThat(result).isFalse();
+        verify(articleCommentRepository, never()).delete(any(ArticleComment.class));
     }
 }

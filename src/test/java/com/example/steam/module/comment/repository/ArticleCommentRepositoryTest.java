@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,6 +87,7 @@ class ArticleCommentRepositoryTest {
 
         //then
         assertThat(articleCommentPage.getTotalElements()).isEqualTo(2);
+        assertThat(articleCommentPage.stream().allMatch(ac -> Objects.equals(ac.getArticle().getId(), article.getId()))).isTrue();
     }
 
 
