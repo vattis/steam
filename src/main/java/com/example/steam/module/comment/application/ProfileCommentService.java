@@ -22,9 +22,7 @@ public class ProfileCommentService {
     private final ProfileCommentRepository profileCommentRepository;
     private final MemberRepository memberRepository;
     //댓글 달기
-    public ProfileComment makeProfileComment(Long memberId, Long profileMemberId, String content){
-        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
-        Member profileMember = memberRepository.findById(profileMemberId).orElseThrow(NoSuchElementException::new);
+    public ProfileComment makeProfileComment(Member member, Member profileMember, String content){
         ProfileComment profileComment = ProfileComment.of(member, content, profileMember);
         return profileCommentRepository.save(profileComment);
     }
@@ -36,13 +34,13 @@ public class ProfileCommentService {
     }
 
     //댓글 삭제
-    public boolean deleteProfileComment(Long profileCommentId, Long memberId){
+    public boolean deleteProfileComment(Long profileCommentId, Member member){
         ProfileComment profileComment = profileCommentRepository.findById(profileCommentId).orElseThrow(NoSuchElementException::new);
-        if(profileComment.getMember().getId() != memberId || profileComment.getProfileMember().getId() != memberId){
-            log.info("잘못된 ProfileComment 삭제:: 회원 불일치");
-            return false;
+        if(profileComment.getMember().getId() == member.getId() || profileComment.getProfileMember().getId() == member.getId()){
+            profileCommentRepository.delete(profileComment);
+            return true;
         }
-        profileCommentRepository.delete(profileComment);
-        return true;
+        log.info("잘못된 ProfileComment 삭제:: 회원 불일치");
+        return false;
     }
 }
