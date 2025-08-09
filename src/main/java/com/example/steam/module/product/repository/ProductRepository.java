@@ -29,8 +29,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     """)
     Page<SimpleProductBannerDto> findAllByOrderByDownloadNum(Pageable pageable);
 
-    List<Product> findAllByOrderByDownloadNum();
-
     Page<Product> findAllByNameContaining(String searchWord, Pageable pageable);
 
     Page<Product> findAllByCompanyNameContaining(String searchWord, Pageable pageable);

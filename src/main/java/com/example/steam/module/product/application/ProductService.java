@@ -48,8 +48,8 @@ public class ProductService {
     }
 
     //개발사로 게임 조회
-    public Page<Product> findAllByCompany(Long companyId){
-        PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_PAGE_SIZE);
+    public Page<Product> findAllByCompany(Long companyId, int pageNo){
+        PageRequest pageRequest = PageRequest.of(pageNo, PageConst.PRODUCT_PAGE_SIZE);
         return productRepository.findAllByCompanyId(companyId, pageRequest);
     }
 

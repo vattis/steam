@@ -62,19 +62,21 @@ class ProductRepositoryTest {
 
         //then
         assertThat(productPage2.getTotalElements()).isEqualTo(11);
+        assertThat(productPage2.stream().allMatch(p -> p.getName().contains(nameSearchWord))).isTrue();
     }
 
     @Test
     void findAllByCompanyNameContaining() {
         //given
         PageRequest pageRequest = PageRequest.of(0, PageConst.PRODUCT_PAGE_SIZE);
-        String companyNameSearchWord = "panyName4";
+        String companyNameSearchWord = "companyName4";
 
         //when
         Page<Product> productPage3 = productRepository.findAllByCompanyNameContaining(companyNameSearchWord, pageRequest);
 
         //then
         assertThat(productPage3.getTotalElements()).isEqualTo(10);
+        assertThat(productPage3.stream().allMatch(p -> p.getCompany().getName().contains(companyNameSearchWord))).isTrue();
     }
 
     @Test
@@ -88,5 +90,6 @@ class ProductRepositoryTest {
 
         //then
         assertThat(productPage4.getTotalElements()).isEqualTo(20);
+        assertThat(productPage4.stream().allMatch(p->p.getCompany().getName().contains(allSearchWord) || p.getName().contains(allSearchWord))).isTrue();
     }
 }
