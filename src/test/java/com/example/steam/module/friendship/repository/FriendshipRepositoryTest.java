@@ -1,6 +1,5 @@
 package com.example.steam.module.friendship.repository;
 
-import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.friendship.domain.Friendship;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
@@ -8,31 +7,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class FriendshipRepositoryTest {
     @Autowired private FriendshipRepository friendshipRepository;
     @Autowired private MemberRepository memberRepository;
     private List<Member> members;
+    private List<Member> otherMembers;
     private List<Friendship> friendships;
-
+    private List<Friendship> notAcceptedFriendships;
     @BeforeEach
     void init(){
         List<Member> members = new ArrayList<>();
+        otherMembers = new ArrayList<>();
         List<Friendship> friendships = new ArrayList<>();
         for(int i = 1; i <= 10; i++){
             members.add(memberRepository.save(Member.makeSample(i)));
         }
+        for(int i = 11; i <= 15; i++){
+            otherMembers.add(Member.makeSample(i));
+        }
         memberRepository.saveAll(members);
+        memberRepository.saveAll(otherMembers);
         for(int i = 0; i <= 8; i++){
             Friendship friendship1 = Friendship.of(members.get(i), members.get(i+1), true);
             Friendship friendship2 = Friendship.createReverseFriendship(friendship1);
@@ -48,6 +49,11 @@ class FriendshipRepositoryTest {
         friendshipRepository.saveAll(friendships);
         this.members = members;
         this.friendships = friendships;
+
+        Friendship notAcceptedFriendship1 = Friendship.of(otherMembers.get(0), otherMembers.get(3), false);
+        friendshipRepository.save(notAcceptedFriendship1);
+        Friendship notAcceptedFriendship2 = Friendship.of(otherMembers.get(0), otherMembers.get(4), false);
+        friendshipRepository.save(notAcceptedFriendship2);
     }
 
     @Test
@@ -106,5 +112,31 @@ class FriendshipRepositoryTest {
 
         //then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void findAllByToMemberAndAcceptedIsFalseTest(){
+        //given
+
+        //when
+        List<Friendship> friendships1 = friendshipRepository.findAllByToMemberAndAcceptedIsFalse(otherMembers.get(3));
+
+        //then
+        assertThat(friendships1.size()).isEqualTo(1);
+        assertThat(friendships1.get(0).getToMember().getId()).isEqualTo(otherMembers.get(3).getId());
+        assertThat(friendships1.get(0).getAccepted()).isFalse();
+    }
+
+    @Test
+    void findAllByFromMemberAndAcceptedIsFalse(){
+        //given
+
+        //when
+        List<Friendship> friendships1 = friendshipRepository.findAllByFromMemberAndAcceptedIsFalse(otherMembers.get(0));
+
+        //then
+        assertThat(friendships1.size()).isEqualTo(2);
+        assertThat(friendships1.stream().allMatch(f -> f.getFromMember().getId().equals(otherMembers.get(0).getId()))).isTrue();
+        assertThat(friendships1.stream().noneMatch(Friendship::getAccepted)).isTrue();
     }
 }
