@@ -29,11 +29,11 @@ public class GalleryController {
 
     //갤러리 목록으로 이동
     @GetMapping("/galleries")
-    public String togoGalleryList(Model model, Principal principal){
+    public String togoGalleryList(@RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo, Model model, Principal principal){
         if(principal != null){
             Member member = memberService.findMemberByEmail(principal.getName());
             List<SimpleGalleryDto> ownedGalleries = member.getMemberGames().stream().map(SimpleGalleryDto::makeDtoWithMemberGame).toList();
-            Page<SimpleGalleryDto> galleries = galleryService.findAllGallery().map(SimpleGalleryDto::from);
+            Page<SimpleGalleryDto> galleries = galleryService.findAllGallery(pageNo).map(SimpleGalleryDto::from);
 
             model.addAttribute("ownedGalleries", ownedGalleries);
             model.addAttribute("galleries", galleries);

@@ -32,8 +32,8 @@ public class GalleryService {
     }
 
     //갤러리 전체 찾기
-    public Page<Gallery> findAllGallery(){
-        Pageable pageable = PageRequest.of(0, PageConst.GALLERY_LIST_PAGE_SIZE);
+    public Page<Gallery> findAllGallery(int pageNo){
+        Pageable pageable = PageRequest.of(pageNo, PageConst.GALLERY_LIST_PAGE_SIZE);
         return galleryRepository.findAll(pageable);
     }
 
