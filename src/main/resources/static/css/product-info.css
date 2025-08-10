@@ -216,6 +216,37 @@ body {
     color: #eaf6ff;
     word-break: break-all;
 }
+.rating-group {
+    display: inline-flex;
+    flex-direction: row-reverse; /* 높은 점수가 왼쪽 */
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.rating-group input {
+    display: none;
+}
+.rating-group label {
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: transform 0.05s ease, opacity 0.1s ease;
+}
+.rating-group label:hover,
+.rating-group label:hover ~ label {
+    opacity: 1;
+}
+.rating-group input:checked ~ label {
+    opacity: 1;
+}
+.rating-group label:active { transform: scale(0.95); }
+
+/* ===== 별점 표시 ===== */
+.review-stars span,
+.avg-stars span {
+    font-size: 18px;
+    margin-right: 2px;
+    line-height: 1;
+}
 
 /* 반응형 */
 @media (max-width: 900px) {

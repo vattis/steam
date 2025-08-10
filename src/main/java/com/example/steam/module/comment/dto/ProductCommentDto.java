@@ -17,6 +17,7 @@ public class ProductCommentDto {
     private SimpleMemberDto member;
     private String content;
     private LocalDateTime createdTime;
+    private Float rating;
 
     public static ProductCommentDto from(ProductComment productComment) {
         return ProductCommentDto.builder()
@@ -24,6 +25,7 @@ public class ProductCommentDto {
                 .member(SimpleMemberDto.from(productComment.getMember()))
                 .content(productComment.getContent())
                 .createdTime(productComment.getCreatedTime())
+                .rating(productComment.getRate())
                 .build();
     }
 }
