@@ -73,8 +73,15 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    public void deleteArticle(Long id){
-        articleRepository.deleteById(id);
+    public String deleteArticle(Long articleId, Member member){
+        Article article = articleRepository.findById(articleId).orElseThrow(NoSuchElementException::new);
+        String galleryName = article.getGallery().getProduct().getName();
+        if(article.getMember().getId() != member.getId()){
+            log.info("잘못된 Article 삭제 요청::로그인 사용자 불일치");
+            return galleryName;
+        }
+        articleRepository.delete(article);
+        return galleryName;
     }
 
 }

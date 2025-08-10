@@ -9,6 +9,7 @@ import com.example.steam.module.article.dto.ArticleWriteForm;
 import com.example.steam.module.article.dto.DetailArticleDto;
 import com.example.steam.module.article.dto.DetailArticleWithCommentDto;
 import com.example.steam.module.comment.application.ArticleCommentService;
+import com.example.steam.module.comment.domain.ArticleComment;
 import com.example.steam.module.comment.dto.ArticleCommentDto;
 import com.example.steam.module.gallery.application.GalleryService;
 import com.example.steam.module.gallery.domain.Gallery;
@@ -93,6 +94,15 @@ public class ArticleController {
         return "search-article";
     }
 
+    //게시물 삭제
+    @GetMapping("/article/delete/{articleId}")
+    public String deleteArticle(@PathVariable("articleId") Long articleId,
+                                Principal principal){
+        Member member = memberService.findMemberByEmail(principal.getName());
+        String galleryName = articleService.deleteArticle(articleId, member);
+        return "redirect:/gallery/" + galleryName;
+    }
+
     private static ArticleSearchTag getArticleSearchTag(String tag) {
         return switch (tag) {
             case "ALL" -> ArticleSearchTag.ALL;
@@ -103,6 +113,8 @@ public class ArticleController {
             default -> null;
         };
     }
+
+
 
 
 }
