@@ -42,4 +42,9 @@ public class GalleryService {
         Pageable pageable = PageRequest.of(pageNo, PageConst.GALLERY_LIST_PAGE_SIZE);
         return galleryRepository.findByProduct_NameContaining(searchWord, pageable);
     }
+
+    //Id로 찾기
+    public Gallery findById(Long galleryId){
+        return galleryRepository.findById(galleryId).orElseThrow(NoSuchElementException::new);
+    }
 }

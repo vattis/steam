@@ -65,8 +65,8 @@
 </header>
 
 <main>
-    <h2 th:text="'[' + ${articleWriteForm.galleryId} + '] 게시글 작성'"></h2>
-    <form th:action="@{'/article/' + ${articleWriteForm.galleryId} + '/write'}" method="post" th:object="${articleWriteForm}">
+    <h2 th:text="'[' + ${galleryName} + '] 게시글 작성'"></h2>
+    <form th:action="@{'/article/' + ${articleWriteForm.getGalleryId()} + '/write'}" method="post" th:object="${articleWriteForm}">
         <input type="text" th:field="*{title}" placeholder="제목을 입력하세요" required />
         <textarea th:field="*{content}" rows="10" placeholder="내용을 입력하세요" required></textarea>
         <button type="submit">작성 완료</button>

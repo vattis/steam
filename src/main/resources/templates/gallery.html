@@ -178,7 +178,9 @@
 
 <div class="community-header">
     <h1 th:text="${galleryName} + ' 커뮤니티'">Steam 커뮤니티</h1>
-    <a href="/community/write" target="_blank" class="new-post-button">새 글 작성</a>
+    <a th:href="@{'/article/' + ${galleryId} + '/write'}" target="_blank" class="new-post-button">
+        새 글 작성
+    </a>
 </div>
 
 <div class="content-wrapper">

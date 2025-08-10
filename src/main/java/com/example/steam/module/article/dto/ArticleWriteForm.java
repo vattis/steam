@@ -16,6 +16,12 @@ public class ArticleWriteForm {
     private String content;
     private LocalDateTime createdDate;
 
+    public static ArticleWriteForm of(Long galleryId){
+        return ArticleWriteForm.builder()
+                .galleryId(galleryId)
+                .build();
+    }
+
     public static ArticleWriteForm of(Long galleryId, String title, String content) {
         return ArticleWriteForm.builder()
                 .galleryId(galleryId)

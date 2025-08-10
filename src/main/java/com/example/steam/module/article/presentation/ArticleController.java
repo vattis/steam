@@ -45,8 +45,12 @@ public class ArticleController {
     }
 
     //개시물 작성 폼으로 이동
-    @GetMapping("/article/write")
-    public String gotoWrite(Model model) {
+    @GetMapping("/article/{galleryId}/write")
+    public String gotoWrite(@PathVariable("galleryId") Long galleryId, Model model) {
+        Gallery gallery = galleryService.findById(galleryId);
+        ArticleWriteForm articleWriteForm = ArticleWriteForm.of(galleryId);
+        model.addAttribute("articleWriteForm", articleWriteForm);
+        model.addAttribute("galleryName", gallery.getProduct().getName());
         return "/writeArticle";
     }
 
@@ -57,8 +61,8 @@ public class ArticleController {
             return "redirect:/login";
         }
         Member member = memberService.findMemberByEmail(principal.getName());
-        articleService.saveArticle(articleWriteForm, member);
-        return "redirect:/article/"+ articleWriteForm.getGalleryId();
+        Article article = articleService.saveArticle(articleWriteForm, member);
+        return "redirect:/article/"+ article.getId();
     }
 
     //게시물 화면 이동
