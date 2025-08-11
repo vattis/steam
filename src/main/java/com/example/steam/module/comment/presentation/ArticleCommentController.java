@@ -9,6 +9,8 @@ import com.example.steam.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,5 +30,13 @@ public class ArticleCommentController {
         Article article = articleService.findArticle(articleId);
         articleCommentService.makeArticleComment(member, article, articleCommentContent);
         return "redirect:/article/" + articleId;
+    }
+    @DeleteMapping("/articleComment/{articleCommentId}")
+    public String deleteArticleComment(@PathVariable("articleCommentId") Long articleCommentId, Principal principal){
+        Member member = memberService.findMemberByEmail(principal.getName());
+        ArticleComment articleComment = articleCommentService.findById(articleCommentId);
+        Article article = articleComment.getArticle();
+        articleCommentService.deleteArticleComment(articleComment, member);
+        return "redirect:/article/" + article.getId();
     }
 }

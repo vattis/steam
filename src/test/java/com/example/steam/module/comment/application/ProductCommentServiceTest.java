@@ -5,6 +5,7 @@ import com.example.steam.module.comment.domain.ProductComment;
 import com.example.steam.module.comment.repository.ProductCommentRepository;
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,6 +58,7 @@ class ProductCommentServiceTest {
     @Test
     void makeProductCommentTest() {
         //given
+        MemberGame.of(product, member);
         given(productRepository.findById(product.getId())).willReturn(Optional.of(product));
         given(productCommentRepository.save(any(ProductComment.class))).willReturn(productComment);
 

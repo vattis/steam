@@ -206,7 +206,7 @@
             <div class="article-meta-left">
                 <a th:href="@{'/profile/' + ${articleCommentDto.articleDto.memberDto.id} + '/0'}">
                     <img class="avatar"
-                         th:src="${articleCommentDto.articleDto.memberDto.avatarUrl != null} ? ${articleCommentDto.articleDto.memberDto.avatarUrl} : '/images/profile-image.jpg'"
+                         th:src="${articleCommentDto.articleDto.memberDto.avatarUrl != null ? articleCommentDto.articleDto.memberDto.avatarUrl : '/images/profile-image.jpg'}"
                          alt="작성자 아바타" />
                 </a>
                 <a th:href="@{'/profile/' + ${articleCommentDto.articleDto.memberDto.id} + '/0'}" style="color: inherit; text-decoration: none;">
@@ -217,9 +217,11 @@
                 <span class="likes" th:text="'♥ ' + ${articleCommentDto.articleDto.likes}">♥ 0</span>
             </div>
 
-            <!-- 글 삭제 버튼 (본인일 때만) -->
+            <!-- 글 삭제 버튼 (본인일 때만, DELETE 오버라이드) -->
             <form th:if="${currentUser != null and currentUser.id == articleCommentDto.articleDto.memberDto.id}"
-                  th:action="@{'/article/delete/' + ${articleCommentDto.articleDto.id}}" method="get">
+                  th:action="@{/article/{id}(id=${articleCommentDto.articleDto.id})}" method="post">
+                <input type="hidden" name="_method" value="delete"/>
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit" class="delete-button">삭제</button>
             </form>
         </div>
@@ -237,7 +239,7 @@
                 <div>
                     <a th:href="@{'/profile/' + ${comment.memberDto.id} + '/0'}">
                         <img class="avatar"
-                             th:src="${comment.memberDto.avatarUrl != null} ? ${comment.memberDto.avatarUrl} : '/images/profile-image.jpg'"
+                             th:src="${comment.memberDto.avatarUrl != null ? comment.memberDto.avatarUrl : '/images/profile-image.jpg'}"
                              alt="댓글 작성자 아바타" />
                     </a>
                     <a th:href="@{'/profile/' + ${comment.memberDto.id} + '/0'}" style="color: inherit; text-decoration: none;">
@@ -247,9 +249,13 @@
                     </a>
                 </div>
 
-                <!-- 댓글 삭제 버튼 (본인일 때만) -->
+                <!-- 댓글 삭제 버튼 (본인일 때만, DELETE 오버라이드) -->
                 <form th:if="${currentUser != null and currentUser.id == comment.memberDto.id}"
-                      th:action="@{'/articleComment/delete/' + ${comment.id}}" method="post">
+                      th:action="@{/articleComment/{id}(id=${comment.id})}" method="post">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <!-- 삭제 후 원글로 돌아가도록 articleId 전달 -->
+                    <input type="hidden" name="articleId" th:value="${articleCommentDto.articleDto.id}"/>
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" class="delete-button">삭제</button>
                 </form>
             </div>

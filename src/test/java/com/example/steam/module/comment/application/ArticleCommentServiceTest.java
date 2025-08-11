@@ -101,10 +101,9 @@ class ArticleCommentServiceTest {
     @DisplayName("댓글 삭제가 성공적으로 이루어지는 경우")
     void deleteArticleCommentTest1() {
         //given
-        given(articleCommentRepository.findById(articleComment.getId())).willReturn(Optional.of(articleComment));
 
         //when
-        boolean result = articleCommentService.deleteArticleComment(articleComment.getId(), member);
+        boolean result = articleCommentService.deleteArticleComment(articleComment, member);
 
 
         //then
@@ -120,10 +119,9 @@ class ArticleCommentServiceTest {
         int otherSampleNum = 5;
         Member requestMember = Member.makeSample(otherSampleNum);
         ReflectionTestUtils.setField(requestMember, "id", 5L);
-        given(articleCommentRepository.findById(articleComment.getId())).willReturn(Optional.of(articleComment));
 
         //when
-        Boolean result = articleCommentService.deleteArticleComment(articleComment.getId(), requestMember);
+        Boolean result = articleCommentService.deleteArticleComment(articleComment, requestMember);
 
         //then
         assertThat(result).isFalse();
