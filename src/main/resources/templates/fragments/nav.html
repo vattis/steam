@@ -42,7 +42,7 @@
 
     <a href="/galleries" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">커뮤니티</a>
     <a th:if="${currentUser != null}"
-       th:href="@{/library/{memberId}(memberId=${currentUser.id})}"
+       th:href="@{/shoppingCart}"
        style="color: #c6d4df; margin-left: 20px; text-decoration: none;">장바구니</a>
 
     <!-- 로그인 여부에 따라 다른 버튼 표시 -->

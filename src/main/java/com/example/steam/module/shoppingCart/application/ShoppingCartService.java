@@ -38,22 +38,28 @@ public class ShoppingCartService {
         return shoppingCartProductRepository.findAllByShoppingCartId(member.getShoppingCart().getId(), pageRequest);
     }
 
+    //id로 장바구니 상품 찾기
+    public ShoppingCartProduct findById(Long shoppingCartProductId){
+        return shoppingCartProductRepository.findById(shoppingCartProductId).orElseThrow(NoSuchElementException::new);
+    }
+
     //장바구니 상품 삭제
-    public void removeShoppingCartProduct(Long shoppingCartProductId){
-        shoppingCartProductRepository.deleteById(shoppingCartProductId);
+    public void removeShoppingCartProduct(ShoppingCartProduct shoppingCartProduct, Member member){
+        if(shoppingCartProduct.getShoppingCart().getMember().getId() != member.getId()){
+            log.info("잘못된 ShoppingCartProduct 삭제 요청::사용자 불일치");
+            return;
+        }
+        shoppingCartProductRepository.delete(shoppingCartProduct);
     }
 
     //장바구니 상품 추가
-    public void addShoppingCartProduct(Long memberId, Long productId){
-        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
-        Product product = productRepository.findById(productId).orElseThrow(NoSuchElementException::new);
+    public void addShoppingCartProduct(Member member, Product product){
         ShoppingCartProduct shoppingCartProduct = ShoppingCartProduct.of(member.getShoppingCart(), product);
         member.getShoppingCart().addShoppingCartProduct(shoppingCartProduct);
     }
 
     //장바구니를 주문으로 변경
-    public Orders makeShoppingCartToOrder(Long memberId){
-        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
+    public Orders makeShoppingCartToOrder(Member member){
         ShoppingCart shoppingCart = member.getShoppingCart();
         return ordersRepository.save(shoppingCart.toOrders());
     }

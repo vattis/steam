@@ -70,13 +70,16 @@ class ShoppingCartServiceTest {
     @Test
     void removeShoppingCartProduct() {
         //given
-        Long shoppingCartProductId = 1L;
+        Member member = Member.makeSample(1);
+        Product product = Product.makeSample(1, Company.makeSample(1));
+        ShoppingCart shoppingCart = ShoppingCart.of(member);
+        ShoppingCartProduct shoppingCartProduct = ShoppingCartProduct.of(shoppingCart, product);
 
         //when
-        shoppingCartService.removeShoppingCartProduct(shoppingCartProductId);
+        shoppingCartService.removeShoppingCartProduct(shoppingCartProduct, member);
 
         //then
-        verify(shoppingCartProductRepository, times(1)).deleteById(shoppingCartProductId);
+        verify(shoppingCartProductRepository, times(1)).delete(shoppingCartProduct);
     }
 
     @Test
@@ -85,14 +88,11 @@ class ShoppingCartServiceTest {
         Member member = Member.makeSample(1);
         ReflectionTestUtils.setField(member, "id", 1L);
         Optional<Member> optionalMember = Optional.of(member);
-        given(memberRepository.findById(member.getId())).willReturn(optionalMember);
         Product product = Product.makeSample(1, Company.makeSample(1));
         ReflectionTestUtils.setField(product, "id", 1L);
-        Optional<Product> optionalProduct = Optional.of(product);
-        given(productRepository.findById(product.getId())).willReturn(optionalProduct);
 
         //when
-        shoppingCartService.addShoppingCartProduct(member.getId(), product.getId());
+        shoppingCartService.addShoppingCartProduct(member, product);
 
         //then
         assertThat(optionalMember.get().getShoppingCart().getShoppingCartProducts().get(0).getProduct().getId()).isEqualTo(product.getId());
@@ -104,19 +104,17 @@ class ShoppingCartServiceTest {
         //given
         Member member = Member.makeSample(1);
         ReflectionTestUtils.setField(member, "id", 1L);
-        Optional<Member> optionalMember = Optional.of(member);
-        given(memberRepository.findById(member.getId())).willReturn(optionalMember);
         ShoppingCart shoppingCart = member.getShoppingCart();
         for(int i = 0; i < 10; i++){
-            given(productRepository.findById((long)i)).willReturn(Optional.of(Product.makeSample(i, Company.makeSample(i))));
-            shoppingCartService.addShoppingCartProduct(member.getId(), (long)i);
+            Product product = Product.makeSample(i, Company.makeSample(i));
+            shoppingCartService.addShoppingCartProduct(member, product);
         }
         Orders order = member.getShoppingCart().toOrders();
         ReflectionTestUtils.setField(order, "id", 1L);
         given(ordersRepository.save(any(Orders.class))).willReturn(order);
 
         //when
-        Orders orderResult = shoppingCartService.makeShoppingCartToOrder(member.getId());
+        Orders orderResult = shoppingCartService.makeShoppingCartToOrder(member);
 
         //then
         //shoppingCart를 orders로 전환한 후 shoppingCart를 비웠는지 확인

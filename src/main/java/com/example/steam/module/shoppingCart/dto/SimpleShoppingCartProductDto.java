@@ -11,6 +11,7 @@ public class SimpleShoppingCartProductDto {
     private Long id;
     private String productName;
     private Integer productPrice;
+    private String avatarUrl;
 
     public static SimpleShoppingCartProductDto from(ShoppingCartProduct shoppingCartProduct){
         Product product = shoppingCartProduct.getProduct();
@@ -19,6 +20,7 @@ public class SimpleShoppingCartProductDto {
                 .id(shoppingCartProduct.getId())
                 .productName(product.getName())
                 .productPrice(product.getPrice())
+                .avatarUrl(product.getImageUrl())
                 .build();
     }
 }

@@ -2,6 +2,8 @@ package com.example.steam.module.shoppingCart.presentation;
 
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.product.application.ProductService;
+import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.shoppingCart.application.ShoppingCartService;
 import com.example.steam.module.shoppingCart.dto.SimpleShoppingCartProductDto;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
@@ -20,6 +24,7 @@ import java.security.Principal;
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
     private final MemberService memberService;
+    private final ProductService productService;
 
     @GetMapping("/shoppingCart")
     public String shoppingCart(@RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo,
@@ -27,7 +32,14 @@ public class ShoppingCartController {
         Member member = memberService.findMemberByEmail(principal.getName());
         Page<SimpleShoppingCartProductDto> shoppingCartProductPage = shoppingCartService.getShoppingCartProducts(member, pageNo).map(SimpleShoppingCartProductDto::from);
         model.addAttribute("shoppingCartProductPage", shoppingCartProductPage);
-        return "/shoppingCart";
+        return "/shopping-cart";
     }
 
+    @PostMapping("/shoppingCart/product/{productId}")
+    public String addShoppingCartProduct(@PathVariable("productId") Long productId, Principal principal){
+        Member member = memberService.findMemberByEmail(principal.getName());
+        Product product = productService.findById(productId);
+        shoppingCartService.addShoppingCartProduct(member, product);
+        return "redirect:/product/" + productId;
+    }
 }
