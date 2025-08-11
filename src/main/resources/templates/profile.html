@@ -177,6 +177,25 @@
             color: #ffffff !important;
             font-weight: bold;
         }
+
+        /* 본인 댓글 삭제 버튼 UI */
+        .comment-meta-row{
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .delete-button-small{
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .delete-button-small:hover{ background-color: #c0392b; }
+        .inline{ display:inline; }
     </style>
 </head>
 <body>
@@ -231,9 +250,26 @@
                         <strong th:text="${comment.nickname}">작성자</strong>
                     </a>
                 </div>
+
                 <p th:text="${comment.content}" style="margin: 8px 0 0 0;">댓글 내용</p>
-                <small th:text="${#temporals.format(comment.createdTime, 'yyyy-MM-dd HH:mm')}"
-                       style="display: block; text-align: right;">2025-05-23</small>
+
+                <!-- 본인 댓글만 삭제 버튼 노출 -->
+                <div class="comment-meta-row">
+                    <small th:text="${#temporals.format(comment.createdTime, 'yyyy-MM-dd HH:mm')}">2025-05-23</small>
+
+                    <form th:if="${currentUser != null and currentUser.id == comment.memberId}"
+                          th:action="@{/profileComment/{id}(id=${comment.id})}"
+                          method="post" class="inline">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <input type="hidden" name="profileId" th:value="${profile.profileMember.id}"/>
+
+                        <!-- CSRF가 모델에 있을 때만 렌더 -->
+                        <input type="hidden" th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                        <button type="submit" class="delete-button-small">삭제</button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -267,11 +303,11 @@
         <h3>친구 목록</h3>
         <div th:each="friend : ${profileDto.friendships}">
             <div class="friend">
-                <a th:href="@{'/profile/' + ${friend.toMember.id} + '/0'}" class="image-link">
+                <a th:href="@{'/profile/' + ${friend.toMember.id}}" class="image-link">
                     <img th:src="${#strings.isEmpty(friend.getToMember().avatarUrl)} ? '/images/profile-image.jpg' : ${friend.avatarUrl}"
                          alt="친구 이미지" />
                 </a>
-                <a th:href="@{'/profile/' + ${friend.toMember.id} + '/0'}" class="link">
+                <a th:href="@{'/profile/' + ${friend.toMember.id}}" class="link">
                     <div th:text="${friend.getToMember().nickname}">친구 닉네임</div>
                 </a>
             </div>

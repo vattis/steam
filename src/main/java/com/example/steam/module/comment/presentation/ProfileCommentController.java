@@ -6,8 +6,9 @@ import com.example.steam.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Controller
 @Slf4j
@@ -24,6 +25,13 @@ public class ProfileCommentController {
         Member member = memberService.findMember(memberId);
         Member profileMember = memberService.findMember(profileId);
         profileCommentService.makeProfileComment(member, profileMember, content);
-        return "redirect:/profile/" + profileId + "/0";
+        return "redirect:/profile/" + profileId;
+    }
+
+    @DeleteMapping("/profileComment/{profileComment}")
+    public String deleteProfileComment(@PathVariable("profileComment") Long profileComment, Principal principal){
+        Member member = memberService.findMemberByEmail(principal.getName());
+        profileCommentService.deleteProfileComment(profileComment, member);
+        return "redirect:/profile/" + member.getId();
     }
 }

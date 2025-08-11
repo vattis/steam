@@ -72,8 +72,8 @@ public class MemberController {
     }
 
     //유저 프로필 이동
-    @GetMapping("/profile/{memberId}/{commentPageNum}")
-    public String gotoMyPage(@PathVariable Long memberId, @PathVariable int commentPageNum, Model model) {
+    @GetMapping("/profile/{memberId}")
+    public String gotoMyPage(@PathVariable("memberId") Long memberId, @RequestParam(name = "commentPageNum", required = false, defaultValue = "0") int commentPageNum, Model model) {
         ProfileDto profileDto = memberService.getProfile(memberId, PageRequest.of(commentPageNum, PageConst.PROFILE_COMMENT_PAGE_SIZE));
         model.addAttribute("profileDto", profileDto);
         return "/profile";
