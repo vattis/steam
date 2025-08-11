@@ -172,7 +172,7 @@
     <div th:if="${searchResults != null and !searchResults.isEmpty()}">
         <div class="game-grid">
             <div class="game-card" th:each="game : ${searchResults.content}">
-                <a th:href="@{'/games/' + ${game.id}}">
+                <a th:href="@{'/product/' + ${game.id}}">
                     <img th:src="${game.imageUrl != null and game.imageUrl != '' ? game.imageUrl : '/images/game-image.jpeg'}" alt="게임 이미지">
                     <div class="info">
                         <div class="title" th:text="${game.name}">게임 이름</div>

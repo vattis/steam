@@ -197,13 +197,13 @@
         <h3>최근 플레이한 게임</h3>
         <div th:each="game : ${profile.simpleMemberGames}">
             <div class="game">
-                <a th:href="@{'/games/' + ${game.gameId}}" class="image-link">
+                <a th:href="@{'/product/' + ${game.gameId}}" class="image-link">
                     <img th:src="${#strings.isEmpty(game.gameImageUrl) ? '/images/game-image.jpeg' : game.gameImageUrl}"
                          alt="Game Image"
                          style="max-width: 250px; width: 100%; border-radius: 8px;">
                 </a>
                 <div>
-                    <a th:href="@{'/games/' + ${game.gameId}}" class="link">
+                    <a th:href="@{'/product/' + ${game.gameId}}" class="link">
                         <div class="game-title" th:text="${game.gameName}">게임 제목</div>
                     </a>
                     <div class="playtime" th:text="|플레이 시간: ${game.playTime}|">플레이 시간</div>

@@ -4,6 +4,7 @@ import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.comment.domain.ProductComment;
 import com.example.steam.module.comment.repository.ProductCommentRepository;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,14 @@ public class ProductCommentService {
     //댓글 달기
     public ProductComment makeProductComment(Member member, Long productId, String content, Float rate){
         Product product = productRepository.findById(productId).orElseThrow(NoSuchElementException::new);
-        ProductComment productComment = ProductComment.of(product, member, content, rate);
-        return productCommentRepository.save(productComment);
+        for(MemberGame memberGame : member.getMemberGames()){//해당 상품을 갖고 있는 유저인지 확인
+            if(memberGame.getProduct().getId().equals(product.getId())){
+                ProductComment productComment = ProductComment.of(product, member, content, rate);
+                return productCommentRepository.save(productComment);
+            }
+        }
+        log.info("ProductComment 생성 실패::권한이 없는 유저");
+        return null;
     }
 
     //게임id로 게임 후기 찾기
