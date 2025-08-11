@@ -54,14 +54,14 @@ class ShoppingCartServiceTest {
     void getShoppingCartProducts() {
         //given
         Member member = Member.makeSample(1);
+        int pageNo = 0;
         ReflectionTestUtils.setField(member, "id", 1L);
         ShoppingCart shoppingCart = member.getShoppingCart();
         ReflectionTestUtils.setField(shoppingCart, "id", 1L);
         Optional<Member> optional = Optional.of(member);
-        given(memberRepository.findById(member.getId())).willReturn(optional);
 
         //when
-        shoppingCartService.getShoppingCartProducts(member.getId());
+        shoppingCartService.getShoppingCartProducts(member, pageNo);
 
         //then
         verify(shoppingCartProductRepository, times(1)).findAllByShoppingCartId(eq(shoppingCart.getId()), any(PageRequest.class));

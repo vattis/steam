@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>장바구니 - Steam 스타일</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#171a21; --panel:#1b2838; --panel-2:#2a475e; --text:#c7d5e0; --muted:#99a7b5;
+            --accent:#66c0f4; --accent-2:#417a9b; --danger:#e74c3c; --danger-2:#c0392b; --ok:#3ecf8e;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--text);font-family:Roboto,system-ui,apple-system,Segoe UI,sans-serif}
+        a{color:var(--text);text-decoration:none}
+        a:hover{color:var(--accent)}
+
+        .container{max-width:1100px;margin:24px auto;padding:16px}
+        .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+        @media (max-width: 960px){.grid{grid-template-columns:1fr}}
+
+        .card{background:var(--panel);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.25);overflow:hidden}
+        .card-header{padding:16px 20px;border-bottom:1px solid var(--accent)}
+        .card-header h1,.card-header h2{margin:0;color:var(--accent);font-size:20px}
+
+        /* items */
+        .bulk{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.15)}
+        .items-empty{padding:40px;text-align:center;color:var(--muted)}
+        .item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);align-items:center}
+        .item:last-child{border-bottom:none}
+        .thumb{width:120px;height:60px;border-radius:6px;object-fit:cover;background:#0e151f}
+        .title{font-weight:700}
+        .meta{font-size:12px;color:var(--muted);margin-top:4px}
+        .tags{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+        .tag{background:var(--panel-2);color:#fff;padding:2px 8px;border-radius:999px;font-size:11px}
+
+        .qty-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+        .qty-input{width:64px;text-align:center;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:#0f1a26;color:#fff}
+
+        .price-col{text-align:right}
+        .price{font-weight:700}
+        .orig{color:var(--muted);text-decoration:line-through;margin-left:6px;font-weight:400}
+        .discount-badge{background:#2c974b;color:#fff;border-radius:6px;padding:2px 6px;font-size:12px;margin-left:6px}
+
+        .btn{display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:8px;padding:10px 12px;cursor:pointer;font-weight:700}
+        .btn-ghost{background:var(--panel-2);color:#fff}
+        .btn-ghost:hover{filter:brightness(1.05)}
+        .btn-danger{background:var(--danger);color:#fff}
+        .btn-danger:hover{background:var(--danger-2)}
+        .btn-primary{background:var(--accent);color:#0b1420}
+        .btn-primary:hover{background:var(--accent-2);color:#fff}
+        .btn-sm{padding:8px 10px;border-radius:6px;font-weight:600}
+
+        /* summary */
+        .summary-body{padding:16px 20px}
+        .line{display:flex;justify-content:space-between;margin:10px 0}
+        .line.total{border-top:1px dashed rgba(255,255,255,.15);padding-top:12px;margin-top:12px;font-weight:700}
+        .muted{color:var(--muted)}
+        .ok{color:var(--ok)}
+        .w-100{width:100%}
+        .mb-8{margin-bottom:8px}
+        .mt-12{margin-top:12px}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="grid">
+
+        <!-- 아이템 리스트 + 선택 삭제 (한 폼으로 처리) -->
+        <section class="card">
+            <div class="card-header"><h1>장바구니</h1></div>
+
+            <!-- 선택 삭제용 폼: 체크박스들을 이 폼 안에 넣어서 전송 -->
+            <form th:action="@{/shoppingCart/items/bulk}" method="post">
+                <input type="hidden" name="_method" value="delete" />
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <div class="bulk" th:if="${not #lists.isEmpty(cart.items)}">
+                    <label>
+                        <!-- 전부 선택은 JS 없이 구현이 어려워서, 서버에서 선택 삭제만 처리 -->
+                        <span class="muted">삭제할 항목을 체크하고 버튼을 누르세요</span>
+                    </label>
+                    <button type="submit" class="btn btn-danger btn-sm">선택 삭제</button>
+                </div>
+
+                <!-- 비어있을 때 -->
+                <div class="items-empty" th:if="${#lists.isEmpty(cart.items)}">장바구니가 비어 있어요.</div>
+
+                <!-- 아이템 루프 -->
+                <div th:each="ci : ${cart.items}" th:unless="${#lists.isEmpty(cart.items)}" class="item">
+                    <div>
+                        <label>
+                            <input type="checkbox" name="ids" th:value="${ci.id}" />
+                            <img class="thumb"
+                                 th:src="${#strings.isEmpty(ci.imageUrl) ? '/images/game-image.jpeg' : ci.imageUrl}"
+                                 alt="게임 이미지" />
+                        </label>
+                    </div>
+
+                    <div>
+                        <div class="title">
+                            <a th:href="@{/product/{id}(id=${ci.productId})}" th:text="${ci.name}">게임 이름</a>
+                        </div>
+                        <div class="meta">
+                            <span th:text="'플랫폼: ' + ${ci.platform}">플랫폼: PC</span>
+                            <span class="muted" th:text="' | 등록: ' + ${#temporals.format(ci.addedAt,'yyyy-MM-dd')}"> | 등록: 2025-08-10</span>
+                        </div>
+                        <div class="tags">
+                            <span class="tag" th:each="t : ${ci.tags}" th:text="${t}">액션</span>
+                        </div>
+
+                        <!-- 수량 변경 (아이템별 폼) -->
+                        <form th:action="@{/shoppingCart/quantity}" method="post" class="qty-row">
+                            <input type="hidden" name="cartItemId" th:value="${ci.id}" />
+                            <input type="number" min="1" class="qty-input" name="quantity" th:value="${ci.quantity}" />
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="btn btn-ghost btn-sm">수량 적용</button>
+                        </form>
+                    </div>
+
+                    <div class="price-col">
+                        <div>
+                            <span class="price" th:text="|₩ ${#numbers.formatInteger(ci.discountPrice, 0, 'COMMA')}|">₩ 9,900</span>
+                            <span class="orig" th:if="${ci.discountPrice < ci.price}"
+                                  th:text="|₩ ${#numbers.formatInteger(ci.price, 0, 'COMMA')}|">₩ 19,800</span>
+                            <span class="discount-badge" th:if="${ci.discountPercent != null}" th:text="|-${ci.discountPercent}%|">-50%</span>
+                        </div>
+
+                        <!-- 단건 삭제 (아이템별 폼) -->
+                        <form th:action="@{/shoppingCart/item/{id}(id=${ci.id})}" method="post" class="mt-12">
+                            <input type="hidden" name="_method" value="delete" />
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="btn btn-danger btn-sm w-100">삭제</button>
+                        </form>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <!-- 주문 요약 -->
+        <aside class="card">
+            <div class="card-header"><h2>주문 요약</h2></div>
+            <div class="summary-body">
+                <div class="line">
+                    <span>상품 금액</span>
+                    <span th:text="|₩ ${#numbers.formatInteger(cart.subtotal, 0, 'COMMA')}|">₩ 59,400</span>
+                </div>
+                <div class="line">
+                    <span>할인</span>
+                    <span class="ok" th:text="|− ₩ ${#numbers.formatInteger(cart.discountTotal, 0, 'COMMA')}|">− ₩ 20,000</span>
+                </div>
+                <div class="line">
+                    <span>부가세</span>
+                    <span th:text="|₩ ${#numbers.formatInteger(cart.tax, 0, 'COMMA')}|">₩ 3,000</span>
+                </div>
+                <div class="line total">
+                    <span>결제 예정 금액</span>
+                    <strong th:text="|₩ ${#numbers.formatInteger(cart.total, 0, 'COMMA')}|">₩ 42,400</strong>
+                </div>
+
+                <!-- 쿠폰 -->
+                <form th:action="@{/shoppingCart/coupon}" method="post" class="mb-8">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="text" name="code" placeholder="쿠폰 코드 입력"
+                           style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:#0f1a26;color:#fff" />
+                    <div style="margin-top:8px;text-align:right">
+                        <button class="btn btn-ghost btn-sm" type="submit">쿠폰 적용</button>
+                    </div>
+                </form>
+
+                <!-- 결제 버튼 -->
+                <form th:action="@{/checkout}" method="post">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="btn btn-primary w-100" type="submit">구매하기</button>
+                </form>
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -33,9 +33,8 @@ public class ShoppingCartService {
     private final OrdersRepository ordersRepository;
 
     //장바구니 목록 조회
-    public Page<ShoppingCartProduct> getShoppingCartProducts(Long memberId){
-        PageRequest pageRequest = PageRequest.of(0, PageConst.SHOPPING_CART_PRODUCT_PAGE_SIZE);
-        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
+    public Page<ShoppingCartProduct> getShoppingCartProducts(Member member, int pageNo){
+        PageRequest pageRequest = PageRequest.of(pageNo, PageConst.SHOPPING_CART_PRODUCT_PAGE_SIZE);
         return shoppingCartProductRepository.findAllByShoppingCartId(member.getShoppingCart().getId(), pageRequest);
     }
 
