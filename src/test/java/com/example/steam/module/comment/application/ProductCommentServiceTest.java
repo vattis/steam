@@ -96,10 +96,9 @@ class ProductCommentServiceTest {
     @DisplayName("지우려는 사람과 댓글 소유자가 일치하는 경우 성공")
     void deleteProductCommentTest1() {
         //given
-        given(productCommentRepository.findById(productComment.getId())).willReturn(Optional.of(productComment));
 
         //when
-        boolean result = productCommentService.deleteProductComment(productComment.getId(), member);
+        boolean result = productCommentService.deleteProductComment(productComment, member);
 
 
         //then
@@ -115,10 +114,9 @@ class ProductCommentServiceTest {
         int otherSample = 5;
         Member otherMember = Member.makeSample(otherSample);
         ReflectionTestUtils.setField(member, "id", 5L);
-        given(productCommentRepository.findById(productComment.getId())).willReturn(Optional.of(productComment));
 
         //when
-        boolean result = productCommentService.deleteProductComment(productComment.getId(), otherMember);
+        boolean result = productCommentService.deleteProductComment(productComment, otherMember);
 
         //then
         assertThat(result).isFalse();
