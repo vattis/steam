@@ -11,7 +11,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table(name="shopping_cart_product")
+@Table(name="shopping_cart_product",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"shopping_cart_id", "product_id"}))
 @Builder
 @Getter
 @AllArgsConstructor

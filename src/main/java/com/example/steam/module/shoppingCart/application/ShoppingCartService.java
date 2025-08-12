@@ -3,7 +3,6 @@ package com.example.steam.module.shoppingCart.application;
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
-import com.example.steam.module.order.domain.OrderProduct;
 import com.example.steam.module.order.domain.Orders;
 import com.example.steam.module.order.repository.OrdersRepository;
 import com.example.steam.module.product.domain.Product;
@@ -54,8 +53,13 @@ public class ShoppingCartService {
 
     //장바구니 상품 추가
     public void addShoppingCartProduct(Member member, Product product){
+        if(shoppingCartProductRepository.existsByShoppingCartIdAndProductId(member.getShoppingCart().getId(), product.getId())){
+            log.info("잘못된 ShoppingCartProduct 추가 요청::중복된 product 요청");
+            return;
+        }
         ShoppingCartProduct shoppingCartProduct = ShoppingCartProduct.of(member.getShoppingCart(), product);
         member.getShoppingCart().addShoppingCartProduct(shoppingCartProduct);
+        shoppingCartProductRepository.save(shoppingCartProduct);
     }
 
     //장바구니를 주문으로 변경

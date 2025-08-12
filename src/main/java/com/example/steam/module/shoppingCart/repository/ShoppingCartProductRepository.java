@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ShoppingCartProductRepository extends JpaRepository<ShoppingCartProduct, Long> {
     Page<ShoppingCartProduct> findAllByShoppingCartId(Long shoppingCartId, PageRequest pageRequest);
+    boolean existsByShoppingCartIdAndProductId(Long shoppingCartId, Long productId);
 }

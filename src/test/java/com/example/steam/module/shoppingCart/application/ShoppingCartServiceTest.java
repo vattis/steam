@@ -28,8 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ShoppingCartServiceTest {
@@ -83,19 +82,41 @@ class ShoppingCartServiceTest {
     }
 
     @Test
+    @DisplayName("장바구니에 상품 추가")
     void addShoppingCartProduct() {
         //given
         Member member = Member.makeSample(1);
         ReflectionTestUtils.setField(member, "id", 1L);
         Optional<Member> optionalMember = Optional.of(member);
+        ReflectionTestUtils.setField(member.getShoppingCart(), "id", 1L);
         Product product = Product.makeSample(1, Company.makeSample(1));
         ReflectionTestUtils.setField(product, "id", 1L);
+        given(shoppingCartProductRepository.existsByShoppingCartIdAndProductId(member.getShoppingCart().getId(), product.getId())).willReturn(false);
 
         //when
         shoppingCartService.addShoppingCartProduct(member, product);
 
         //then
         assertThat(optionalMember.get().getShoppingCart().getShoppingCartProducts().get(0).getProduct().getId()).isEqualTo(product.getId());
+    }
+
+    @Test
+    @DisplayName("장바구니에 상품 추가 실패::중복된 상품 추가 시도")
+    void addShoppingCartProduct2() {
+        //given
+        Member member = Member.makeSample(1);
+        ReflectionTestUtils.setField(member, "id", 1L);
+        Optional<Member> optionalMember = Optional.of(member);
+        ReflectionTestUtils.setField(member.getShoppingCart(), "id", 1L);
+        Product product = Product.makeSample(1, Company.makeSample(1));
+        ReflectionTestUtils.setField(product, "id", 1L);
+        given(shoppingCartProductRepository.existsByShoppingCartIdAndProductId(member.getShoppingCart().getId(), product.getId())).willReturn(true);
+
+        //when
+        shoppingCartService.addShoppingCartProduct(member, product);
+
+        //then
+        verify(shoppingCartProductRepository, never()).save(any(ShoppingCartProduct.class));
     }
 
     @Test
