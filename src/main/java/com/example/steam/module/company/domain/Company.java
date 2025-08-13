@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE company SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@SQLRestriction("deleted = false")
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

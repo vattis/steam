@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE member SET deleted = true WHERE id=?") //delete를 사용시, delete=true 업데이트 쿼리를 대신 날린다
-@SQLRestriction("deleted is false") //search 사용시 where 절에 delete=false 조건을 추가한다
+@SQLRestriction("deleted = false") //search 사용시 where 절에 delete=false 조건을 추가한다
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,18 +1,19 @@
 spring:
+  profiles:
+    group:
+      "local": "common, h2"
+      "dev": "common, mysql"
+      "prod": "common, mysql"
+
+---
+
+spring:
   application:
     name: steam
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/steam
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+  config:
+    activate:
+      on-profile: common
   jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
     defer-datasource-initialization: true
     generate-ddl: true
   sql:
@@ -40,3 +41,44 @@ spring:
             timeout: 5000
             writetimeout: 5000
         auth-code-expiration-millis: 1800000
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: h2
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/steam
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: jdbc:mysql://localhost:3306/steam?serverTimezone=Asia/Seoul
+    username: root
+    password: nexonhsk00
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+---

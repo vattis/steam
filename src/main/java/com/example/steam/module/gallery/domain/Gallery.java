@@ -13,7 +13,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE gallery SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@SQLRestriction("deleted = false")
 public class Gallery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

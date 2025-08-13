@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE article SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@SQLRestriction("deleted = false")
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

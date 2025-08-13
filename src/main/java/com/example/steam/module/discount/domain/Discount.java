@@ -19,7 +19,7 @@ import java.util.Random;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql="UPDATE discount SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@SQLRestriction("deleted = false")
 public class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

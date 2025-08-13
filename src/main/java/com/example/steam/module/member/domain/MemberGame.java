@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql="UPDATE member_game SET deleted = true WHERE id=?") //delete를 사용시, delete=true 업데이트 쿼리를 대신 날린다
-@SQLRestriction("deleted is false") //search 사용시 where 절에 delete=false 조건을 추가한다
+@SQLRestriction("deleted = false") //search 사용시 where 절에 delete=false 조건을 추가한다
 public class MemberGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -20,7 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Builder
 @Getter
 @SQLDelete(sql="UPDATE friendship SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@SQLRestriction("deleted = false")
 public class Friendship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

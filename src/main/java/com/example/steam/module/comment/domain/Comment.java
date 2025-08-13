@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql="UPDATE comment SET deleted = true WHERE id=?")
-@SQLRestriction("deleted is false")
+@SQLRestriction("deleted = false")
 @Inheritance(strategy = InheritanceType.JOINED) ///상속 관계 매핑 사용
 public class Comment {
     @Id
