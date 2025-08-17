@@ -26,7 +26,7 @@ public class MemberGameDto {
                 .gameImageUrl(gameImageUrl)
                 .build();
     }
-    public static MemberGameDto from(MemberGame memberGame){
-        return MemberGameDto.of(memberGame.getId(), memberGame.getProduct().getId(), memberGame.getName(), memberGame.getPlayMinutes(), memberGame.getLastPlayedTime(), memberGame.getImageUrl());
+    public static MemberGameDto from(MemberGame memberGame, String productName){
+        return MemberGameDto.of(memberGame.getId(), memberGame.getProduct().getId(), productName, memberGame.getPlayMinutes(), memberGame.getLastPlayedTime(), null);
     }
 }

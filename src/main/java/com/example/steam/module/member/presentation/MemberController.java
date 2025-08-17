@@ -2,6 +2,7 @@ package com.example.steam.module.member.presentation;
 
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.email.application.EmailService;
+import com.example.steam.module.member.application.MemberGameService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
@@ -28,6 +29,7 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final MemberRepository memberRepository;
+    private final MemberGameService memberGameService;
     private final MemberGameRepository memberGameRepository;
     private int tempAuthNum; //임시 인증 번호 저장소 이후에 redis에 저장 예정
 
@@ -61,12 +63,12 @@ public class MemberController {
             log.info("[MemberController] 일치하지 않은 유저의 라이브러리 접근 확인");
             return "redirect:/";
         }
-        model.addAttribute("games", member.getMemberGames().stream().map(MemberGameDto::from).toList());
+        model.addAttribute("games", memberGameService.getMemberGameDtosByMember(member));
         if(selectedGameId == null){
             model.addAttribute("selectedGame", null);
         }else{
-            MemberGame selectedGame = memberGameRepository.findById(selectedGameId).orElseThrow(NoSuchElementException::new);
-            model.addAttribute("selectedGame", MemberGameDto.from(selectedGame));
+            MemberGameDto selectedGame = memberGameService.findDtoById(selectedGameId);
+            model.addAttribute("selectedGame", selectedGame);
         }
         return "/library";
     }

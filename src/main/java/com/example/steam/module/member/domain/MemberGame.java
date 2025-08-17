@@ -28,9 +28,6 @@ public class MemberGame {
     @Column(nullable = false)
     private int playMinutes;
 
-    @Column(nullable = false)
-    private String name;
-
     @ManyToOne
     private Product product;
 
@@ -41,9 +38,6 @@ public class MemberGame {
     @Column(nullable = true)
     private LocalDateTime lastPlayedTime;
 
-    @Column(nullable = true)
-    @Builder.Default
-    private String imageUrl = null;
 
     @Builder.Default
     private boolean playing = false;
@@ -55,7 +49,6 @@ public class MemberGame {
 
     public static MemberGame of(Product product, Member member){
         MemberGame memberGame = MemberGame.builder()
-                .name(product.getName())
                 .product(product)
                 .member(member)
                 .playMinutes(0)
