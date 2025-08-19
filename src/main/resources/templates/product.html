@@ -61,7 +61,7 @@
 
                 <!-- 로그인 상태별 구매 버튼 -->
                 <div class="purchase-button">
-                    <form th:action="@{/shoppingCart/product/{productId}(productId=${product.id})}" method="post" th:if="${isLogin}">
+                    <form th:action="@{/shoppingCartProduct/{productId}(productId=${product.id})}" method="post" th:if="${isLogin}">
                         <input type="hidden" th:name="productId" th:value="${product.id}" />
                         <button type="submit">장바구니에 담기</button>
                     </form>

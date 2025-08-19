@@ -35,11 +35,5 @@ public class ShoppingCartController {
         return "/shopping-cart";
     }
 
-    @PostMapping("/shoppingCart/product/{productId}")
-    public String addShoppingCartProduct(@PathVariable("productId") Long productId, Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
-        Product product = productService.findById(productId);
-        shoppingCartService.addShoppingCartProduct(member, product);
-        return "redirect:/product/" + productId;
-    }
+
 }
