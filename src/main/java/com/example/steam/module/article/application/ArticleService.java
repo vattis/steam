@@ -42,19 +42,19 @@ public class ArticleService {
     }
 
     //게시판 별 검색
-    public Page<Article> findAllBySearchWord(Long galleryId, ArticleSearch articleSearch){
+    public Page<Article> findAllBySearchWord(Gallery gallery, ArticleSearch articleSearch){
         Pageable pageable = PageRequest.of(0, PageConst.ARTICLE_PAGE_SIZE);
         //Gallery gallery = galleryRepository.findById(galleryId).orElseThrow(NoSuchElementException::new);
         if(articleSearch.getTag() == ArticleSearchTag.ALL){
-            return articleRepository.findAllByGalleryIdAndMemberNameOrContentOrTitleContaining(galleryId, articleSearch.getSearchWord(), pageable);
+            return articleRepository.findAllByGalleryIdAndMemberNameOrContentOrTitleContaining(gallery.getId(), articleSearch.getSearchWord(), pageable);
         }else if(articleSearch.getTag() == ArticleSearchTag.TITLE){
-            return articleRepository.findAllByGalleryIdAndTitleContaining(galleryId, articleSearch.getSearchWord(), pageable);
+            return articleRepository.findAllByGalleryIdAndTitleContaining(gallery.getId(), articleSearch.getSearchWord(), pageable);
         }else if(articleSearch.getTag() == ArticleSearchTag.CONTENT){
-            return articleRepository.findAllByGalleryIdAndContentContaining(galleryId, articleSearch.getSearchWord(), pageable);
+            return articleRepository.findAllByGalleryIdAndContentContaining(gallery.getId(), articleSearch.getSearchWord(), pageable);
         }else if(articleSearch.getTag() == ArticleSearchTag.NICKNAME){
-            return articleRepository.findAllByGalleryIdAndMemberNicknameContaining(galleryId, articleSearch.getSearchWord(), pageable);
+            return articleRepository.findAllByGalleryIdAndMemberNicknameContaining(gallery.getId(), articleSearch.getSearchWord(), pageable);
         }else if(articleSearch.getTag() == ArticleSearchTag.COMMENT){
-            return articleRepository.findAllByGalleryIdAndCommentsContentContaining(galleryId, articleSearch.getSearchWord(), pageable);
+            return articleRepository.findAllByGalleryIdAndCommentsContentContaining(gallery.getId(), articleSearch.getSearchWord(), pageable);
         }else {
             return null;
         }
@@ -68,7 +68,7 @@ public class ArticleService {
 
     //article 저장
     public Article saveArticle(ArticleWriteForm articleWriteForm, Member member){
-        Gallery gallery = galleryRepository.findById(articleWriteForm.getGalleryId()).orElseThrow(NoSuchElementException::new);
+        Gallery gallery = galleryRepository.findByProduct_Name(articleWriteForm.getGalleryName()).orElseThrow(NoSuchElementException::new);
         Article article = Article.of(gallery, member, articleWriteForm.getTitle(), articleWriteForm.getContent());
         return articleRepository.save(article);
     }

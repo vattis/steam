@@ -150,13 +150,13 @@
 
 <div class="community-header">
     <h1>검색 결과</h1>
-    <a href="/community/write" target="_blank" class="new-post-button">새 글 작성</a>
+    <a th:href="@{'/article/' + ${galleryName} + '/write'}" target="_blank" class="new-post-button">새 글 작성</a>
 </div>
 
 <div class="content-wrapper">
 
     <!-- ✅ 검색 폼 -->
-    <form th:action="@{'/gallery/' + ${galleryId} + '/articles'}" method="get" class="search-form">
+    <form th:action="@{'/gallery/' + ${galleryName} + '/articles'}" method="get" class="search-form">
         <select name="tag">
             <option value="ALL" th:selected="${searchTag == 'ALL'}">전체</option>
             <option value="TITLE" th:selected="${searchTag == 'TITLE'}">제목</option>

@@ -11,20 +11,20 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class ArticleWriteForm {
-    private Long galleryId;
+    private String galleryName;
     private String title;
     private String content;
     private LocalDateTime createdDate;
 
-    public static ArticleWriteForm of(Long galleryId){
+    public static ArticleWriteForm of(String galleryName){
         return ArticleWriteForm.builder()
-                .galleryId(galleryId)
+                .galleryName(galleryName)
                 .build();
     }
 
-    public static ArticleWriteForm of(Long galleryId, String title, String content) {
+    public static ArticleWriteForm of(String galleryName, String title, String content) {
         return ArticleWriteForm.builder()
-                .galleryId(galleryId)
+                .galleryName(galleryName)
                 .title(title)
                 .content(content)
                 .build();

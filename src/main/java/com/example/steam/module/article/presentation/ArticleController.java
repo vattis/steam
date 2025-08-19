@@ -46,17 +46,18 @@ public class ArticleController {
     }
 
     //개시물 작성 폼으로 이동
-    @GetMapping("/article/{galleryId}/write")
-    public String gotoWrite(@PathVariable("galleryId") Long galleryId, Model model) {
-        Gallery gallery = galleryService.findById(galleryId);
-        ArticleWriteForm articleWriteForm = ArticleWriteForm.of(galleryId);
+    @GetMapping("/article/{galleryName}/write")
+    public String gotoWrite(@PathVariable("galleryName") String galleryName, Model model) {
+        System.out.println("@!#!@#!@#!@#!@$$!@@!#!@#1");
+        Gallery gallery = galleryService.findGalleryWithProductName(galleryName);
+        ArticleWriteForm articleWriteForm = ArticleWriteForm.of(galleryName);
         model.addAttribute("articleWriteForm", articleWriteForm);
         model.addAttribute("galleryName", gallery.getProduct().getName());
         return "/writeArticle";
     }
 
-    //개시물 작성
-    @PostMapping("article/{galleryId}/write")
+    //게시물 작성
+    @PostMapping("article/{galleryName}")
     public String postArticle(@ModelAttribute ArticleWriteForm articleWriteForm, Principal principal){
         if(principal == null){ //비로그인 시 로그인 화면으로
             return "redirect:/login";
@@ -79,23 +80,24 @@ public class ArticleController {
     }
 
     //게시물 검색
-    @GetMapping("/gallery/{galleryId}/articles")
-    public String searchArticles(@PathVariable("galleryId")Long galleryId,
+    @GetMapping("/gallery/{galleryName}/articles")
+    public String searchArticles(@PathVariable("galleryName")String galleryName,
                                  @RequestParam("tag") String tag,
                                  @RequestParam("searchWord") String searchWord,
                                  @RequestParam(required = false, defaultValue = "0") int pageNo,
                                  Model model){
         ArticleSearchTag articleSearchTag = getArticleSearchTag(tag);
         ArticleSearch articleSearch = ArticleSearch.of(articleSearchTag, searchWord);
-        Page<ArticleDto> articleDtos = articleService.findAllBySearchWord(galleryId, articleSearch).map(ArticleDto::from);
+        Gallery gallery = galleryService.findGalleryWithProductName(galleryName);
+        Page<ArticleDto> articleDtos = articleService.findAllBySearchWord(gallery, articleSearch).map(ArticleDto::from);
         model.addAttribute("articleDtos", articleDtos);
-        model.addAttribute("galleryId", galleryId);
+        model.addAttribute("galleryName", galleryName);
         model.addAttribute("searchWord", searchWord);
         return "search-article";
     }
 
     //게시물 삭제
-    @GetMapping("/article/delete/{articleId}")
+    @DeleteMapping("/article/{articleId}")
     public String deleteArticle(@PathVariable("articleId") Long articleId,
                                 Principal principal){
         Member member = memberService.findMemberByEmail(principal.getName());
@@ -113,8 +115,5 @@ public class ArticleController {
             default -> null;
         };
     }
-
-
-
 
 }

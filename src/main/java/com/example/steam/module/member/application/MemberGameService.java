@@ -31,7 +31,7 @@ public class MemberGameService {
         return memberGameRepository.findAllDtoByMember(member);
     }
 
-    public List<MemberGameDto> findTop5DtoNyMember(Member member){
+    public List<MemberGameDto> findTop5DtoByMember(Member member){
         return memberGameRepository.findTop5DtoByMember(member, PageRequest.of(0, 5));
     }
 }

@@ -102,6 +102,8 @@ class ArticleServiceTest {
         Gallery gallery = Gallery.makeSample(Product.makeSample(1, Company.makeSample(1)));
         Member member = Member.makeSample(1);
         Long galleryId = 1L;
+        ReflectionTestUtils.setField(gallery, "id", galleryId);
+
         List<Article> articles1 = new ArrayList<>();
         articles1.add(Article.of(gallery, member, "titleTest", "titleTest"));
         Page<Article> titleArticlePage = new PageImpl<>(articles1);
@@ -129,11 +131,11 @@ class ArticleServiceTest {
         given(articleRepository.findAllByGalleryIdAndCommentsContentContaining(any(Long.class), any(String.class), any(PageRequest.class))).willReturn(commentContentArticlePage);
 
         //when
-        Page<Article> titleArticlePageResult = articleService.findAllBySearchWord(galleryId, titleArticleSearch);
-        Page<Article> contentArticlePageResult = articleService.findAllBySearchWord(galleryId, contentArticleSearch);
-        Page<Article> nicknameArticlePageResult = articleService.findAllBySearchWord(galleryId, nicknameArticleSearch);
-        Page<Article> commentContentArticlePageResult = articleService.findAllBySearchWord(galleryId, commentArticleSearch);
-        Page<Article> allArticlePageResult = articleService.findAllBySearchWord(galleryId, allArticleSearch);
+        Page<Article> titleArticlePageResult = articleService.findAllBySearchWord(gallery, titleArticleSearch);
+        Page<Article> contentArticlePageResult = articleService.findAllBySearchWord(gallery, contentArticleSearch);
+        Page<Article> nicknameArticlePageResult = articleService.findAllBySearchWord(gallery, nicknameArticleSearch);
+        Page<Article> commentContentArticlePageResult = articleService.findAllBySearchWord(gallery, commentArticleSearch);
+        Page<Article> allArticlePageResult = articleService.findAllBySearchWord(gallery, allArticleSearch);
 
         //then
         assertThat(titleArticlePageResult.toList().get(0).getTitle()).isEqualTo(articles1.get(0).getTitle());
@@ -150,12 +152,12 @@ class ArticleServiceTest {
         Long galleryId = 1L;
         String title = "title";
         String content = "content";
-        ArticleWriteForm articleWriteForm = ArticleWriteForm.of(galleryId, title, content);
         Product product = Product.makeSample(sampleNum, Company.makeSample(sampleNum));
         Gallery gallery = Gallery.makeSample(product);
+        ArticleWriteForm articleWriteForm = ArticleWriteForm.of(gallery.getProduct().getName(), title, content);
         Member member = Member.makeSample(sampleNum);
         Article article = Article.of(gallery, member, title, content);
-        given(galleryRepository.findById(galleryId)).willReturn(Optional.of(gallery));
+        given(galleryRepository.findByProduct_Name(gallery.getProduct().getName())).willReturn(Optional.of(gallery));
         given(articleRepository.save(any(Article.class))).willReturn(article);
 
         //when
@@ -165,7 +167,7 @@ class ArticleServiceTest {
         assertThat(articleResult.getContent()).isEqualTo(article.getContent());
         assertThat(articleResult.getTitle()).isEqualTo(article.getTitle());
 
-        verify(galleryRepository).findById(galleryId);
+        verify(galleryRepository).findByProduct_Name(gallery.getProduct().getName());
         verify(articleRepository).save(any(Article.class));
     }
 }

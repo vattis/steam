@@ -1,6 +1,7 @@
 package com.example.steam.module.member.dto;
 
 import com.example.steam.module.member.domain.MemberGame;
+import com.example.steam.module.product.domain.Product;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,7 +27,8 @@ public class MemberGameDto {
                 .gameImageUrl(gameImageUrl)
                 .build();
     }
-    public static MemberGameDto from(MemberGame memberGame, String productName){
-        return MemberGameDto.of(memberGame.getId(), memberGame.getProduct().getId(), productName, memberGame.getPlayMinutes(), memberGame.getLastPlayedTime(), null);
+    public static MemberGameDto from(MemberGame memberGame){
+        Product product = memberGame.getProduct();
+        return MemberGameDto.of(memberGame.getId(), memberGame.getProduct().getId(), product.getName(), memberGame.getPlayMinutes(), memberGame.getLastPlayedTime(), product.getImageUrl());
     }
 }

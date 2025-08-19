@@ -8,6 +8,7 @@ import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.friendship.repository.FriendshipRepository;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
+import com.example.steam.module.member.dto.MemberGameDto;
 import com.example.steam.module.member.dto.ProfileDto;
 import com.example.steam.module.member.dto.SignUpForm;
 import com.example.steam.module.member.repository.MemberGameRepository;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ class MemberServiceTest {
     @Mock MemberGameRepository memberGameRepository;
     @Mock ProfileCommentRepository profileCommentRepository;
     @Mock FriendshipRepository friendshipRepository;
+    @Mock MemberGameService memberGameService;
     @InjectMocks MemberService memberService;
 
     @Test
@@ -112,18 +115,19 @@ class MemberServiceTest {
         PageRequest pageRequest = PageRequest.of(1, PageConst.PROFILE_COMMENT_PAGE_SIZE);
         Member profileMember = Member.makeSample(2);
         Member member1 = Member.makeSample(4);
-        List<MemberGame> memberGames = new ArrayList<>();
+        List<MemberGameDto> memberGames = new ArrayList<>();
         List<ProfileCommentDto> profileCommentDtos = new ArrayList<>();
 
         for(int i = 1; i <= 5; i++){
-            memberGames.add(MemberGame.of(Product.makeSample(i, Company.makeSample(i)), profileMember));
+            MemberGame memberGame = MemberGame.of(Product.makeSample(i, Company.makeSample(i)), profileMember);
+            memberGames.add(MemberGameDto.from(memberGame));
         }
         for(int i = 1; i <= 10; i++){
             profileCommentDtos.add(ProfileCommentDto.from(ProfileComment.makeSample(i, member1, profileMember)));
         }
         PageImpl<ProfileCommentDto> profileCommentDtoPage = new PageImpl<>(profileCommentDtos);
         given(memberRepository.findById(profileMemberId)).willReturn(Optional.of(profileMember));
-        given(memberGameRepository.findTop5ByMemberOrderByLastPlayedTimeDesc(profileMember)).willReturn(memberGames);
+        given(memberGameService.findTop5DtoByMember(profileMember)).willReturn(memberGames);
         given(profileCommentRepository.findDtoByProfileMember(profileMember, pageRequest)).willReturn(profileCommentDtoPage);
 
         //when

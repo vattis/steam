@@ -178,13 +178,13 @@
 
 <div class="community-header">
     <h1 th:text="${galleryName} + ' 커뮤니티'">Steam 커뮤니티</h1>
-    <a th:href="@{'/article/' + ${galleryId} + '/write'}" target="_blank" class="new-post-button">
+    <a th:href="@{'/article/' + ${galleryName} + '/write'}" target="_blank" class="new-post-button">
         새 글 작성
     </a>
 </div>
 
 <div class="content-wrapper">
-    <form th:action="@{'/gallery/' + ${galleryId} + '/articles'}" method="get" class="search-form">
+    <form th:action="@{'/gallery/' + ${galleryName} + '/articles'}" method="get" class="search-form">
         <select name="tag">
             <option value="ALL">전체</option>
             <option value="TITLE">제목</option>

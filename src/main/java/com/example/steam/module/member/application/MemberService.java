@@ -68,7 +68,7 @@ public class MemberService {
     //프로필 정보 검색 및 dto 생성
     public ProfileDto getProfile(Long profileMemberId, PageRequest pageRequest){
         Member profileMember = memberRepository.findById(profileMemberId).orElseThrow(NoSuchElementException::new);
-        List<MemberGameDto> memberGames = memberGameService.findTop5DtoNyMember(profileMember);
+        List<MemberGameDto> memberGames = memberGameService.findTop5DtoByMember(profileMember);
         Page<ProfileCommentDto> profileCommentPage = profileCommentRepository.findDtoByProfileMember(profileMember, pageRequest);
         List<SimpleFriendshipDto> friendships = friendshipRepository.findAllByFromMemberId(profileMemberId).stream().map(SimpleFriendshipDto::from).toList();
         return ProfileDto.of(profileMember, memberGames, profileCommentPage, friendships);
