@@ -34,4 +34,10 @@ public class MemberGameService {
     public List<MemberGameDto> findTop5DtoByMember(Member member){
         return memberGameRepository.findTop5DtoByMember(member, PageRequest.of(0, 5));
     }
+
+    public boolean isOwned(Member member,Long memberGameId){
+        MemberGame memberGame = memberGameRepository.findById(memberGameId).orElseThrow(NoSuchElementException::new);
+        Member memberGameMember = memberGame.getMember();
+        return memberGameMember.getId().equals(member.getId());
+    }
 }
