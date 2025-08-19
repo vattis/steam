@@ -49,6 +49,10 @@ dependencies {
 
 	//mysql
 	implementation 'mysql:mysql-connector-java:8.0.32'
+
+	//cache
+	implementation group: 'net.sf.ehcache', name: 'ehcache', version: '2.10.6'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '2.6.3'
 }
 
 tasks.named('test') {
