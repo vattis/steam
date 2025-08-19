@@ -17,7 +17,7 @@ public class ProfileCommentController {
     private final ProfileCommentService profileCommentService;
     private final MemberService memberService;
 
-    @PostMapping("/profile/comment")
+    @PostMapping("/profileComment")
     public String makeProfileComment(
             @RequestParam("memberId") Long memberId,
             @RequestParam("profileId") Long profileId,

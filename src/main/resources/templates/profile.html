@@ -290,7 +290,7 @@
             </ul>
         </div>
 
-        <form class="comment-form" th:action="@{/profile/comment}" method="post">
+        <form class="comment-form" th:action="@{/profileComment}" method="post">
             <input type="hidden" name="memberId" th:value="${currentUser.id}" />
             <input type="hidden" name="profileId" th:value="${profile.profileMember.id}" />
             <textarea name="content" placeholder="댓글을 입력하세요" rows="3"></textarea>
