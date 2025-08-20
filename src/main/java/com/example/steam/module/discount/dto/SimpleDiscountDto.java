@@ -29,6 +29,7 @@ public class SimpleDiscountDto {
     }
 
     public static SimpleDiscountDto from(Discount discount){
+        if(discount == null) return null;
         return SimpleDiscountDto.of(discount.getId(), discount.getProduct().getId(), discount.getStartTime(), discount.getEndTime(), discount.getDiscountRate(), discount.isActive());
     }
 }

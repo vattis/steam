@@ -42,7 +42,7 @@ public class Product {
     @Builder.Default
     private List<ProductComment> productComments = new ArrayList<>();
 
-    @OneToOne(mappedBy="product")
+    @OneToOne(mappedBy="product", fetch = FetchType.LAZY)
     private Discount discount;
 
     @Column
