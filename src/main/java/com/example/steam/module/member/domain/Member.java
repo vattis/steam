@@ -48,7 +48,7 @@ public class Member {
     @Builder.Default
     private List<Orders> orders = new ArrayList<>();
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ShoppingCart shoppingCart;
 
     @OneToMany(mappedBy="fromMember", cascade = CascadeType.ALL)
