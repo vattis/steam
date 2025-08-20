@@ -36,13 +36,11 @@ public class Discount {
     private LocalDateTime endTime;
 
     @Column
-    private int discountRate;
+    private Integer discountRate;
 
-    @Column
-    private int discountPrice;
-
-    @Column
-    private boolean active;
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean active = false;
 
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
@@ -54,7 +52,7 @@ public class Discount {
                 .startTime(startTime)
                 .endTime(endTime)
                 .discountRate(discountRate)
-                .discountPrice(discountPrice).build();
+                .build();
         product.assignDiscount(discount);
         return discount;
     }

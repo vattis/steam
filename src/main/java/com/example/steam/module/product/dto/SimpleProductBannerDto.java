@@ -54,7 +54,7 @@ public class SimpleProductBannerDto {
         if(discount == null){
             return SimpleProductBannerDto.of(product.getId(), product.getName(), product.getPrice(), product.getImageUrl(), null, null, null, null, null);
         }
-        return SimpleProductBannerDto.of(product.getId(), product.getName(), product.getPrice(), product.getImageUrl(), discount.getId(), discount.getStartTime(), discount.getEndTime(), discount.getDiscountRate(), discount.isActive());
+        return SimpleProductBannerDto.of(product.getId(), product.getName(), product.getPrice(), product.getImageUrl(), discount.getId(), discount.getStartTime(), discount.getEndTime(), discount.getDiscountRate(), discount.getActive());
     }
     public int getDiscountPrice() {
         return price*((100-this.discountRate))/100;

@@ -103,9 +103,6 @@ public class Product {
         if(discount == null || !discount.isValid()){
             return this.price;
         }
-        if(discount.getDiscountRate() != 0){
-            return price*(100-discount.getDiscountRate());
-        }
-        return price-discount.getDiscountPrice();
+        return price*(100-discount.getDiscountRate());
     }
 }
