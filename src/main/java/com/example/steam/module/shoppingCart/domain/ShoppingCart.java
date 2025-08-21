@@ -3,7 +3,6 @@ package com.example.steam.module.shoppingCart.domain;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.order.domain.OrderProduct;
 import com.example.steam.module.order.domain.Orders;
-import com.example.steam.module.product.domain.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +28,8 @@ public class ShoppingCart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne
-    @JoinColumn(nullable = false)
+    @OneToOne(mappedBy = "shoppingCart")
+    //@JoinColumn(nullable = false)
     private Member member;
 
     @Column(nullable = false)

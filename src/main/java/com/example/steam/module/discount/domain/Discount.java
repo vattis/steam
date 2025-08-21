@@ -39,6 +39,7 @@ public class Discount {
     private Integer discountRate;
 
     @Column(nullable = false)
+    @ColumnDefault("false")
     @Builder.Default
     private Boolean active = false;
 

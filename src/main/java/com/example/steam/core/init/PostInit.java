@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 public class PostInit {
     private final MemberRepository memberRepository;
