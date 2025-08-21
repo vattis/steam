@@ -38,7 +38,7 @@ public class MemberGame {
     @Column(nullable = true)
     private LocalDateTime lastPlayedTime;
 
-
+    @ColumnDefault("false")
     @Builder.Default
     private boolean playing = false;
 
