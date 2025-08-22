@@ -8,6 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findAllByOrderByCreated(Pageable pageable);
+
+    @Query("""
+        select distinct a
+        from Article a
+        join fetch a.member m
+        join a.gallery g
+        where g.id = :galleryId
+        and a.deleted = false
+        and m.deleted = false
+        and g.deleted = false
+""")
     Page<Article> findAllByGalleryId(Long galleryId, Pageable pageable);
     Page<Article> findAllByGalleryIdAndTitleContaining(Long galleryId, String searchWord, Pageable pageable);
     Page<Article> findAllByGalleryIdAndContentContaining(Long galleryId, String searchWord, Pageable pageable);
