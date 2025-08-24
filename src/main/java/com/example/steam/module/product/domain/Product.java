@@ -21,6 +21,9 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedEntityGraph(
+        name = "Product.withDiscount",
+        attributeNodes = @NamedAttributeNode("discount"))
 @SQLDelete(sql="UPDATE product SET deleted = true WHERE id=?")
 @SQLRestriction("deleted = false")
 public class Product {
@@ -42,7 +45,7 @@ public class Product {
     @Builder.Default
     private List<ProductComment> productComments = new ArrayList<>();
 
-    @OneToOne(mappedBy="product", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy="product", fetch = FetchType.LAZY, optional = false)
     private Discount discount;
 
     @Column
