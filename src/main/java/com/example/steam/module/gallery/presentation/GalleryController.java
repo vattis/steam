@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,13 +33,12 @@ public class GalleryController {
 
     //갤러리 목록으로 이동
     @GetMapping("/galleries")
-    public String togoGalleryList(@RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo, Model model, Principal principal){
+    public String togoGalleryList(@RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo, Model model,
+                                  @AuthenticationPrincipal(expression = "id")Long memberId){
         Page<SimpleGalleryDto> galleries = new PageImpl<>(new ArrayList<>());
-        if(principal != null){
-            Member member = memberService.findMemberByEmail(principal.getName());
-            List<SimpleGalleryDto> ownedGalleries = member.getMemberGames().stream().map(SimpleGalleryDto::makeDtoWithMemberGame).toList();
+        if(memberId != null){
+            List<SimpleGalleryDto> ownedGalleries = galleryService.findOwnedGalleriesByMemberId(memberId).stream().map(SimpleGalleryDto::from).toList();
             galleries = galleryService.findAllGallery(pageNo).map(SimpleGalleryDto::from);
-
             model.addAttribute("ownedGalleries", ownedGalleries);
         }
         model.addAttribute("galleries", galleries);

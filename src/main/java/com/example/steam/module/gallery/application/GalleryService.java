@@ -47,4 +47,9 @@ public class GalleryService {
     public Gallery findById(Long galleryId){
         return galleryRepository.findById(galleryId).orElseThrow(NoSuchElementException::new);
     }
+
+    //member id로 해당하는 갤러리 찾기
+    public List<Gallery> findOwnedGalleriesByMemberId(Long memberId){
+        return galleryRepository.findAllByMemberOwnedProduct(memberId);
+    }
 }
