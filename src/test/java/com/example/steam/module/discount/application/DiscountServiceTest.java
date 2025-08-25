@@ -1,6 +1,5 @@
 package com.example.steam.module.discount.application;
 
-import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.discount.domain.Discount;
 import com.example.steam.module.discount.repository.DiscountRepository;
 import com.example.steam.module.product.domain.Product;
@@ -12,10 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +34,7 @@ class DiscountServiceTest {
         int discountRate = 20;
         int discountPrice = 1000;
 
-        Discount dummyDiscount = new Discount(1L, product, now, now.plusDays(3), discountRate, discountPrice, true, false);
+        Discount dummyDiscount = new Discount(1L, product, now, now.plusDays(3), discountRate, true, false);
 
         // product.assignDiscount(discount)를 내부에서 호출하므로 반드시 mock이 필요
         doNothing().when(product).assignDiscount(any(Discount.class));
@@ -50,7 +48,6 @@ class DiscountServiceTest {
         // then
         assertNotNull(result);
         assertEquals(discountRate, result.getDiscountRate());
-        assertEquals(discountPrice, result.getDiscountPrice());
         assertEquals(now, result.getStartTime());
         verify(discountRepository).save(any(Discount.class));
         verify(product).assignDiscount(any(Discount.class));
