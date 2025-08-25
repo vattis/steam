@@ -2,6 +2,7 @@ package com.example.steam.module.member.application;
 
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberUserDetails;
+import com.example.steam.module.member.dto.CurrentMemberDto;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .id(member.getId())
                 .username(member.getEmail())
                 .password(passwordEncoder.encode(member.getPassword()))
+                .currentMemberDto(CurrentMemberDto.from(member))
                 .roles(role)
                 .build();
     }

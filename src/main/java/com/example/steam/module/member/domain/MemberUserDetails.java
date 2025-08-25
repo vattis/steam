@@ -1,5 +1,6 @@
 package com.example.steam.module.member.domain;
 
+import com.example.steam.module.member.dto.CurrentMemberDto;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +17,9 @@ public class MemberUserDetails implements UserDetails {
     private Long id;
     private String username;
     private String password;
+
+    //로그인에 자주 쓰이는 정보들
+    private final CurrentMemberDto currentMemberDto;
 
     @Builder.Default
     private List<String> roles = new ArrayList<>();

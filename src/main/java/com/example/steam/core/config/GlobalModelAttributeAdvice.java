@@ -1,10 +1,12 @@
 package com.example.steam.core.config;
 
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.domain.MemberUserDetails;
 import com.example.steam.module.member.dto.CurrentMemberDto;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,11 +26,9 @@ public class GlobalModelAttributeAdvice {
     }
 
     @ModelAttribute("currentUser")
-    public CurrentMemberDto currentMemberDto(Principal principal){
-        if(principal != null){ //로그인이 된 상태일 때
-            Member member = memberRepository.findByEmail(principal.getName()).orElseThrow(NoSuchElementException::new);
-            return CurrentMemberDto.from(member);
-
+    public CurrentMemberDto currentMemberDto(@AuthenticationPrincipal MemberUserDetails memberUserDetails){
+        if(memberUserDetails != null){ //로그인이 된 상태일 때
+            return memberUserDetails.getCurrentMemberDto();
         }
         return null; //로그인 되지 않은 상태
     }

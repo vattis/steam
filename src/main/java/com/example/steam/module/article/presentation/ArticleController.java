@@ -48,7 +48,6 @@ public class ArticleController {
     //개시물 작성 폼으로 이동
     @GetMapping("/article/{galleryName}/write")
     public String gotoWrite(@PathVariable("galleryName") String galleryName, Model model) {
-        System.out.println("@!#!@#!@#!@#!@$$!@@!#!@#1");
         Gallery gallery = galleryService.findGalleryWithProductName(galleryName);
         ArticleWriteForm articleWriteForm = ArticleWriteForm.of(galleryName);
         model.addAttribute("articleWriteForm", articleWriteForm);
