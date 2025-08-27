@@ -3,6 +3,7 @@ package com.example.steam.module.article.repository;
 import com.example.steam.module.article.domain.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,8 +21,13 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
         and g.deleted = false
 """)
     Page<Article> findAllByGalleryId(Long galleryId, Pageable pageable);
+    @EntityGraph(attributePaths = {"member"})
+
     Page<Article> findAllByGalleryIdAndTitleContaining(Long galleryId, String searchWord, Pageable pageable);
+    @EntityGraph(attributePaths = {"member"})
+
     Page<Article> findAllByGalleryIdAndContentContaining(Long galleryId, String searchWord, Pageable pageable);
+    @EntityGraph(attributePaths = {"member"})
     Page<Article> findAllByGalleryIdAndMemberNicknameContaining(Long galleryId, String searchWord, Pageable pageable);
     @Query("""
         select distinct a

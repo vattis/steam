@@ -31,8 +31,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     """)
     Page<SimpleProductBannerDto> findAllByOrderByDownloadNum(Pageable pageable);
 
+    @EntityGraph(attributePaths = {"discount"})
     Page<Product> findAllByNameContaining(String searchWord, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"discount"})
     Page<Product> findAllByCompanyNameContaining(String searchWord, Pageable pageable);
 
     @Query(value = "select distinct p from Product p join p.company c where p.name like concat('%', :searchWord, '%') or c.name like concat('%', :searchWord, '%')")
