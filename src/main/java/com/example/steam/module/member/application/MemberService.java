@@ -11,6 +11,8 @@ import com.example.steam.module.member.dto.MemberGameDto;
 import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class MemberService {
     }
 
     //회원 정보 수정
+    @CachePut(value = "memberSpringCache", key = "#signUpForm.email")
     public Member updateMember(SignUpForm signUpForm){
         if(!signUpForm.isValid()){
             throw new RuntimeException();
@@ -52,7 +55,9 @@ public class MemberService {
     }
 
     //이메일을 통한 회원 검색
-    public Member findMemberByEmail(String email){ return memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new); }
+    @Cacheable(value="memberSpringCache", key = "'member:' + #email", unless = "#result == null")
+    public Member findMemberByEmail(String email){
+        return memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new); }
 
     //회원가입 유효성 검증
     public boolean isValid(SignUpForm signUpForm){
