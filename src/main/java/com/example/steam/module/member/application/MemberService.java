@@ -40,7 +40,7 @@ public class MemberService {
     }
 
     //회원 정보 수정
-    @CachePut(value = "memberSpringCache", key = "#signUpForm.email")
+    @CachePut(value = "SpringCache", key = "#signUpForm.email")
     public Member updateMember(SignUpForm signUpForm){
         if(!signUpForm.isValid()){
             throw new RuntimeException();
@@ -55,7 +55,7 @@ public class MemberService {
     }
 
     //이메일을 통한 회원 검색
-    @Cacheable(value="memberSpringCache", key = "'member:' + #email", unless = "#result == null")
+    @Cacheable(value="SpringCache", key = "'member:' + #email", unless = "#result == null")
     public Member findMemberByEmail(String email){
         return memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new); }
 

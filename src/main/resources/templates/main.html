@@ -107,32 +107,20 @@
 </div>
 
 <section class="game-list">
-    <div class="game-card">
-        <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg" alt="Game 1">
+    <div class="game-card" th:each="product : ${products}">
+        <img th:src="${product.imageUrl != null and product.imageUrl != ''
+                 ? product.imageUrl
+                 : '/images/game-image.jpeg'}"
+             th:alt="${product.name}"
+             alt="게임 이미지">
         <div class="info">
-            <h3>Counter-Strike 2</h3>
-            <div class="price">Free</div>
-        </div>
-    </div>
-    <div class="game-card">
-        <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/570/header.jpg" alt="Game 2">
-        <div class="info">
-            <h3>Dota 2</h3>
-            <div class="price">Free</div>
-        </div>
-    </div>
-    <div class="game-card">
-        <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/header.jpg" alt="Game 3">
-        <div class="info">
-            <h3>Apex Legends</h3>
-            <div class="price">Free</div>
-        </div>
-    </div>
-    <div class="game-card">
-        <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/578080/header.jpg" alt="Game 4">
-        <div class="info">
-            <h3>PUBG: Battlegrounds</h3>
-            <div class="price">Free</div>
+            <h3 th:text="${product.name}">Game Name</h3>
+            <div class="price"
+                 th:text="${product.discountId != null
+                       ? product.discountPrice + '원 (할인)'
+                       : product.price + '원'}">
+                Free
+            </div>
         </div>
     </div>
 </section>

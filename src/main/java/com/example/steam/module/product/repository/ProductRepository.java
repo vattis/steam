@@ -2,6 +2,7 @@ package com.example.steam.module.product.repository;
 
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.dto.SimpleProductBannerDto;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

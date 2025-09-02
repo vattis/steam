@@ -10,6 +10,7 @@ import com.example.steam.module.product.dto.SimpleProductBannerDto;
 import com.example.steam.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -72,6 +73,14 @@ public class ProductService {
 
     //다운로드가 많이된 게임 찾기
     public Page<SimpleProductBannerDto> findPopularProductBanner(Pageable pageable){
+        return productRepository.findAllByOrderByDownloadNum(pageable);
+    }
+
+    //인기 게임 5개 찾기
+    @Cacheable(value="SpringCache", key = "'ProductBanner:top5'",
+                unless = "#result == null || #result.isEmpty()")
+    public Page<SimpleProductBannerDto> findTop5PopularProductBanner(){
+        Pageable pageable = PageRequest.of(0, PageConst.PRODUCTS_BANNER_SIZE);
         return productRepository.findAllByOrderByDownloadNum(pageable);
     }
 
