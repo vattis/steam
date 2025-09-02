@@ -1,10 +1,12 @@
 package com.example.steam.module.shoppingCart.application;
 
 import com.example.steam.core.utils.page.PageConst;
+import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
 import com.example.steam.module.order.domain.Orders;
 import com.example.steam.module.order.repository.OrdersRepository;
+import com.example.steam.module.product.application.ProductService;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.repository.ProductRepository;
 import com.example.steam.module.shoppingCart.domain.ShoppingCart;
@@ -30,6 +32,8 @@ public class ShoppingCartService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final OrdersRepository ordersRepository;
+    private final MemberService memberService;
+    private final ProductService productService;
 
     //장바구니 목록 조회
     public Page<ShoppingCartProduct> getShoppingCartProducts(Member member, int pageNo){
@@ -44,7 +48,7 @@ public class ShoppingCartService {
 
     //장바구니 상품 삭제
     public void removeShoppingCartProduct(ShoppingCartProduct shoppingCartProduct, Member member){
-        if(shoppingCartProduct.getShoppingCart().getMember().getId() != member.getId()){
+        if(!shoppingCartProduct.getShoppingCart().getMember().getId().equals(member.getId())){
             log.info("잘못된 ShoppingCartProduct 삭제 요청::사용자 불일치");
             return;
         }
@@ -52,11 +56,13 @@ public class ShoppingCartService {
     }
 
     //장바구니 상품 추가
-    public void addShoppingCartProduct(Member member, Product product){
-        if(shoppingCartProductRepository.existsByShoppingCartIdAndProductId(member.getShoppingCart().getId(), product.getId())){
+    public void addShoppingCartProduct(Long memberId, Long productId){
+        if(shoppingCartProductRepository.existsByShoppingCartIdAndProductId(memberId, productId)){
             log.info("잘못된 ShoppingCartProduct 추가 요청::중복된 product 요청");
             return;
         }
+        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
+        Product product = productRepository.findById(productId).orElseThrow(NoSuchElementException::new);
         ShoppingCartProduct shoppingCartProduct = ShoppingCartProduct.of(member.getShoppingCart(), product);
         member.getShoppingCart().addShoppingCartProduct(shoppingCartProduct);
         shoppingCartProductRepository.save(shoppingCartProduct);

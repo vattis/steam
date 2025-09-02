@@ -27,7 +27,7 @@ public class ShoppingCartProductController {
     public String addShoppingCartProduct(@PathVariable("productId") Long productId, Principal principal){
         Member member = memberService.findMemberByEmail(principal.getName());
         Product product = productService.findById(productId);
-        shoppingCartService.addShoppingCartProduct(member, product);
+        shoppingCartService.addShoppingCartProduct(member.getId(), product.getId());
         return "redirect:/product/" + productId;
     }
 

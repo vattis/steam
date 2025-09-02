@@ -53,7 +53,7 @@ public class ProductController {
             html = "/shop";
         }
         Page<SimpleProductBannerDto> discountProducts = productService.findDiscountProductBanner(pageable);
-        Page<SimpleProductBannerDto> popularProducts = productService.findPopularProductBanner(pageable);
+        Page<SimpleProductBannerDto> popularProducts = productService.findTop5PopularProductBanner();
         model.addAttribute("discountProducts", discountProducts);
         model.addAttribute("popularProducts", popularProducts);
         return html;
