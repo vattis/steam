@@ -55,7 +55,6 @@ public class MemberService {
     }
 
     //이메일을 통한 회원 검색
-    @Cacheable(value="memberSpringCache", key = "'member:' + #email", unless = "#result == null")
     public Member findMemberByEmail(String email){
         return memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new); }
 
