@@ -2,7 +2,10 @@ package com.example.steam.module.chat.domain;
 
 import com.example.steam.module.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.SQLDelete;
@@ -48,5 +51,9 @@ public class ChatRoom {
                 .member2(member2)
                 .created(LocalDateTime.now())
                 .build();
+    }
+
+    public boolean checkMember(Long memberId){
+        return member1.getId().equals(memberId) || member2.getId().equals(memberId);
     }
 }

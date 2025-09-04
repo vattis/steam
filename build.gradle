@@ -53,6 +53,14 @@ dependencies {
 	//cache
 	implementation group: 'net.sf.ehcache', name: 'ehcache', version: '2.10.6'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '2.6.3'
+
+	//actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.0.1'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	//websocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 tasks.named('test') {
