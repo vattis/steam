@@ -4,60 +4,172 @@
 <head>
   <meta charset="UTF-8">
   <title>Steam 네비게이션 바</title>
+  <style>
+    /* 레이아웃은 그대로 유지 */
+    .user-menu { display: inline-flex; align-items: center; gap: 20px; }
+    .user-nick { margin-left: 40px; color: #3ecf8e; font-weight: bold; text-decoration: none; }
+
+    /* 닉네임만 기준점 (드롭다운은 절대위치로 띄워서 다른 요소 위치 불변) */
+    #nickWrap { position: relative; display: inline-block; }
+
+    /* 기본: 완전 숨김 (전역 CSS 충돌 방지 위해 !important) */
+    #friendMenu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 140px;
+      background: #1b2838;
+      border: 1px solid #2a475e;
+      border-radius: 8px;
+      padding: 8px;
+      display: none !important;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      z-index: 1000;
+    }
+
+    /* 닉네임 hover/포커스일 때만 보임 */
+    #nickWrap:hover  #friendMenu,
+    #nickWrap:focus-within #friendMenu {
+      display: block !important;
+    }
+
+    /* 버튼(링크) */
+    .btn-link {
+      display: block;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #2a475e;
+      background: #2a475e;
+      color: #c6d4df;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-link:hover { background: #325a77; }
+
+    /* 접근성 포커스 */
+    .user-nick:focus,
+    .btn-link:focus {
+      outline: 2px solid #66c0f4;
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 <body>
 
-<!-- ✅ Fragment 정의 -->
 <!-- fragments/navbar.html -->
-<div class="navbar">
-  <div>
-    <a th:href="@{/shop/product}">상점</a>
-    <a th:href="@{/categories}">카테고리</a>
-    <a th:href="@{/top-sellers}">인기 게임</a>
-    <a th:href="@{/new-releases}">신규 출시</a>
-  </div>
-  <div>
-    <a th:href="@{/login}">로그인</a>
-    <a th:href="@{/signup}">회원가입</a>
+<div th:fragment="navbar(currentUser)">
+  <!-- ▼ 이 스타일은 fragment와 함께 삽입되어 hover가 확실히 적용됩니다 -->
+  <style>
+    /* fragment 전용 스코프 */
+    #nav-scope { display:flex; align-items:center; background:#171a21; padding:20px; }
+    #nav-scope .menu-right { display:flex; align-items:center; margin-left:auto; }
+    #nav-scope a { color:#c6d4df; text-decoration:none; }
+    #nav-scope a:hover { color:#ffffff; }
+
+    /* 닉네임/로그아웃 묶음 */
+    #nav-scope .user-menu { display:inline-flex; align-items:center; gap:20px; }
+
+    /* 닉네임 */
+    #nav-scope .user-nick { margin-left:40px; color:#3ecf8e; font-weight:bold; text-decoration:none; }
+
+    /* 닉네임만 기준점(레이아웃 불변) */
+    #nav-scope #nickWrap { position:relative; display:inline-block; }
+
+    /* 기본: 완전 숨김 (전역 CSS 충돌 방지 위해 !important) */
+    #nav-scope #friendMenu {
+      position:absolute;
+      top:calc(100% + 8px);
+      right:0;
+      min-width:140px;
+      background:#1b2838;
+      border:1px solid #2a475e;
+      border-radius:8px;
+      padding:8px;
+      display:none !important;
+      box-shadow:0 8px 20px rgba(0,0,0,.35);
+      z-index:1000;
+    }
+
+    /* 닉네임 hover/포커스일 때만 보이기 */
+    #nav-scope #nickWrap:hover  #friendMenu,
+    #nav-scope #nickWrap:focus-within #friendMenu {
+      display:block !important;
+    }
+
+    /* 버튼(링크) */
+    #nav-scope .btn-link {
+      display:block;
+      text-align:center;
+      padding:8px 12px;
+      border-radius:6px;
+      border:1px solid #2a475e;
+      background:#2a475e;
+      color:#c6d4df;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    #nav-scope .btn-link:hover { background:#325a77; }
+
+    /* 접근성 포커스 */
+    #nav-scope .user-nick:focus,
+    #nav-scope .btn-link:focus {
+      outline:2px solid #66c0f4;
+      outline-offset:2px;
+      border-radius:6px;
+    }
+  </style>
+
+  <div id="nav-scope">
+    <!-- 왼쪽: 로고 -->
+    <div style="flex-shrink:0;">
+      <a href="/" style="text-decoration:none;">
+        <h1 style="margin:0; color:#66c0f4;">Steam</h1>
+      </a>
+    </div>
+
+    <!-- 오른쪽: 메뉴 -->
+    <nav class="menu-right">
+      <a href="/shop/product" style="margin-left:20px;">상점</a>
+
+      <a th:if="${currentUser != null}"
+         th:href="@{/library/{memberId}(memberId=${currentUser.id})}"
+         style="margin-left:20px;">라이브러리</a>
+
+      <a href="/galleries" style="margin-left:20px;">커뮤니티</a>
+
+      <a th:if="${currentUser != null}"
+         th:href="@{/shoppingCart}"
+         style="margin-left:20px;">장바구니</a>
+
+      <!-- 비로그인 -->
+      <span sec:authorize="isAnonymous()">
+        <a href="/login" style="margin-left:40px; color:#3ecf8e; font-weight:bold;">로그인</a>
+      </span>
+
+      <!-- 로그인: 닉네임 hover 시 '친구 검색' 버튼 노출 (레이아웃 고정) -->
+      <span sec:authorize="isAuthenticated()" class="user-menu">
+        <!-- 닉네임 래퍼(여기에만 hover 적용) -->
+        <span id="nickWrap">
+          <a class="user-nick"
+             th:href="@{/profile/{memberId}(memberId=${currentUser.id}, commentPageNum=${0})}"
+             th:text="${currentUser.nickName}"
+             aria-haspopup="true" aria-expanded="false">프로필</a>
+
+          <!-- 친구 검색 페이지로 이동 (기본 숨김) -->
+          <div id="friendMenu" role="menu" aria-label="User quick actions">
+            <a class="btn-link" th:href="@{/friends/search}">친구 검색</a>
+          </div>
+        </span>
+
+        <!-- 로그아웃: 드롭다운과 분리(위치 고정) -->
+        <a th:href="@{/log-out}" style="color:#ff6961; font-weight:bold;">로그아웃</a>
+      </span>
+    </nav>
   </div>
 </div>
-<div th:fragment="navbar(currentUser)" style="display: flex; align-items: center; background-color: #171a21; padding: 20px;">
 
-  <!-- 왼쪽: 로고 -->
-  <div style="flex-shrink: 0;">
-    <a href="/" style="text-decoration: none;">
-      <h1 style="margin: 0; color: #66c0f4;">Steam</h1>
-    </a>
-  </div>
 
-  <!-- 오른쪽: 메뉴 -->
-  <nav style="display: flex; align-items: center; margin-left: auto;">
-
-    <a href="/shop/product" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">상점</a>
-
-    <!-- currentUser가 null이 아닐 때만 라이브러리 링크 출력 -->
-    <a th:if="${currentUser != null}"
-       th:href="@{/library/{memberId}(memberId=${currentUser.id})}"
-       style="color: #c6d4df; margin-left: 20px; text-decoration: none;">라이브러리</a>
-
-    <a href="/galleries" style="color: #c6d4df; margin-left: 20px; text-decoration: none;">커뮤니티</a>
-    <a th:if="${currentUser != null}"
-       th:href="@{/shoppingCart}"
-       style="color: #c6d4df; margin-left: 20px; text-decoration: none;">장바구니</a>
-
-    <!-- 로그인 여부에 따라 다른 버튼 표시 -->
-    <span sec:authorize="isAnonymous()">
-      <a href="/login" style="margin-left: 40px; color: #3ecf8e; font-weight: bold;">로그인</a>
-    </span>
-
-    <span sec:authorize="isAuthenticated()">
-      <a th:href="@{/profile/{memberId}(memberId=${currentUser.id}, commentPageNum=0)}"
-         style="margin-left: 40px; color: #3ecf8e; font-weight: bold;"
-         th:text="${currentUser.nickName}">프로필</a>
-      <a href="/log-out" style="margin-left: 20px; color: #ff6961; font-weight: bold; text-decoration: none;">로그아웃</a>
-    </span>
-
-  </nav>
-</div>
 </body>
 </html>
