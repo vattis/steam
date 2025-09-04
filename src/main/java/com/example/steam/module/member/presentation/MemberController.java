@@ -7,12 +7,15 @@ import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.member.dto.MemberGameDto;
+import com.example.steam.module.member.dto.MemberSearch;
 import com.example.steam.module.member.dto.ProfileDto;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -87,5 +90,20 @@ public class MemberController {
         ProfileDto profileDto = memberService.getProfile(memberId, PageRequest.of(commentPageNum, PageConst.PROFILE_COMMENT_PAGE_SIZE));
         model.addAttribute("profileDto", profileDto);
         return "/profile";
+    }
+
+    @GetMapping("/members/search")
+    public String gotoMemberSearchPage(){
+        return "/member-search";
+    }
+
+    @GetMapping("/members")
+    public String searchMember(@RequestParam("searchTag") String searchTag,
+                               @RequestParam("searchWord") String searchWord,
+                               @RequestParam(name = "pageNo", defaultValue = "0", required = false)int pageNo,
+                               Model model){
+        Page<SimpleMemberDto> memberDtos =  memberService.searchMember(MemberSearch.of(searchTag, searchWord), pageNo).map(SimpleMemberDto::from);
+        model.addAttribute("members", memberDtos);
+        return "/member-search";
     }
 }

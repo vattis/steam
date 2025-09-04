@@ -13,4 +13,6 @@ public class PageConst {
     public final static int PROFILE_COMMENT_PAGE_SIZE = 10;
     public final static int GALLERY_LIST_PAGE_SIZE = 20;
     public final static int CHAT_SCROLL_SIZE = 15;
+
+    public final static int MEMBER_SEARCH_PAGE_SIZE = 20;
 }

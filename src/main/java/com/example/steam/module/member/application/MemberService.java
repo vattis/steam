@@ -1,10 +1,12 @@
 package com.example.steam.module.member.application;
 
+import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.comment.dto.ProfileCommentDto;
 import com.example.steam.module.comment.repository.ProfileCommentRepository;
 import com.example.steam.module.friendship.dto.SimpleFriendshipDto;
 import com.example.steam.module.friendship.repository.FriendshipRepository;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.MemberSearch;
 import com.example.steam.module.member.dto.ProfileDto;
 import com.example.steam.module.member.dto.SignUpForm;
 import com.example.steam.module.member.dto.MemberGameDto;
@@ -15,6 +17,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +58,7 @@ public class MemberService {
     }
 
     //이메일을 통한 회원 검색
-    @Cacheable(value="memberSpringCache", key = "'member:' + #email", unless = "#result == null")
+    @Cacheable(value="SpringCache", key = "'member:' + #email", unless = "#result == null")
     public Member findMemberByEmail(String email){
         return memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new); }
 
@@ -77,5 +80,30 @@ public class MemberService {
         Page<ProfileCommentDto> profileCommentPage = profileCommentRepository.findDtoByProfileMember(profileMember, pageRequest);
         List<SimpleFriendshipDto> friendships = friendshipRepository.findAllByFromMemberId(profileMemberId).stream().map(SimpleFriendshipDto::from).toList();
         return ProfileDto.of(profileMember, memberGames, profileCommentPage, friendships);
+    }
+
+    //회원 검색(id와 닉네임 동시 검색)
+    public Page<Member> searchMember(MemberSearch memberSearch, int pageNo){
+        Pageable pageable = PageRequest.of(pageNo, PageConst.MEMBER_SEARCH_PAGE_SIZE);
+        if(memberSearch.getSearchTag().equals("nickname")){
+            memberRepository.findAllByNicknameContaining(memberSearch.getSearchWord(), pageable);
+        }else if(memberSearch.getSearchTag().equals("id")){
+            if(isLong(memberSearch.getSearchWord())){
+                memberRepository.findById(Long.parseLong(memberSearch.getSearchWord()), pageable);
+            }else{
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private boolean isLong(String s) {
+        if (s == null) return false;
+        try {
+            Long.parseLong(s.trim());
+            return true;            // 범위까지 검증됨 (오버플로우면 예외)
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

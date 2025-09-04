@@ -1,68 +1,8 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-  <meta charset="UTF-8">
-  <title>Steam 네비게이션 바</title>
-  <style>
-    /* 레이아웃은 그대로 유지 */
-    .user-menu { display: inline-flex; align-items: center; gap: 20px; }
-    .user-nick { margin-left: 40px; color: #3ecf8e; font-weight: bold; text-decoration: none; }
-
-    /* 닉네임만 기준점 (드롭다운은 절대위치로 띄워서 다른 요소 위치 불변) */
-    #nickWrap { position: relative; display: inline-block; }
-
-    /* 기본: 완전 숨김 (전역 CSS 충돌 방지 위해 !important) */
-    #friendMenu {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-      min-width: 140px;
-      background: #1b2838;
-      border: 1px solid #2a475e;
-      border-radius: 8px;
-      padding: 8px;
-      display: none !important;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-      z-index: 1000;
-    }
-
-    /* 닉네임 hover/포커스일 때만 보임 */
-    #nickWrap:hover  #friendMenu,
-    #nickWrap:focus-within #friendMenu {
-      display: block !important;
-    }
-
-    /* 버튼(링크) */
-    .btn-link {
-      display: block;
-      text-align: center;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #2a475e;
-      background: #2a475e;
-      color: #c6d4df;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .btn-link:hover { background: #325a77; }
-
-    /* 접근성 포커스 */
-    .user-nick:focus,
-    .btn-link:focus {
-      outline: 2px solid #66c0f4;
-      outline-offset: 2px;
-      border-radius: 6px;
-    }
-  </style>
-</head>
-<body>
-
 <!-- fragments/navbar.html -->
 <div th:fragment="navbar(currentUser)">
-  <!-- ▼ 이 스타일은 fragment와 함께 삽입되어 hover가 확실히 적용됩니다 -->
+  <!-- ▼ fragment와 함께 삽입되는 스타일: 어디에 include해도 동작 -->
   <style>
-    /* fragment 전용 스코프 */
+    /* 스코프 래퍼 */
     #nav-scope { display:flex; align-items:center; background:#171a21; padding:20px; }
     #nav-scope .menu-right { display:flex; align-items:center; margin-left:auto; }
     #nav-scope a { color:#c6d4df; text-decoration:none; }
@@ -72,49 +12,65 @@
     #nav-scope .user-menu { display:inline-flex; align-items:center; gap:20px; }
 
     /* 닉네임 */
-    #nav-scope .user-nick { margin-left:40px; color:#3ecf8e; font-weight:bold; text-decoration:none; }
+    #nav-scope .user-nick {
+      margin-left:40px; color:#3ecf8e; font-weight:bold; text-decoration:none;
+      position:relative; z-index:2; /* 확장 hover 버퍼 위에 오도록 */
+    }
 
-    /* 닉네임만 기준점(레이아웃 불변) */
+    /* 닉네임만 기준점 (레이아웃 변형 없음) */
     #nav-scope #nickWrap { position:relative; display:inline-block; }
+
+    /* 🔥 Hover 범위 확장 버퍼(보이지 않음): 닉네임 주변+아래쪽 갭을 메움 */
+    #nav-scope #nickWrap::before,
+    #nav-scope #nickWrap::after {
+      content:"";
+      position:absolute;
+      z-index:1;
+    }
+    /* 좌우/위아래 여유 영역 */
+    #nav-scope #nickWrap::before {
+      top:-6px; bottom:-6px; left:-10px; right:-10px;
+    }
+    /* 닉네임과 드롭다운 사이의 '브리지' 영역(깜빡임 방지) */
+    #nav-scope #nickWrap::after {
+      top:100%; left:-12px; right:-12px; height:16px;
+    }
 
     /* 기본: 완전 숨김 (전역 CSS 충돌 방지 위해 !important) */
     #nav-scope #friendMenu {
       position:absolute;
       top:calc(100% + 8px);
       right:0;
-      min-width:140px;
+      min-width:180px;             /* 클릭하기 편하도록 약간 넓게 */
       background:#1b2838;
       border:1px solid #2a475e;
       border-radius:8px;
-      padding:8px;
+      padding:10px;
       display:none !important;
       box-shadow:0 8px 20px rgba(0,0,0,.35);
       z-index:1000;
     }
 
-    /* 닉네임 hover/포커스일 때만 보이기 */
+    /* 닉네임 hover/포커스일 때만 보이기 (버퍼 덕분에 접근 쉬움) */
     #nav-scope #nickWrap:hover  #friendMenu,
     #nav-scope #nickWrap:focus-within #friendMenu {
       display:block !important;
     }
 
-    /* 버튼(링크) */
-    #nav-scope .btn-link {
-      display:block;
-      text-align:center;
-      padding:8px 12px;
+    /* '친구 검색' 링크: 버튼 아님(심플 링크), 클릭 영역은 넓게 */
+    #nav-scope .friend-link {
+      display:block;               /* 블록화 → 넓은 클릭 영역 */
+      padding:10px 14px;
       border-radius:6px;
-      border:1px solid #2a475e;
-      background:#2a475e;
       color:#c6d4df;
       text-decoration:none;
       white-space:nowrap;
     }
-    #nav-scope .btn-link:hover { background:#325a77; }
+    #nav-scope .friend-link:hover { background:#2a475e; color:#fff; }
 
     /* 접근성 포커스 */
     #nav-scope .user-nick:focus,
-    #nav-scope .btn-link:focus {
+    #nav-scope .friend-link:focus {
       outline:2px solid #66c0f4;
       outline-offset:2px;
       border-radius:6px;
@@ -148,7 +104,7 @@
         <a href="/login" style="margin-left:40px; color:#3ecf8e; font-weight:bold;">로그인</a>
       </span>
 
-      <!-- 로그인: 닉네임 hover 시 '친구 검색' 버튼 노출 (레이아웃 고정) -->
+      <!-- 로그인: 닉네임 hover 시 '친구 검색' 텍스트 링크 노출 (레이아웃 고정) -->
       <span sec:authorize="isAuthenticated()" class="user-menu">
         <!-- 닉네임 래퍼(여기에만 hover 적용) -->
         <span id="nickWrap">
@@ -157,9 +113,9 @@
              th:text="${currentUser.nickName}"
              aria-haspopup="true" aria-expanded="false">프로필</a>
 
-          <!-- 친구 검색 페이지로 이동 (기본 숨김) -->
+          <!-- 친구 검색 페이지로 이동 (버튼 아님, 텍스트 링크) -->
           <div id="friendMenu" role="menu" aria-label="User quick actions">
-            <a class="btn-link" th:href="@{/friends/search}">친구 검색</a>
+            <a class="friend-link" th:href="@{/member/search}">회원 검색</a>
           </div>
         </span>
 
@@ -169,7 +125,3 @@
     </nav>
   </div>
 </div>
-
-
-</body>
-</html>
