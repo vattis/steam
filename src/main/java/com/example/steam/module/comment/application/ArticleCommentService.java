@@ -47,7 +47,7 @@ public class ArticleCommentService {
     //댓글 삭제
     public boolean deleteArticleComment(ArticleComment articleComment, Member member){
         Article article = articleComment.getArticle();
-        if(articleComment.getMember().getId() != member.getId()){
+        if(!articleComment.getMember().getId().equals(member.getId())){
             log.info("잘못된 ArticleComment 삭제:: 회원 불일치");
             return false;
         }

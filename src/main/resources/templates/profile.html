@@ -241,12 +241,12 @@
         <div th:each="comment : ${profile.profileCommentPage.content}">
             <div class="comment-box">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <a th:href="@{'/profile/' + ${comment.memberId} + '/0'}" class="image-link">
+                    <a th:href="@{'/profile/' + ${comment.memberId}}" class="image-link">
                         <img style="width: 36px; height: 36px; border-radius: 6px;"
                              th:src="${#strings.isEmpty(comment.avatarUrl)} ? '/images/profile-image.jpg' : ${comment.avatarUrl}"
                              alt="작성자 아바타" />
                     </a>
-                    <a th:href="@{'/profile/' + ${comment.memberId} + '/0'}" class="link">
+                    <a th:href="@{'/profile/' + ${comment.memberId}}" class="link">
                         <strong th:text="${comment.nickname}">작성자</strong>
                     </a>
                 </div>
@@ -266,7 +266,6 @@
                         <!-- CSRF가 모델에 있을 때만 렌더 -->
                         <input type="hidden" th:if="${_csrf != null}"
                                th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
                         <button type="submit" class="delete-button-small">삭제</button>
                     </form>
                 </div>
@@ -277,15 +276,15 @@
         <div class="pagination" th:if="${profile.profileCommentPage.totalPages > 0}">
             <ul>
                 <li th:if="${profile.profileCommentPage.hasPrevious()}">
-                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '/0?pageNo=' + (${profile.profileCommentPage.number} - 1)}">&laquo; 이전</a>
+                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '?pageNo=' + (${profile.profileCommentPage.number} - 1)}">&laquo; 이전</a>
                 </li>
                 <li th:each="page : ${#numbers.sequence(0, profile.profileCommentPage.totalPages - 1)}">
-                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '/0?pageNo=' + ${page}}"
+                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '?pageNo=' + ${page}}"
                        th:text="${page + 1}"
                        th:classappend="${page == profile.profileCommentPage.number} ? 'active-page' : ''"></a>
                 </li>
                 <li th:if="${profile.profileCommentPage.hasNext()}">
-                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '/0?pageNo=' + (${profile.profileCommentPage.number} + 1)}">다음 &raquo;</a>
+                    <a th:href="@{'/profile/' + ${profile.profileMember.id} + '?pageNo=' + (${profile.profileCommentPage.number} + 1)}">&laquo; 이전</a>
                 </li>
             </ul>
         </div>

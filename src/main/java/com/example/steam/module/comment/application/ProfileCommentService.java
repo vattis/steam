@@ -36,7 +36,7 @@ public class ProfileCommentService {
     //댓글 삭제
     public boolean deleteProfileComment(Long profileCommentId, Member member){
         ProfileComment profileComment = profileCommentRepository.findById(profileCommentId).orElseThrow(NoSuchElementException::new);
-        if(profileComment.getMember().getId() == member.getId() || profileComment.getProfileMember().getId() == member.getId()){
+        if(profileComment.getMember().getId().equals(member.getId()) || profileComment.getProfileMember().getId().equals(member.getId())){
             profileCommentRepository.delete(profileComment);
             return true;
         }

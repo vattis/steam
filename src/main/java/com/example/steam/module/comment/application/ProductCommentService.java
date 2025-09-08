@@ -50,7 +50,7 @@ public class ProductCommentService {
 
     //댓글 삭제
     public boolean deleteProductComment(ProductComment productComment, Member member){
-        if(productComment.getMember().getId() != member.getId()){ //댓글 작성자와 삭제 요청자가 다른 경우
+        if(!productComment.getMember().getId().equals(member.getId())){ //댓글 작성자와 삭제 요청자가 다른 경우
             log.info("잘못된 ProductComment 삭제:: 회원 불일치");
             return false;
         }

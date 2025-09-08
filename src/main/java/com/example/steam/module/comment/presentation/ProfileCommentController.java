@@ -29,9 +29,9 @@ public class ProfileCommentController {
     }
 
     @DeleteMapping("/profileComment/{profileComment}")
-    public String deleteProfileComment(@PathVariable("profileComment") Long profileComment, Principal principal){
+    public String deleteProfileComment(@PathVariable("profileComment") Long profileCommentId, Principal principal){
         Member member = memberService.findMemberByEmail(principal.getName());
-        profileCommentService.deleteProfileComment(profileComment, member);
+        profileCommentService.deleteProfileComment(profileCommentId, member);
         return "redirect:/profile/" + member.getId();
     }
 }
