@@ -36,19 +36,24 @@
       top:100%; left:-12px; right:-12px; height:16px;
     }
 
-    /* 기본: 완전 숨김 (전역 CSS 충돌 방지 위해 !important) */
+    /* ▼ 드롭다운 박스: 닉네임 정중앙 아래로, 살짝 축소 */
     #nav-scope #friendMenu {
       position:absolute;
-      top:calc(100% + 8px);
-      right:0;
-      min-width:180px;             /* 클릭하기 편하도록 약간 넓게 */
+      top:calc(100% + 6px);
+      left:50%;                 /* 중앙 기준 */
+      right:auto;
+      transform:translateX(-50%);
+      min-width:150px;          /* 180 → 150으로 축소 */
+      width:max-content;        /* 내용에 맞춤 */
+      max-width:220px;          /* 너무 길어지지 않게 */
       background:#1b2838;
       border:1px solid #2a475e;
       border-radius:8px;
-      padding:10px;
-      display:none !important;
+      padding:8px;              /* 10px → 8px */
+      display:none !important;  /* 전역 CSS 충돌 방지 */
       box-shadow:0 8px 20px rgba(0,0,0,.35);
       z-index:1000;
+      text-align:center;        /* 내부 텍스트 중앙 정렬 백업 */
     }
 
     /* 닉네임 hover/포커스일 때만 보이기 (버퍼 덕분에 접근 쉬움) */
@@ -57,22 +62,26 @@
       display:block !important;
     }
 
-    /* '친구 검색' 링크: 버튼 아님(심플 링크), 클릭 영역은 넓게 */
+    /* '회원 검색' / '받은 초대' 링크: 중앙 정렬 + 컴팩트 + 테두리 제거 */
     #nav-scope .friend-link {
-      display:block;               /* 블록화 → 넓은 클릭 영역 */
-      padding:10px 14px;
+      display:block;               /* 넓은 클릭 영역 */
+      padding:8px 10px;            /* 컴팩트 */
       border-radius:6px;
       color:#c6d4df;
       text-decoration:none;
       white-space:nowrap;
+      text-align:center;           /* ✅ 중앙 정렬 */
+      border:none;                 /* ✅ 버튼 테두리 제거 */
+      outline:none;                /* 기본 아웃라인 제거 (아래 box-shadow로 대체) */
     }
     #nav-scope .friend-link:hover { background:#2a475e; color:#fff; }
+    #nav-scope .friend-link + .friend-link { margin-top:4px; } /* 버튼 간격 축소 */
 
-    /* 접근성 포커스 */
+    /* 접근성 포커스: outline 대신 box-shadow로 표시 (시각적 테두리 느낌 최소화) */
     #nav-scope .user-nick:focus,
     #nav-scope .friend-link:focus {
-      outline:2px solid #66c0f4;
-      outline-offset:2px;
+      outline:none;
+      box-shadow:0 0 0 2px #66c0f4;
       border-radius:6px;
     }
   </style>
@@ -104,7 +113,7 @@
         <a href="/login" style="margin-left:40px; color:#3ecf8e; font-weight:bold;">로그인</a>
       </span>
 
-      <!-- 로그인: 닉네임 hover 시 '친구 검색' 텍스트 링크 노출 (레이아웃 고정) -->
+      <!-- 로그인: 닉네임 hover 시 드롭다운 노출 -->
       <span sec:authorize="isAuthenticated()" class="user-menu">
         <!-- 닉네임 래퍼(여기에만 hover 적용) -->
         <span id="nickWrap">
@@ -113,9 +122,10 @@
              th:text="${currentUser.nickName}"
              aria-haspopup="true" aria-expanded="false">프로필</a>
 
-          <!-- 친구 검색 페이지로 이동 (버튼 아님, 텍스트 링크) -->
+          <!-- 드롭다운 메뉴 -->
           <div id="friendMenu" role="menu" aria-label="User quick actions">
-            <a class="friend-link" th:href="@{/member/search}">회원 검색</a>
+            <a class="friend-link" role="menuitem" th:href="@{/members/search}">회원 검색</a>
+            <a class="friend-link" role="menuitem" th:href="@{/friendships}">받은 초대</a>
           </div>
         </span>
 

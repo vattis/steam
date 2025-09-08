@@ -37,26 +37,31 @@ public class Friendship {
     private Member toMember;
     
     //친구 수락 여부
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean accepted;
+    private FriendshipState state;  // INVITE_SENT, INVITED, FRIENDS, NONE
 
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default
     private Boolean deleted = false;
 
-    public static Friendship of(Member fromMember, Member toMember, Boolean accepted){
+    public static Friendship of(Member fromMember, Member toMember, FriendshipState state){
         return Friendship.builder()
                 .fromMember(fromMember)
                 .toMember(toMember)
-                .accepted(accepted)
+                .state(state)
                 .build();
     }
-    public static Friendship createReverseFriendship(Friendship friendship){
-        return Friendship.of(friendship.toMember, friendship.fromMember, friendship.accepted);
+    public static Friendship createReverseFriendship(Friendship friendship, FriendshipState friendshipState){
+        return Friendship.of(friendship.toMember, friendship.fromMember, friendshipState);
     }
     public Friendship acceptFriendship(){
-        accepted = true;
+        state = FriendshipState.FRIENDS;
+        return this;
+    }
+    public Friendship rejectFriendship(){
+        state = FriendshipState.NONE;
         return this;
     }
 }

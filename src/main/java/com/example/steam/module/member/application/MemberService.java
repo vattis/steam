@@ -3,14 +3,12 @@ package com.example.steam.module.member.application;
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.comment.dto.ProfileCommentDto;
 import com.example.steam.module.comment.repository.ProfileCommentRepository;
+import com.example.steam.module.friendship.domain.FriendshipState;
 import com.example.steam.module.friendship.dto.SimpleFriendshipDto;
 import com.example.steam.module.friendship.repository.FriendshipRepository;
+import com.example.steam.module.friendship.repository.projection.FriendAndStatusView;
 import com.example.steam.module.member.domain.Member;
-import com.example.steam.module.member.dto.MemberSearch;
-import com.example.steam.module.member.dto.ProfileDto;
-import com.example.steam.module.member.dto.SignUpForm;
-import com.example.steam.module.member.dto.MemberGameDto;
-import com.example.steam.module.member.repository.MemberGameRepository;
+import com.example.steam.module.member.dto.*;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
@@ -21,9 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.security.Principal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -83,18 +81,43 @@ public class MemberService {
     }
 
     //회원 검색(id와 닉네임 동시 검색)
-    public Page<Member> searchMember(MemberSearch memberSearch, int pageNo){
+    public Page<Member> searchMember(MemberSearch memberSearch, int pageNo, Principal principal){
         Pageable pageable = PageRequest.of(pageNo, PageConst.MEMBER_SEARCH_PAGE_SIZE);
+        Page<Member> members = Page.empty();
         if(memberSearch.getSearchTag().equals("nickname")){
-            memberRepository.findAllByNicknameContaining(memberSearch.getSearchWord(), pageable);
+            members = memberRepository.findAllByNicknameContaining(memberSearch.getSearchWord(), pageable);
         }else if(memberSearch.getSearchTag().equals("id")){
             if(isLong(memberSearch.getSearchWord())){
-                memberRepository.findById(Long.parseLong(memberSearch.getSearchWord()), pageable);
-            }else{
-                return null;
+                members = memberRepository.findById(Long.parseLong(memberSearch.getSearchWord()), pageable);
             }
         }
-        return null;
+        return members;
+    }
+
+    public Page<SimpleMemberDto> attachFriendState(Page<SimpleMemberDto> simpleMemberDtoPage, Principal principal){
+        if(principal == null){
+            return simpleMemberDtoPage;
+        }
+
+        Member loginMember = memberRepository.findByEmail(principal.getName()).orElseThrow(NoSuchElementException::new);
+        List<Long> memberIdList = simpleMemberDtoPage.map(SimpleMemberDto::getId).stream().toList();
+        List<FriendAndStatusView> temp = friendshipRepository.findFriendIdAndStatus(loginMember.getId(), memberIdList);
+        for(FriendAndStatusView f : temp){
+            System.out.println(f.getFriendshipState());
+        }
+        Map<Long, FriendshipState> friendFlag = friendshipRepository.findFriendIdAndStatus(loginMember.getId(), memberIdList).stream()
+                .collect(Collectors.toMap(FriendAndStatusView::getToMemberId, FriendAndStatusView::getFriendshipState
+                        , (a, b) -> (a == FriendshipState.FRIENDS || b == FriendshipState.FRIENDS)
+                                ? FriendshipState.FRIENDS
+                                : FriendshipState.INVITE_SENT
+                ));
+
+        return simpleMemberDtoPage.map(m -> SimpleMemberDto.builder()
+                        .id(m.getId())
+                        .nickname(m.getNickname())
+                        .avatarUrl(m.getAvatarUrl())
+                        .friendshipState(friendFlag.getOrDefault(m.getId(), FriendshipState.NONE))
+                                .build());
     }
 
     private boolean isLong(String s) {

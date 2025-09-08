@@ -1,6 +1,7 @@
 package com.example.steam.module.friendship.repository;
 
 import com.example.steam.module.friendship.domain.Friendship;
+import com.example.steam.module.friendship.domain.FriendshipState;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,14 +37,14 @@ class FriendshipRepositoryTest {
         memberRepository.saveAll(members);
         memberRepository.saveAll(otherMembers);
         for(int i = 0; i <= 8; i++){
-            Friendship friendship1 = Friendship.of(members.get(i), members.get(i+1), true);
-            Friendship friendship2 = Friendship.createReverseFriendship(friendship1);
+            Friendship friendship1 = Friendship.of(members.get(i), members.get(i+1), FriendshipState.FRIENDS);
+            Friendship friendship2 = Friendship.createReverseFriendship(friendship1, FriendshipState.FRIENDS);
             friendships.add(friendship1);
             friendships.add(friendship2);
         }
         for(int i = 0; i <= 7; i++){
-            Friendship friendship1 = Friendship.of(members.get(i), members.get(i+2), true);
-            Friendship friendship2 = Friendship.createReverseFriendship(friendship1);
+            Friendship friendship1 = Friendship.of(members.get(i), members.get(i+2), FriendshipState.FRIENDS);
+            Friendship friendship2 = Friendship.createReverseFriendship(friendship1, FriendshipState.FRIENDS);
             friendships.add(friendship1);
             friendships.add(friendship2);
         }
@@ -50,10 +52,14 @@ class FriendshipRepositoryTest {
         this.members = members;
         this.friendships = friendships;
 
-        Friendship notAcceptedFriendship1 = Friendship.of(otherMembers.get(0), otherMembers.get(3), false);
-        friendshipRepository.save(notAcceptedFriendship1);
-        Friendship notAcceptedFriendship2 = Friendship.of(otherMembers.get(0), otherMembers.get(4), false);
-        friendshipRepository.save(notAcceptedFriendship2);
+        Friendship invitedSentFriendship1 = Friendship.of(otherMembers.get(0), otherMembers.get(3), FriendshipState.INVITE_SENT);
+        Friendship invitedFriendship1 = Friendship.createReverseFriendship(invitedSentFriendship1, FriendshipState.INVITED);
+        friendshipRepository.save(invitedSentFriendship1);
+        friendshipRepository.save(invitedFriendship1);
+        Friendship invitedSentFriendship2 = Friendship.of(otherMembers.get(0), otherMembers.get(4), FriendshipState.INVITE_SENT);
+        Friendship invitedFriendship2 = Friendship.createReverseFriendship(invitedSentFriendship2, FriendshipState.INVITED);
+        friendshipRepository.save(invitedSentFriendship2);
+        friendshipRepository.save(invitedFriendship2);
     }
 
     @Test
@@ -93,11 +99,11 @@ class FriendshipRepositoryTest {
         Member toMember1 = members.get(6);
 
         //when
-        Friendship friendship = friendshipRepository.findByFromMemberIdAndToMemberId(fromMember1.getId(), toMember1.getId());
+        Optional<Friendship> friendship = friendshipRepository.findByFromMemberIdAndToMemberId(fromMember1.getId(), toMember1.getId());
 
         //then
-        assertThat(friendship.getFromMember()).isEqualTo(fromMember1);
-        assertThat(friendship.getToMember()).isEqualTo(toMember1);
+        assertThat(friendship.get().getFromMember()).isEqualTo(fromMember1);
+        assertThat(friendship.get().getToMember()).isEqualTo(toMember1);
     }
 
     @Test
@@ -115,16 +121,16 @@ class FriendshipRepositoryTest {
     }
 
     @Test
-    void findAllByToMemberAndAcceptedIsFalseTest(){
+    void findAllByToMemberAndStateTest(){
         //given
 
         //when
-        List<Friendship> friendships1 = friendshipRepository.findAllByToMemberAndAcceptedIsFalse(otherMembers.get(3));
+        List<Friendship> friendships1 = friendshipRepository.findAllByToMemberAndState(otherMembers.get(3), FriendshipState.INVITE_SENT);
 
         //then
         assertThat(friendships1.size()).isEqualTo(1);
         assertThat(friendships1.get(0).getToMember().getId()).isEqualTo(otherMembers.get(3).getId());
-        assertThat(friendships1.get(0).getAccepted()).isFalse();
+        assertThat(friendships1.get(0).getState()).isEqualTo(FriendshipState.INVITE_SENT);
     }
 
     @Test
@@ -132,11 +138,11 @@ class FriendshipRepositoryTest {
         //given
 
         //when
-        List<Friendship> friendships1 = friendshipRepository.findAllByFromMemberAndAcceptedIsFalse(otherMembers.get(0));
+        List<Friendship> friendships1 = friendshipRepository.findAllByFromMemberAndState(otherMembers.get(0), FriendshipState.INVITE_SENT);
 
         //then
         assertThat(friendships1.size()).isEqualTo(2);
         assertThat(friendships1.stream().allMatch(f -> f.getFromMember().getId().equals(otherMembers.get(0).getId()))).isTrue();
-        assertThat(friendships1.stream().noneMatch(Friendship::getAccepted)).isTrue();
+        assertThat(friendships1.stream().allMatch(f->f.getState().equals(FriendshipState.INVITE_SENT))).isTrue();
     }
 }

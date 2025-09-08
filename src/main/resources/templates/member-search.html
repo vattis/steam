@@ -1,4 +1,4 @@
-<!-- src/main/resources/templates/members-search.html -->
+<!-- src/main/resources/templates/member-search.html -->
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -6,303 +6,167 @@
   <title>회원 검색</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    /* ===== Steam-like color palette ===== */
-    :root{
-      --bg: #1b2838;              /* page background */
-      --panel: #22384e;           /* search card top */
-      --panel-2: #1f2f40;         /* search card bottom */
-      --card: #2a475e;            /* result cards */
-      --line: #3a556a;            /* borders/lines */
-      --text: #ffffff;            /* main text */
-      --muted: #c6d4df;           /* sub text */
-      --accent: #66c0f4;          /* Steam blue */
-      --accent-strong:#1a9fff;    /* hover/active */
-    }
+    :root{ --bg:#1b2838; --panel:#22384e; --panel-2:#1f2f40; --card:#2a475e; --line:#3a556a; --text:#ffffff; --muted:#c6d4df; --accent:#66c0f4; --accent-strong:#1a9fff; }
+    *{ box-sizing:border-box; } html,body{ height:100%; }
+    body{ margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; }
+    .wrap{ min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:10vh 16px 40px; }
+    .container{ width:100%; max-width:960px; }
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body{
-      margin:0; background: var(--bg); color: var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-    }
+    .search-card{ background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.02); }
+    .title{ margin:0 0 10px 2px; font-weight:700; letter-spacing:.2px; color:#eaf6ff; font-size:20px; }
+    .search-row{ display:flex; gap:10px; width:100%; align-items:center; flex-wrap:wrap; }
 
-    /* Layout: centered horizontally, slightly upper vertically */
-    .wrap{
-      min-height: 100vh;
-      display: flex; justify-content: center; align-items: flex-start;
-      padding-top: 10vh;
-      padding-left: 16px; padding-right: 16px;
-    }
-    .container{ width:100%; max-width: 960px; }
-
-    /* Search card */
-    .search-card{
-      background: linear-gradient(180deg, var(--panel), var(--panel-2));
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,0.02);
-    }
-    .title{
-      margin: 0 0 10px 2px;
-      font-weight: 700; letter-spacing: .2px; color: #eaf6ff;
-      font-size: 20px;
-    }
-    .search-row{
-      display:flex; gap:10px; width:100%; align-items:center; flex-wrap: wrap;
-    }
-
-    /* === Custom dropdown for searchTag (nickname | id) === */
-    .dropdown{
-      position: relative;
-    }
-    .dropdown-btn{
-      height:54px; min-width:120px; padding:0 14px;
-      display:inline-flex; align-items:center; justify-content:space-between;
-      gap:8px;
-      border-radius:12px; border:1px solid #3a556a; background:#22384e;
-      color:#e6f1fa; font-weight:700; cursor:pointer;
-      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
-    }
-    .dropdown-btn:hover{ border-color: var(--accent); }
-    .dropdown-btn svg{ width:16px; height:16px; opacity:.9; }
-
-    .dropdown-menu{
-      position:absolute; top: calc(100% + 6px); left:0;
-      min-width: 160px;
-      background: #22384e; border:1px solid #3a556a; border-radius:12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.35);
-      padding:6px;
-      display:none; z-index: 50;
-    }
+    .dropdown{ position:relative; }
+    .dropdown-btn{ height:54px; min-width:120px; padding:0 14px; display:inline-flex; align-items:center; justify-content:space-between; gap:8px; border-radius:12px; border:1px solid #3a556a; background:#22384e; color:#e6f1fa; font-weight:700; cursor:pointer; }
+    .dropdown-menu{ position:absolute; top:calc(100% + 6px); left:0; min-width:160px; background:#22384e; border:1px solid #3a556a; border-radius:12px; padding:6px; display:none; z-index:50; box-shadow:0 10px 24px rgba(0,0,0,.35); }
     .dropdown.open .dropdown-menu{ display:block; }
+    .dropdown-menu li{ list-style:none; display:flex; align-items:center; gap:8px; height:38px; padding:0 12px; border-radius:8px; color:#e6f1fa; cursor:pointer; }
+    .dropdown-menu li.selected{ background:linear-gradient(180deg,#2c5780,#244a6b); }
 
-    .dropdown-menu li{
-      list-style:none;
-      display:flex; align-items:center; gap:8px;
-      height:38px; padding:0 12px; border-radius:8px;
-      color:#e6f1fa; cursor:pointer;
-      transition: background .15s ease, box-shadow .15s ease;
-    }
-    .dropdown-menu li:hover{
-      background: #2a475e;
-      box-shadow: inset 0 0 0 1px rgba(102,192,244,.25);
-    }
-    .dropdown-menu li.selected{
-      background: linear-gradient(180deg, #2c5780, #244a6b);
-      box-shadow: 0 0 0 3px rgba(102,192,244,.18);
-    }
-
-    .search-group{ position: relative; flex: 1 1 auto; min-width: 260px; }
-    .search-input{
-      width:100%; height: 54px; padding: 0 56px 0 48px;
-      background: #213a51;
-      border: 1px solid #355b79;
-      border-radius: 12px;
-      color: var(--text); font-size: 16px;
-      outline: none;
-      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
-    }
+    .search-group{ position:relative; flex:1 1 auto; min-width:260px; }
+    .search-input{ width:100%; height:54px; padding:0 56px 0 48px; background:#213a51; border:1px solid #355b79; border-radius:12px; color:var(--text); font-size:16px; }
     .search-input::placeholder{ color:#9fb3c3; }
-    .search-input:focus{
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(102,192,244,.25), inset 0 0 0 1px rgba(255,255,255,0.05);
-      background: #24445d;
-    }
-    .search-icon{
-      position:absolute; left:14px; top:50%; transform: translateY(-50%);
-      width:22px; height:22px; opacity:.95; pointer-events:none;
-      filter: drop-shadow(0 1px 0 rgba(0,0,0,.35));
-    }
+    .search-icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); width:22px; height:22px; opacity:.95; pointer-events:none; }
 
-    .submit-btn{
-      height:54px; padding:0 20px; min-width:120px;
-      border-radius: 12px;
-      border: 1px solid #2f6e94;
-      background: linear-gradient(180deg, var(--accent), var(--accent-strong));
-      color:#06253b; font-weight:800; letter-spacing:.2px;
-      cursor:pointer;
-      box-shadow: 0 6px 18px rgba(26,159,255,.28);
-      transition: transform .05s ease, filter .15s ease, box-shadow .15s ease;
-    }
-    .submit-btn:hover{ filter: brightness(1.06); }
-    .submit-btn:active{ transform: translateY(1px); }
+    .submit-btn{ height:54px; padding:0 20px; min-width:120px; border-radius:12px; border:1px solid #2f6e94; background:linear-gradient(180deg,var(--accent),var(--accent-strong)); color:#06253b; font-weight:800; cursor:pointer; }
 
-    /* Results */
-    .result-meta{
-      display:flex; justify-content: space-between; align-items: center;
-      margin: 16px 4px 10px; color: var(--muted); font-size: 14px;
-    }
+    .result-meta{ display:flex; justify-content:space-between; align-items:center; margin:16px 4px 10px; color:var(--muted); font-size:14px; }
     .results{ display:grid; gap:12px; }
 
-    .member-card{
-      background: var(--card);
-      border:1px solid var(--line);
-      border-radius: 12px;
-      padding:14px 16px;
-      display:flex; gap:14px; align-items:center;
-    }
-    .avatar{
-      width:44px; height:44px; border-radius: 8px;
-      background: linear-gradient(135deg, #2e5f7f, #234c66);
-      border:1px solid #3a6a86;
-      display:flex; align-items:center; justify-content:center;
-      font-weight:800; color:#d4ecff;
-    }
-    .m-info{ flex:1 1 auto; min-width: 0; }
+    .member-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; display:flex; gap:14px; align-items:center; }
+    .avatar{ width:44px; height:44px; border-radius:8px; border:1px solid #3a6a86; object-fit:cover; display:block; flex:0 0 auto; }
+    .m-info{ flex:1 1 auto; min-width:0; }
     .m-name{ font-weight:700; font-size:16px; color:#eaf6ff; margin-bottom:2px; }
-    .m-sub{ color:#c6d4df; font-size:13px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .m-sub{ color:#c6d4df; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .m-sub > span + span::before{ content:" · "; margin:0 4px; color:#9fb3c3; }
 
-    /* Pagination */
-    .pagination{
-      display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
-      margin: 18px 0 8px;
-    }
-    .page-link{
-      display:inline-flex; align-items:center; justify-content:center;
-      min-width:36px; height:36px; padding:0 10px;
-      border-radius:10px; border:1px solid #3a556a; background:#22384e;
-      color:#e6f1fa; text-decoration:none; font-weight:600;
-      transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
-    }
-    .page-link:hover{ border-color: var(--accent); box-shadow: 0 0 0 3px rgba(102,192,244,.18); }
-    .page-link.active{
-      background: linear-gradient(180deg, #2c5780, #244a6b);
-      border-color: var(--accent);
-      color:#ffffff;
-      box-shadow: 0 0 0 3px rgba(102,192,244,.22);
-    }
+    .tag{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 10px; border-radius:10px; border:1px solid #3a556a; }
+    .tag-ok{ background:linear-gradient(180deg,#2c5780,#244a6b); border-color:#66c0f4; color:#fff; }
+    .tag-wait{ background:#22384e; color:#c6d4df; }
+    .btn-accept-friend{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 12px; border-radius:10px; border:1px solid #3a556a; background:#22384e; color:#e6f1fa; font-weight:600; cursor:pointer; }
+    .btn-accept-friend:hover{ border-color:#66c0f4; box-shadow:0 0 0 3px rgba(102,192,244,.18); }
+    .btn-add-friend{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 12px; border-radius:10px; border:1px solid #3a556a; background:#22384e; color:#e6f1fa; font-weight:600; cursor:pointer; }
+    .btn-add-friend:hover{ border-color:#66c0f4; box-shadow:0 0 0 3px rgba(102,192,244,.18); }
+
+    .pagination{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:18px 0 8px; }
+    .page-link{ display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 10px; border-radius:10px; border:1px solid #3a556a; background:#22384e; color:#e6f1fa; text-decoration:none; font-weight:600; }
+    .page-link.active{ background:linear-gradient(180deg,#2c5780,#244a6b); border-color:#66c0f4; }
     .page-link.disabled{ opacity:.5; pointer-events:none; }
-
-    /* Empty */
-    .empty{
-      text-align:center; color:#c6d4df; padding: 32px 12px;
-      border:1px dashed #3a556a; border-radius:12px; background: #22384e;
-    }
-
-    @media (max-width:560px){
-      .submit-btn{ min-width:100px; }
-      .search-input{ height:50px; }
-      .submit-btn{ height:50px; }
-      .dropdown-btn{ height:50px; }
-    }
   </style>
 </head>
 <body>
+<div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
 <div class="wrap">
   <div class="container">
 
-    <!-- 검색 카드 -->
+    <!-- 검색 폼 (GET) -->
     <section class="search-card">
       <h1 class="title">회원 검색</h1>
       <form th:action="@{/members}" method="get" class="search-row" role="search">
-
-        <!-- Dropdown: searchTag (nickname | id) -->
         <div class="dropdown" id="searchTagDropdown">
-          <button type="button"
-                  class="dropdown-btn"
-                  id="tagButton"
-                  aria-haspopup="listbox"
-                  aria-expanded="false"
-                  aria-controls="tagMenu"
-                  th:text="${searchTag == 'id' ? 'UID' : '닉네임'}">
-            닉네임
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="#9fb3c3" d="M7 10l5 5 5-5z"></path>
-            </svg>
-          </button>
+          <button type="button" class="dropdown-btn" id="tagButton" aria-haspopup="listbox" aria-expanded="false" aria-controls="tagMenu"
+                  th:text="${param.searchTag} == 'id' ? 'UID' : '닉네임'">닉네임</button>
           <ul class="dropdown-menu" id="tagMenu" role="listbox" aria-labelledby="tagButton">
-            <li role="option" data-value="nickname"
-                th:classappend="${searchTag == null || searchTag != 'id'} ? ' selected'">
-              닉네임
-            </li>
-            <li role="option" data-value="id"
-                th:classappend="${searchTag == 'id'} ? ' selected'">
-              UID
-            </li>
+            <li role="option" data-value="nickname" th:classappend="${param.searchTag == null or param.searchTag != 'id'} ? ' selected'">닉네임</li>
+            <li role="option" data-value="id"        th:classappend="${param.searchTag == 'id'} ? ' selected'">UID</li>
           </ul>
-          <!-- 실제 전송 값 -->
-          <input type="hidden" name="searchTag" th:value="${searchTag == null ? 'nickname' : searchTag}" />
+          <input type="hidden" name="searchTag" th:value="${param.searchTag != null ? param.searchTag : 'nickname'}" />
         </div>
 
         <div class="search-group">
-          <!-- 검색 아이콘 -->
-          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#66c0f4" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 0 0 1.57-4.23 6.5 6.5 0 1 0-6.5 6.5 6.471 6.471 0 0 0 4.23-1.57l.27.28v.79L20 20.5 21.5 19 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-          </svg>
-          <input
-                  class="search-input"
-                  type="text"
-                  name="q"
-                  th:attr="placeholder=${searchTag} == 'id' ? 'UID로 검색' : '닉네임으로 검색'"
-                  th:value="${searchQuery}"
-                  autocomplete="off" />
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="#66c0f4" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 0 0 1.57-4.23 6.5 6.5 0 1 0-6.5 6.5 6.471 6.471 0 0 0 4.23-1.57l.27.28v.79L20 20.5 21.5 19 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input class="search-input" type="text" name="searchWord"
+                 th:placeholder="${param.searchTag == 'id' ? 'UID로 검색' : '닉네임으로 검색'}"
+                 th:value="${param.searchWord}" autocomplete="off" />
         </div>
 
-        <input type="hidden" name="page" th:value="${page != null ? page.number : 0}" />
-        <input type="hidden" name="size" th:value="${page != null ? page.size : 10}" />
+        <input type="hidden" name="pageNo" th:value="${members != null ? members.number : 0}" />
         <button type="submit" class="submit-btn">검색</button>
       </form>
     </section>
 
     <!-- 결과 메타 -->
-    <div th:if="${page != null}" class="result-meta">
-      <div th:text="|총 ${page.totalElements}건|">총 0건</div>
-      <div th:if="${#strings.isEmpty(searchQuery) == false}"
-           th:text="|키워드: '${searchQuery}' (${searchTag == 'id' ? 'UID' : '닉네임'})|">키워드: ''</div>
+    <div th:if="${members != null}" class="result-meta">
+      <div th:text="|총 ${members.totalElements}건|">총 0건</div>
+      <div th:if="${#strings.isEmpty(param.searchWord) == false}"
+           th:text="|키워드: '${param.searchWord}' (${param.searchTag == 'id' ? 'UID' : '닉네임'})|">키워드: ''</div>
     </div>
 
-    <!-- 결과 리스트 -->
-    <section th:if="${page != null}">
-      <div th:if="${page.totalElements == 0}" class="empty">
-        조건에 맞는 회원이 없습니다.
-      </div>
+    <!-- 결과 섹션 (검색 폼 '밖') -->
+    <section>
+      <div th:if="${members == null}" class="empty">조건에 맞는 회원이 없습니다.</div>
 
-      <div th:if="${page.totalElements > 0}" class="results">
-        <article class="member-card" th:each="m : ${page.content}">
-          <div class="avatar" th:text="${#strings.substring(m.name != null ? m.name : 'M',0,1)}">M</div>
-          <div class="m-info">
-            <div class="m-name" th:text="${m.name}">홍길동</div>
-            <div class="m-sub">
-              <span th:text="${m.email}">hong@example.com</span>
-              <span th:if="${m.nickname != null}" th:text="| · ${m.nickname}|"> · honggildong</span>
-              <span th:if="${m.status != null}" th:text="| · ${m.status}|"> · ACTIVE</span>
+      <div th:if="${members != null}">
+        <div th:if="${members.totalElements == 0}" class="empty">조건에 맞는 회원이 없습니다.</div>
+
+        <div th:if="${members.totalElements > 0}" class="results">
+          <article class="member-card" th:each="m : ${members.content}">
+            <img class="avatar"
+                 th:src="${#strings.isEmpty(m.avatarUrl) ? '/images/profile-image.jpg' : m.avatarUrl}"
+                 alt="프로필 이미지" loading="lazy" />
+            <div class="m-info">
+              <div class="m-name" th:text="${m.nickname}">홍길동</div>
+              <div class="m-sub">
+                <span th:text="${m.nickname}">honggildong</span>
+              </div>
             </div>
-          </div>
-          <a class="page-link" th:href="@{|/members/${m.id}|}">상세</a>
-        </article>
+
+            <!-- 2) redirect 값 보강: #httpServletRequest 없이 현재 목록 URL 구성 -->
+            <th:block th:switch="${m.friendshipState != null ? m.friendshipState.name() : 'NONE'}">
+              <span class="tag tag-ok"   th:case="'FRIENDS'">친구</span>
+              <span class="tag tag-wait" th:case="'INVITE_SENT'">대기중</span>
+              <form th:case="'INVITED'" th:action="@{/friendships/{id}(id=${m.id})}" method="post" style="margin:0">
+                <input type="hidden" name="_method" value="patch"/>
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-accept-friend">친구 수락</button>
+              </form>
+              <form th:case="'NONE'" th:action="@{/friendships}" method="post" style="margin:0">
+                <input type="hidden" name="toMemberId" th:value="${m.id}"/>
+                <input type="hidden" name="redirect"
+                       th:value="@{/members(
+                         searchWord=${param.searchWord != null ? param.searchWord : ''},
+                         searchTag=${param.searchTag  != null ? param.searchTag  : 'nickname'},
+                         pageNo=${members != null ? members.number : 0}
+                       )}"/>
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-add-friend">친구 추가</button>
+              </form>
+
+              <form th:case="*" th:action="@{/friendships}" method="post" style="margin:0">
+                <input type="hidden" name="toMemberId" th:value="${m.id}"/>
+                <input type="hidden" name="redirect"
+                       th:value="@{/members(
+                         searchWord=${param.searchWord != null ? param.searchWord : ''},
+                         searchTag=${param.searchTag  != null ? param.searchTag  : 'nickname'},
+                         pageNo=${members != null ? members.number : 0}
+                       )}"/>
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-add-friend">친구 추가</button>
+              </form>
+            </th:block>
+          </article>
+        </div>
+
+        <!-- 페이징 -->
+        <nav th:if="${members.totalPages > 1}" class="pagination" aria-label="페이지 네비게이션"
+             th:with="start=${members.number > 2 ? members.number - 2 : 0},
+                      end=${members.number + 2 < members.totalPages ? members.number + 2 : members.totalPages - 1}">
+          <a class="page-link" th:classappend="${members.first} ? 'disabled' : ''"
+             th:href="@{/members(searchWord=${param.searchWord},searchTag=${param.searchTag},pageNo=${members.number - 1})}">‹ 이전</a>
+
+          <a class="page-link" th:each="i : ${#numbers.sequence(start, end)}"
+             th:text="${i + 1}" th:classappend="${i == members.number} ? ' active' : ''"
+             th:href="@{/members(searchWord=${param.searchWord},searchTag=${param.searchTag},pageNo=${i})}">1</a>
+
+          <a class="page-link" th:classappend="${members.last} ? 'disabled' : ''"
+             th:href="@{/members(searchWord=${param.searchWord},searchTag=${param.searchTag},pageNo=${members.number + 1})}">다음 ›</a>
+        </nav>
       </div>
-
-      <!-- 페이징 -->
-      <nav th:if="${page.totalPages > 1}" class="pagination" aria-label="페이지 네비게이션">
-        <a class="page-link"
-           th:classappend="${page.first} ? ' disabled'"
-           th:href="@{/members(q=${searchQuery}, searchTag=${searchTag}, page=${page.number-1}, size=${page.size})}">
-          ‹ 이전
-        </a>
-
-        <span th:with="start=${T(java.lang.Math).max(0, page.number-2)},
-                       end=${T(java.lang.Math).min(page.totalPages-1, page.number+2)}">
-          <a class="page-link"
-             th:each="i : ${#numbers.sequence(start, end)}"
-             th:text="${i + 1}"
-             th:classappend="${i == page.number} ? ' active'"
-             th:href="@{/members(q=${searchQuery}, searchTag=${searchTag}, page=${i}, size=${page.size})}">1</a>
-        </span>
-
-        <a class="page-link"
-           th:classappend="${page.last} ? ' disabled'"
-           th:href="@{/members(q=${searchQuery}, searchTag=${searchTag}, page=${page.number+1}, size=${page.size})}">
-          다음 ›
-        </a>
-      </nav>
     </section>
 
   </div>
 </div>
 
-<!-- 최소 스크립트: 드롭다운 토글/선택/placeholder 동기화 -->
 <script>
   (function(){
     const dd = document.getElementById('searchTagDropdown');
@@ -314,45 +178,33 @@
 
     function setTag(value, label){
       hidden.value = value;
-      btn.firstChild.nodeValue = label; // 버튼 텍스트 업데이트
+      const textNode = Array.from(btn.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+      if(textNode){ textNode.nodeValue = label + ' '; }
       btn.setAttribute('aria-expanded','false');
       dd.classList.remove('open');
-      if(input){
-        input.placeholder = (value === 'id') ? 'UID로 검색' : '닉네임으로 검색';
-      }
+      if(input){ input.placeholder = (value === 'id') ? 'UID로 검색' : '닉네임으로 검색'; }
     }
 
     btn.addEventListener('click', function(e){
       e.preventDefault();
-      const isOpen = dd.classList.toggle('open');
-      btn.setAttribute('aria-expanded', String(isOpen));
+      btn.setAttribute('aria-expanded', String(dd.classList.toggle('open')));
     });
 
     menu.addEventListener('click', function(e){
-      const li = e.target.closest('li[role="option"]');
-      if(!li) return;
+      const li = e.target.closest('li[role="option"]'); if(!li) return;
       menu.querySelectorAll('li').forEach(x=>x.classList.remove('selected'));
       li.classList.add('selected');
-      const val = li.getAttribute('data-value');
-      const label = li.textContent.trim();
-      setTag(val, label);
+      setTag(li.getAttribute('data-value'), li.textContent.trim());
     });
 
     document.addEventListener('click', function(e){
-      if(!dd.contains(e.target)){
-        dd.classList.remove('open');
-        btn.setAttribute('aria-expanded','false');
-      }
+      if(!dd.contains(e.target)){ dd.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
     });
 
     document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape'){
-        dd.classList.remove('open');
-        btn.setAttribute('aria-expanded','false');
-      }
+      if(e.key === 'Escape'){ dd.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
     });
 
-    // 초기 placeholder 동기화 (서버 값 기준)
     if(input && hidden){
       input.placeholder = (hidden.value === 'id') ? 'UID로 검색' : '닉네임으로 검색';
     }

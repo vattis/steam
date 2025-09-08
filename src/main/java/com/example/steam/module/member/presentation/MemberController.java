@@ -2,6 +2,7 @@ package com.example.steam.module.member.presentation;
 
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.email.application.EmailService;
+import com.example.steam.module.friendship.application.FriendshipService;
 import com.example.steam.module.member.application.MemberGameService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
@@ -34,6 +35,7 @@ public class MemberController {
     private final MemberRepository memberRepository;
     private final MemberGameService memberGameService;
     private final MemberGameRepository memberGameRepository;
+    private final FriendshipService friendshipService;
     private int tempAuthNum; //임시 인증 번호 저장소 이후에 redis에 저장 예정
 
     @ResponseBody
@@ -98,12 +100,14 @@ public class MemberController {
     }
 
     @GetMapping("/members")
-    public String searchMember(@RequestParam("searchTag") String searchTag,
-                               @RequestParam("searchWord") String searchWord,
-                               @RequestParam(name = "pageNo", defaultValue = "0", required = false)int pageNo,
+    public String searchMember(@RequestParam(name = "searchTag",  defaultValue = "nickname") String searchTag,
+                               @RequestParam(name = "searchWord", defaultValue = "") String searchWord,
+                               @RequestParam(name = "pageNo",     defaultValue = "0") int pageNo,
+                               Principal principal,
                                Model model){
-        Page<SimpleMemberDto> memberDtos =  memberService.searchMember(MemberSearch.of(searchTag, searchWord), pageNo).map(SimpleMemberDto::from);
-        model.addAttribute("members", memberDtos);
+        Page<SimpleMemberDto> simpleMemberDtos =  memberService.searchMember(MemberSearch.of(searchTag, searchWord), pageNo, principal).map(SimpleMemberDto::from);
+        Page<SimpleMemberDto> result = memberService.attachFriendState(simpleMemberDtos, principal);
+        model.addAttribute("members", result);
         return "/member-search";
     }
 }
