@@ -1,5 +1,6 @@
 package com.example.steam.module.friendship.presentation;
 
+import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.friendship.application.FriendshipService;
 import com.example.steam.module.friendship.domain.FriendshipState;
 import com.example.steam.module.friendship.dto.SimpleFriendshipDto;
@@ -8,6 +9,8 @@ import com.example.steam.module.member.domain.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,20 @@ public class FriendshipController {
 
     private final MemberService memberService;
     private final FriendshipService friendshipService;
+    //친구 목록 조회
+    @GetMapping("/friendships/{loginMemberId}")
+    public String showFriendships(@PathVariable("loginMemberId") Long loginMemberId,
+                                  @RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo,
+                                  Principal principal, Model model){
+        Member member = memberService.findMemberByEmail(principal.getName());
+        if(!loginMemberId.equals(member.getId())){
+            log.info("잘못된 친구 목록 요청: 로그인 사용자 불일치 || loginMemberId ={}  requestMemberId ={}", member.getId(), loginMemberId);
+            return "redirect:/";
+        }
+        Page<SimpleFriendshipDto> friends = friendshipService.getFriends(loginMemberId, PageRequest.of(pageNo, PageConst.FRIENDS_PAGE_SIZE)).map(SimpleFriendshipDto::from);
+        model.addAttribute("friends", friends);
+        return "/friends";
+    }
 
     // 받은 친구 신청 조회 (INVITED로만 조회)
     @GetMapping("/friendships")

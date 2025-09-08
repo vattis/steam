@@ -28,6 +28,7 @@
     </style>
 </head>
 <body>
+<div th:replace="~{fragments/nav :: navbar(${currentUser})}"></div>
 <div class="wrap">
     <div class="container">
         <section class="card">
@@ -51,17 +52,16 @@
                     </div>
 
                     <div class="actions">
-                        <!-- 수락: PATCH /friendships/{id} (HiddenHttpMethodFilter 필요) -->
-                        <form th:action="@{/friendships/{id}(id=${inv.toMember.id})}" method="post">
-                            <input type="hidden" name="_method" value="patch"/>
-                            <input type="hidden" name="state" value="FRIENDS"/>
+                        <!-- 수락 -->
+                        <form th:action="@{/friendships/{toMemberId}(toMemberId=${inv.toMember.id})}" method="post">
+                            <input type="hidden" name="_method" value="PATCH"/>
                             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                             <button type="submit" class="btn">수락</button>
                         </form>
 
-                        <!-- 거절: DELETE /friendships/{id} -->
-                        <form th:action="@{/friendships/{id}(id=${inv.toMember.id})}" method="post">
-                            <input type="hidden" name="_method" value="delete"/>
+                        <!-- 거절 -->
+                        <form th:action="@{/friendships/{toMemberId}(toMemberId=${inv.fromMember.id})}" method="post">
+                            <input type="hidden" name="_method" value="DELETE"/>
                             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                             <button type="submit" class="btn btn-danger">거절</button>
                         </form>

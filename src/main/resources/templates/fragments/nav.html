@@ -124,6 +124,7 @@
 
           <!-- 드롭다운 메뉴 -->
           <div id="friendMenu" role="menu" aria-label="User quick actions">
+            <a class="friend-link" role="menuitem" th:href="@{/friendships/{memberId}(memberId=${currentUser.id})}">친구 목록</a>
             <a class="friend-link" role="menuitem" th:href="@{/members/search}">회원 검색</a>
             <a class="friend-link" role="menuitem" th:href="@{/friendships}">받은 초대</a>
           </div>

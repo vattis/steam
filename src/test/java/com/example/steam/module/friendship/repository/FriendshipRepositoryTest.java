@@ -1,5 +1,6 @@
 package com.example.steam.module.friendship.repository;
 
+import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.friendship.domain.Friendship;
 import com.example.steam.module.friendship.domain.FriendshipState;
 import com.example.steam.module.member.domain.Member;
@@ -8,6 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +109,27 @@ class FriendshipRepositoryTest {
         assertThat(friendship.get().getFromMember()).isEqualTo(fromMember1);
         assertThat(friendship.get().getToMember()).isEqualTo(toMember1);
     }
+
+    @Test
+    void findAllByFromMember_IdAndStateTest(){
+        //given
+        Member member1 = otherMembers.get(0);
+        Member member2 = members.get(0);
+        Pageable pageable = PageRequest.of(0, PageConst.FRIENDS_PAGE_SIZE);
+
+        //when
+        Page<Friendship> result1 = friendshipRepository.findAllByFromMember_IdAndState(member1.getId(), FriendshipState.INVITE_SENT, pageable);
+        Page<Friendship> result2 = friendshipRepository.findAllByFromMember_IdAndState(member2.getId(), FriendshipState.FRIENDS, pageable);
+
+
+        //then
+        assertThat(result1.stream().allMatch(f -> f.getFromMember().getId().equals(member1.getId()) && f.getState().equals(FriendshipState.INVITE_SENT)));
+        assertThat(result2.stream().allMatch(f -> f.getFromMember().getId().equals(member2.getId()) && f.getState().equals(FriendshipState.FRIENDS)));
+        assertThat(result1.getTotalElements()).isEqualTo(2);
+        assertThat(result2.getTotalElements()).isEqualTo(2);
+    }
+
+
 
     @Test
     void deleteByFromMemberIdAndToMemberId() {

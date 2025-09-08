@@ -7,6 +7,8 @@ import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +26,8 @@ public class FriendshipService {
     private final MemberRepository memberRepository;
 
     //해당 유저의 친구 관계 조회
-    public List<Friendship> getFriends(Long fromMemberId){
-        return friendshipRepository.findAllByFromMemberId(fromMemberId);
+    public Page<Friendship> getFriends(Long fromMemberId, Pageable pageable){
+        return friendshipRepository.findAllByFromMember_IdAndState(fromMemberId, FriendshipState.FRIENDS, pageable);
     }
 
     //친구 신청

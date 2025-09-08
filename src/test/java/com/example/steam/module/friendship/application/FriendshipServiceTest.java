@@ -1,5 +1,6 @@
 package com.example.steam.module.friendship.application;
 
+import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.friendship.domain.Friendship;
 import com.example.steam.module.friendship.domain.FriendshipState;
 import com.example.steam.module.friendship.repository.FriendshipRepository;
@@ -11,11 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,11 +33,14 @@ class FriendshipServiceTest {
     @Test
     void getFriends() {
         //given
-        List<Friendship> friendships = new ArrayList<>();
-        given(friendshipRepository.findAllByFromMemberId(1L)).willReturn(friendships);
+        Member member = Member.makeSample(1);
+        ReflectionTestUtils.setField(member, "id", 1L);
+        Page<Friendship> friendships = Page.empty();
+        Pageable pageable = PageRequest.of(0, PageConst.FRIENDS_PAGE_SIZE);
+        given(friendshipRepository.findAllByFromMember_IdAndState(member.getId(), FriendshipState.FRIENDS, pageable)).willReturn(friendships);
 
         //when
-        List<Friendship> friendshipPageResult = friendshipService.getFriends(1L);
+        Page<Friendship> friendshipPageResult = friendshipService.getFriends(member.getId(), pageable);
 
         //then
         assertThat(friendshipPageResult).isEqualTo(friendships);
