@@ -9,7 +9,6 @@ import com.example.steam.module.article.dto.ArticleWriteForm;
 import com.example.steam.module.article.dto.DetailArticleDto;
 import com.example.steam.module.article.dto.DetailArticleWithCommentDto;
 import com.example.steam.module.comment.application.ArticleCommentService;
-import com.example.steam.module.comment.domain.ArticleComment;
 import com.example.steam.module.comment.dto.ArticleCommentDto;
 import com.example.steam.module.gallery.application.GalleryService;
 import com.example.steam.module.gallery.domain.Gallery;

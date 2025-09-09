@@ -5,7 +5,6 @@ import com.example.steam.module.comment.application.ProductCommentService;
 import com.example.steam.module.comment.dto.ProductCommentDto;
 import com.example.steam.module.member.repository.MemberRepository;
 import com.example.steam.module.product.application.ProductService;
-import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.domain.ProductSearch;
 import com.example.steam.module.product.domain.ProductSearchTag;
 import com.example.steam.module.product.dto.DetailProductDto;
@@ -66,7 +65,7 @@ public class ProductController {
         model.addAttribute("product", productDto);
         model.addAttribute("productCommentDtoPage", productCommentDtoPage);
         model.addAttribute("productWithComment", new ProductWithCommentDto(productDto, productCommentDtoPage));
-        return "/product";
+        return "/product/product";
     }
 
     @GetMapping("/product/search")
@@ -80,7 +79,7 @@ public class ProductController {
         model.addAttribute("searchWord", searchWord);
         model.addAttribute("searchTag", searchTag);
         model.addAttribute("searchResults", products);
-        return "/searchProduct";
+        return "/product/searchProduct";
     }
 
 }

@@ -3,25 +3,19 @@ package com.example.steam.module.gallery.presentation;
 import com.example.steam.module.gallery.application.GalleryService;
 import com.example.steam.module.gallery.domain.SimpleGalleryDto;
 import com.example.steam.module.member.application.MemberService;
-import com.example.steam.module.member.domain.Member;
-import com.example.steam.module.member.domain.MemberGame;
-import com.example.steam.module.member.dto.SimpleMemberGameDto;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Controller
 @Slf4j
@@ -42,7 +36,7 @@ public class GalleryController {
             model.addAttribute("ownedGalleries", ownedGalleries);
         }
         model.addAttribute("galleries", galleries);
-        return "/gallery-list";
+        return "/gallery/gallery-list";
     }
 
     //갤러리 검색
@@ -53,6 +47,6 @@ public class GalleryController {
         Page<SimpleGalleryDto> galleryDtos = galleryService.search(searchWord, pageNo).map(SimpleGalleryDto::from);
         model.addAttribute("galleries", galleryDtos);
         model.addAttribute("searchWord", searchWord);
-        return "/gallery-search";
+        return "/gallery/gallery-search";
     }
 }

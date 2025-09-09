@@ -39,7 +39,7 @@ public class FriendshipController {
         }
         Page<SimpleFriendshipDto> friends = friendshipService.getFriends(loginMemberId, PageRequest.of(pageNo, PageConst.FRIENDS_PAGE_SIZE)).map(SimpleFriendshipDto::from);
         model.addAttribute("friends", friends);
-        return "/friends";
+        return "/friend/friends";
     }
 
     // 받은 친구 신청 조회 (INVITED로만 조회)
@@ -58,7 +58,7 @@ public class FriendshipController {
                 .stream().map(SimpleFriendshipDto::from).toList();
 
         model.addAttribute("result", result);
-        return "/invited-friendship"; // templates/friends-invitations.html
+        return "/friend/invited-friendship"; // templates/friends-invitations.html
     }
 
     // 친구 신청 (POST)

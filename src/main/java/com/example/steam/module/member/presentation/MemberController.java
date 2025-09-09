@@ -6,7 +6,6 @@ import com.example.steam.module.friendship.application.FriendshipService;
 import com.example.steam.module.member.application.MemberGameService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
-import com.example.steam.module.member.domain.MemberGame;
 import com.example.steam.module.member.dto.MemberGameDto;
 import com.example.steam.module.member.dto.MemberSearch;
 import com.example.steam.module.member.dto.ProfileDto;
@@ -83,7 +82,7 @@ public class MemberController {
             MemberGameDto selectedGame = memberGameService.findDtoById(selectedGameId);
             model.addAttribute("selectedGame", selectedGame);
         }
-        return "/library";
+        return "/member/library";
     }
 
     //유저 프로필 이동
@@ -91,7 +90,7 @@ public class MemberController {
     public String gotoMyPage(@PathVariable("memberId") Long memberId, @RequestParam(name = "commentPageNum", required = false, defaultValue = "0") int commentPageNum, Model model) {
         ProfileDto profileDto = memberService.getProfile(memberId, PageRequest.of(commentPageNum, PageConst.PROFILE_COMMENT_PAGE_SIZE));
         model.addAttribute("profileDto", profileDto);
-        return "/profile";
+        return "/member/profile";
     }
 
     @GetMapping("/members/search")
@@ -108,6 +107,6 @@ public class MemberController {
         Page<SimpleMemberDto> simpleMemberDtos =  memberService.searchMember(MemberSearch.of(searchTag, searchWord), pageNo, principal).map(SimpleMemberDto::from);
         Page<SimpleMemberDto> result = memberService.attachFriendState(simpleMemberDtos, principal);
         model.addAttribute("members", result);
-        return "/member-search";
+        return "/member/member-search";
     }
 }
