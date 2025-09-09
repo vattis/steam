@@ -21,18 +21,18 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
             and ((c.created < :prevTs) or (c.created = :prevTs and c.id < :prevId))
             order by c.created desc, c.id desc
             """)
-    List<Chat> findHistoryChat(@Param("roomId") Long roomId,
-                               @Param("prevTs") LocalDateTime prevCursorTime,
+    List<Chat> findHistoryChat(@Param("chatRoomId") Long chatRoomId,
+                               @Param("prevTs") LocalDateTime prevTs,
                                @Param("prevId") Long prevId,
                                Pageable pageable);
 
     @Query(value = """
-           select case when count(c) > 0 then true else false end
+           select (case when count(c) > 0 then true else false end)
            from Chat c
            where c.chatRoom.id = :chatRoomId
-           and (c.created < :prevTs) or (c.created = :prevTs and c.id < :prevId)
+           and ((c.created < :prevTs) or (c.created = :prevTs and c.id < :prevId))
            """)
-    boolean existsHistoryChat(@Param("roomId") Long roomId,
+    boolean existsHistoryChat(@Param("chatRoomId") Long chatRoomId,
                               @Param("prevTs") LocalDateTime prevTs,
                               @Param("prevId") Long prevId);
 }

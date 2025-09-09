@@ -11,8 +11,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class ChatConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // stomp 접속 주소 url = ws://localhost:8080/ws
-        registry.addEndpoint("/ws") // 연결될 엔드포인트
+        // stomp 접속 주소 url = ws://localhost:8080/ws-stomp
+        registry.addEndpoint("/ws-stomp") // 연결될 엔드포인트
                 .setAllowedOrigins("*");
     }
 
