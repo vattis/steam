@@ -17,8 +17,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("""
         select cr from ChatRoom cr
-        where (cr.member1 = :member1Id and cr.member2 = :member2Id)
-        or (cr.member2 = :member1Id and cr.member1 = :member2Id)
+        where (cr.member1.id = :member1Id and cr.member2.id = :member2Id)
+        or (cr.member2.id = :member1Id and cr.member1.id = :member2Id)
 """)
     Optional<ChatRoom> findByMembers(Long member1Id, Long member2Id);
 }
