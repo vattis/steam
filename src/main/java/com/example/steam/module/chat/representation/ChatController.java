@@ -10,6 +10,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 
@@ -29,6 +31,12 @@ public class ChatController {
                          Principal principal) {
         Member member = memberService.findMemberByEmail(principal.getName());
         chatService.sendMessage(chatRoomId, member.getId(), content);
+    }
+
+    @GetMapping("/ping")
+    @ResponseBody
+    public String ping(){
+        return "pong";
     }
 
 }

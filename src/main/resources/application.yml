@@ -4,7 +4,7 @@ spring:
       "local": "common, h2"
       "dev": "common, mysql"
       "prod": "common, mysql"
-
+      "dev-load-test": "common, mysql, load"
 ---
 
 spring:
@@ -101,3 +101,19 @@ management:
           http.server.requests: 0.5,0.95,0.99
         percentiles-histogram:
           http.server.requests: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: load
+logging:
+  level:
+    org.springframework.web.socket: WARN
+    org.springframework.messaging: WARN
+server:
+  tomcat:
+    threads:
+      max: 400
+    accept-count: 10000
+    max-connections: 20000
