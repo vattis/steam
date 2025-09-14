@@ -109,8 +109,11 @@ spring:
       on-profile: load
 logging:
   level:
-    org.springframework.web.socket: WARN
-    org.springframework.messaging: WARN
+    org:
+      springframework:
+        web:
+          socket: DEBUG
+          messaging: DEBUG
 server:
   tomcat:
     threads:

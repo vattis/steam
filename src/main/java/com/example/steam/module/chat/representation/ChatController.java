@@ -5,6 +5,7 @@ import com.example.steam.module.chat.application.ChatService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 
+@Profile("!load")
 @Controller
 @RequiredArgsConstructor
 public class ChatController {

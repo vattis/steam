@@ -14,9 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +38,10 @@ public class ChatService {
 
     //메세지 보내기
     public Chat sendMessage(Long chatRoomId, Long memberId, String message){
+        if(message.length() > 400){
+            log.info("너무 긴 메세지 전송 시도");
+            throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE);
+        }
         Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(NoSuchElementException::new);
         if(!chatRoom.checkMember(memberId)){
@@ -45,6 +51,7 @@ public class ChatService {
         }
         Chat chat = chatRepository.save(Chat.of(member, chatRoom, message));
         ChatDto chatDto = ChatDto.from(chat);
+        log.info("[WS OUT] /sub/chat/{} -> {}", chatRoomId, chatDto);
         messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chatDto);
         return chat;
     }

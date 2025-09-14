@@ -10,13 +10,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @Profile("load")
 @Configuration
 public class LoadTestSecurityConfig {
+    @Order(1)
     @Bean
-    @Order(1) //다른 필터가 먼저 적용되면 패스가 안되므로
-    SecurityFilterChain wsPass(HttpSecurity http) throws Exception{
+    SecurityFilterChain wsPass(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/ws/**")
+                .securityMatcher("/ws-stomp", "/ws-stomp/**") // ← 정확 매칭 추가
                 .authorizeHttpRequests(a -> a.anyRequest().permitAll())
-                .csrf(csrf->csrf.disable())
+                .csrf(csrf -> csrf.disable())
                 .build();
     }
 
