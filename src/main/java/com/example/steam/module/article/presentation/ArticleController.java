@@ -14,6 +14,7 @@ import com.example.steam.module.gallery.application.GalleryService;
 import com.example.steam.module.gallery.domain.Gallery;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,7 +42,7 @@ public class ArticleController {
         Page<ArticleDto> articlePage = articleService.findAllByGalleryId(gallery.getId(), pageNo).map(ArticleDto::from);
         model.addAttribute("articleDto", articlePage);
         model.addAttribute("galleryId", gallery.getId());
-        return "/gallery";
+        return "/gallery/gallery";
     }
 
     //개시물 작성 폼으로 이동
@@ -51,7 +52,7 @@ public class ArticleController {
         ArticleWriteForm articleWriteForm = ArticleWriteForm.of(galleryName);
         model.addAttribute("articleWriteForm", articleWriteForm);
         model.addAttribute("galleryName", gallery.getProduct().getName());
-        return "/writeArticle";
+        return "/article/writeArticle";
     }
 
     //게시물 작성
@@ -60,8 +61,8 @@ public class ArticleController {
         if(principal == null){ //비로그인 시 로그인 화면으로
             return "redirect:/login";
         }
-        Member member = memberService.findMemberByEmail(principal.getName());
-        Article article = articleService.saveArticle(articleWriteForm, member);
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
+        Article article = articleService.saveArticle(articleWriteForm, member.getId());
         return "redirect:/article/"+ article.getId();
     }
 
@@ -74,7 +75,7 @@ public class ArticleController {
         Page<ArticleCommentDto> articleCommentDtoPage = articleCommentService.findArticleCommentByArticleId(articleId, pageNo).map(ArticleCommentDto::from);
         DetailArticleWithCommentDto detailArticleWithCommentDto = DetailArticleWithCommentDto.of(DetailArticleDto.from(article), articleCommentDtoPage);
         model.addAttribute("articleCommentDto", detailArticleWithCommentDto);
-        return "/article";
+        return "/article/article";
     }
 
     //게시물 검색
@@ -91,15 +92,15 @@ public class ArticleController {
         model.addAttribute("articleDtos", articleDtos);
         model.addAttribute("galleryName", galleryName);
         model.addAttribute("searchWord", searchWord);
-        return "search-article";
+        return "/article/search-article";
     }
 
     //게시물 삭제
     @DeleteMapping("/article/{articleId}")
     public String deleteArticle(@PathVariable("articleId") Long articleId,
                                 Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
-        String galleryName = articleService.deleteArticle(articleId, member);
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
+        String galleryName = articleService.deleteArticle(articleId, member.getId());
         return "redirect:/gallery/" + galleryName;
     }
 

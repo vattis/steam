@@ -11,6 +11,7 @@ import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.dto.*;
 import com.example.steam.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
@@ -41,7 +43,7 @@ public class MemberService {
     }
 
     //회원 정보 수정
-    @CachePut(value = "SpringCache", key = "#signUpForm.email")
+    //@CachePut(value = "SpringCache", key = "#signUpForm.email")
     public Member updateMember(SignUpForm signUpForm){
         if(!signUpForm.isValid()){
             throw new RuntimeException();
@@ -56,9 +58,14 @@ public class MemberService {
     }
 
     //이메일을 통한 회원 검색
-    @Cacheable(value="SpringCache", key = "'member:' + #email", unless = "#result == null")
-    public Member findMemberByEmail(String email){
-        return memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new); }
+    @Cacheable(value="memberByEmail",
+            key = "'login-member:' + T(org.springframework.util.DigestUtils).md5DigestAsHex(#email.bytes)",
+            unless = "#result == null")
+    public SimpleMemberDto findMemberDtoByEmail(String email){
+        Member member = memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
+        return SimpleMemberDto.from(member);
+    }
+
 
     //회원가입 유효성 검증
     public boolean isValid(SignUpForm signUpForm){

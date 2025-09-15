@@ -6,6 +6,7 @@ import com.example.steam.module.chat.domain.ChatRoom;
 import com.example.steam.module.chat.dto.ChatRoomDto;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -26,7 +27,7 @@ public class ChatRoomController {
     //채팅방 입장
     @GetMapping("/chatRoom/{partnerId}")
     private String gotoChatRoom(@PathVariable Long partnerId, Principal principal, Model model){
-        Member loginMember = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto loginMember = memberService.findMemberDtoByEmail(principal.getName());
         ChatRoom chatRoom = chatRoomService.getChatRoomByMemberIds(partnerId, loginMember.getId());
         if(!chatRoom.checkMember(loginMember.getId())){
             log.info("권한이 없는 채팅방 입장 시도: chatRoom = {} , member = {}", chatRoom.getId(), loginMember.getId());

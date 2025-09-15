@@ -33,7 +33,8 @@ public class ArticleCommentService {
     }
 
     //댓글 달기
-    public ArticleComment makeArticleComment(Member member, Article article, String content){
+    public ArticleComment makeArticleComment(Long memberId, Article article, String content){
+        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
         ArticleComment articleComment = ArticleComment.of(member, article, content);
         return articleCommentRepository.save(articleComment);
     }
@@ -45,9 +46,9 @@ public class ArticleCommentService {
     }
 
     //댓글 삭제
-    public boolean deleteArticleComment(ArticleComment articleComment, Member member){
+    public boolean deleteArticleComment(ArticleComment articleComment, Long memberId){
         Article article = articleComment.getArticle();
-        if(!articleComment.getMember().getId().equals(member.getId())){
+        if(!articleComment.getMember().getId().equals(memberId)){
             log.info("잘못된 ArticleComment 삭제:: 회원 불일치");
             return false;
         }

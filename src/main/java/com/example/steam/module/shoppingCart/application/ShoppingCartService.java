@@ -36,7 +36,8 @@ public class ShoppingCartService {
     private final ProductService productService;
 
     //장바구니 목록 조회
-    public Page<ShoppingCartProduct> getShoppingCartProducts(Member member, int pageNo){
+    public Page<ShoppingCartProduct> getShoppingCartProducts(Long memberId, int pageNo){
+        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
         PageRequest pageRequest = PageRequest.of(pageNo, PageConst.SHOPPING_CART_PRODUCT_PAGE_SIZE);
         return shoppingCartProductRepository.findAllByShoppingCartId(member.getShoppingCart().getId(), pageRequest);
     }
@@ -47,8 +48,8 @@ public class ShoppingCartService {
     }
 
     //장바구니 상품 삭제
-    public void removeShoppingCartProduct(ShoppingCartProduct shoppingCartProduct, Member member){
-        if(!shoppingCartProduct.getShoppingCart().getMember().getId().equals(member.getId())){
+    public void removeShoppingCartProduct(ShoppingCartProduct shoppingCartProduct, Long memberId){
+        if(!shoppingCartProduct.getShoppingCart().getMember().getId().equals(memberId)){
             log.info("잘못된 ShoppingCartProduct 삭제 요청::사용자 불일치");
             return;
         }

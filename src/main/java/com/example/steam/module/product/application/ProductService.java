@@ -77,8 +77,8 @@ public class ProductService {
     }
 
     //인기 게임 5개 찾기
-    @Cacheable(value="SpringCache", key = "'ProductBanner:top5'",
-                unless = "#result == null || #result.isEmpty()")
+    //@Cacheable(value="SpringCache", key = "'ProductBanner:top5'",
+    //            unless = "#result == null || #result.isEmpty()")
     public Page<SimpleProductBannerDto> findTop5PopularProductBanner(){
         Pageable pageable = PageRequest.of(0, PageConst.PRODUCTS_BANNER_SIZE);
         return productRepository.findAllByOrderByDownloadNum(pageable);

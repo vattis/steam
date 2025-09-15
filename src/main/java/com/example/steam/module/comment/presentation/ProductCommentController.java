@@ -4,6 +4,7 @@ import com.example.steam.module.comment.application.ProductCommentService;
 import com.example.steam.module.comment.domain.ProductComment;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -24,15 +25,15 @@ public class ProductCommentController {
                               @RequestParam("content") String content,
                               @RequestParam("rating") Float rate,
                               Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
-        productCommentService.makeProductComment(member, productId, content, rate);
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
+        productCommentService.makeProductComment(member.getId(), productId, content, rate);
         return "redirect:/product/"+productId;
     }
     @DeleteMapping("/productComment/{productCommentId}")
     String deleteProductComment(@PathVariable("productCommentId") Long productCommentId, Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         ProductComment productComment = productCommentService.findById(productCommentId);
-        productCommentService.deleteProductComment(productComment, member);
+        productCommentService.deleteProductComment(productComment, member.getId());
         return "redirect:/product/" + productComment.getProduct().getId();
     }
 }

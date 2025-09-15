@@ -10,8 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    @Cacheable(value="SpringCache", key = "'member:' + #email", unless = "#result == null")
+
     Optional<Member> findByEmail(String email);
+
     boolean existsByEmail(String email);
 
     Page<Member> findAllByNicknameContaining(String searchWord, Pageable pageable);

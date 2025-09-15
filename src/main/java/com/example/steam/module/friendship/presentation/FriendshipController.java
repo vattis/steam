@@ -6,6 +6,7 @@ import com.example.steam.module.friendship.domain.FriendshipState;
 import com.example.steam.module.friendship.dto.SimpleFriendshipDto;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class FriendshipController {
     public String showFriendships(@PathVariable("loginMemberId") Long loginMemberId,
                                   @RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo,
                                   Principal principal, Model model){
-        Member member = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         if(!loginMemberId.equals(member.getId())){
             log.info("잘못된 친구 목록 요청: 로그인 사용자 불일치 || loginMemberId ={}  requestMemberId ={}", member.getId(), loginMemberId);
             return "redirect:/";
@@ -53,7 +54,7 @@ public class FriendshipController {
             return "redirect:/friendships?state=INVITED";
         }
 
-        Member loginMember = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto loginMember = memberService.findMemberDtoByEmail(principal.getName());
         List<SimpleFriendshipDto> result = friendshipService.getFriendRequest(loginMember.getId())
                 .stream().map(SimpleFriendshipDto::from).toList();
 
@@ -68,7 +69,7 @@ public class FriendshipController {
                                 @RequestParam(value = "redirect", required = false) String redirect,
                                 HttpServletRequest req,
                                 RedirectAttributes ra) {
-        Member loginMember = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto loginMember = memberService.findMemberDtoByEmail(principal.getName());
         friendshipService.inviteFriend(loginMember.getId(), toMemberId);
         ra.addFlashAttribute("msg", "친구 초대를 보냈습니다.");
 
@@ -81,7 +82,7 @@ public class FriendshipController {
     public String acceptFriendship(@PathVariable Long toMemberId, Principal principal,
                                    @RequestParam(value = "redirect", required = false) String redirect,
                                    HttpServletRequest req){
-        Member loginMember = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto loginMember = memberService.findMemberDtoByEmail(principal.getName());
         friendshipService.acceptFriend(loginMember.getId(), toMemberId);
         return "redirect:" + resolveRedirect(redirect, req, "/members");
     }
@@ -91,7 +92,7 @@ public class FriendshipController {
     public String declineFriendship(@PathVariable Long toMemberId, Principal principal,
                                     @RequestParam(value = "redirect", required = false) String redirect,
                                     HttpServletRequest req){
-        Member loginMember = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto loginMember = memberService.findMemberDtoByEmail(principal.getName());
         friendshipService.removeFriendship(loginMember.getId(), toMemberId);
         return "redirect:" + resolveRedirect(redirect, req, "/members");
     }

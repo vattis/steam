@@ -2,6 +2,7 @@ package com.example.steam.module.shoppingCart.presentation;
 
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import com.example.steam.module.product.application.ProductService;
 import com.example.steam.module.shoppingCart.application.ShoppingCartService;
 import com.example.steam.module.shoppingCart.dto.SimpleShoppingCartProductDto;
@@ -26,8 +27,8 @@ public class ShoppingCartController {
     @GetMapping("/shoppingCart")
     public String shoppingCart(@RequestParam(name = "pageNo", required = false, defaultValue = "0") int pageNo,
                                Principal principal, Model model){
-        Member member = memberService.findMemberByEmail(principal.getName());
-        Page<SimpleShoppingCartProductDto> shoppingCartProductPage = shoppingCartService.getShoppingCartProducts(member, pageNo).map(SimpleShoppingCartProductDto::from);
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
+        Page<SimpleShoppingCartProductDto> shoppingCartProductPage = shoppingCartService.getShoppingCartProducts(member.getId(), pageNo).map(SimpleShoppingCartProductDto::from);
         model.addAttribute("shoppingCartProductPage", shoppingCartProductPage);
         return "/member/shopping-cart";
     }

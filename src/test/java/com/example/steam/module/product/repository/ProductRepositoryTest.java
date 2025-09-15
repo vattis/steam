@@ -3,6 +3,8 @@ package com.example.steam.module.product.repository;
 import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.company.repository.CompanyRepository;
+import com.example.steam.module.discount.domain.Discount;
+import com.example.steam.module.discount.repository.DiscountRepository;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.dto.SimpleProductBannerDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,20 +25,25 @@ class ProductRepositoryTest {
 
     @Autowired private CompanyRepository companyRepository;
     @Autowired private ProductRepository productRepository;
-
+    @Autowired private DiscountRepository discountRepository;
 
     @BeforeEach
     void setUp() {
         List<Company> companies = new ArrayList<>();
         List<Product> products = new ArrayList<>();
+        List<Discount> discounts = new ArrayList<>();
+
         for(int i = 1; i <= 10; i++) {
             companies.add(Company.makeSample(i));
         }
         for(int i = 1; i <= 100; i++){
-            products.add(Product.makeSample(i, companies.get(i%10)));
+            Product product = Product.makeSample(i, companies.get(i%10));
+            products.add(product);
+            discounts.add(Discount.makeSample(i, product));
         }
         companyRepository.saveAll(companies);
         productRepository.saveAll(products);
+        discountRepository.saveAll(discounts);
     }
 
     @Test

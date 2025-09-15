@@ -6,6 +6,7 @@ import com.example.steam.module.comment.application.ArticleCommentService;
 import com.example.steam.module.comment.domain.ArticleComment;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -26,17 +27,18 @@ public class ArticleCommentController {
 
     @PostMapping("/articleComment")
     public String postArticleComment(@RequestParam("articleId") Long articleId, @RequestParam("commentContent") String articleCommentContent, Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         Article article = articleService.findArticle(articleId);
-        articleCommentService.makeArticleComment(member, article, articleCommentContent);
+        articleCommentService.makeArticleComment(member.getId(), article, articleCommentContent);
         return "redirect:/article/" + articleId;
     }
+
     @DeleteMapping("/articleComment/{articleCommentId}")
     public String deleteArticleComment(@PathVariable("articleCommentId") Long articleCommentId, Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         ArticleComment articleComment = articleCommentService.findById(articleCommentId);
         Article article = articleComment.getArticle();
-        articleCommentService.deleteArticleComment(articleComment, member);
+        articleCommentService.deleteArticleComment(articleComment, member.getId());
         return "redirect:/article/" + article.getId();
     }
 }

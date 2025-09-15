@@ -67,16 +67,17 @@ public class ArticleService {
     }
 
     //article 저장
-    public Article saveArticle(ArticleWriteForm articleWriteForm, Member member){
+    public Article saveArticle(ArticleWriteForm articleWriteForm, Long memberId){
+        Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
         Gallery gallery = galleryRepository.findByProduct_Name(articleWriteForm.getGalleryName()).orElseThrow(NoSuchElementException::new);
         Article article = Article.of(gallery, member, articleWriteForm.getTitle(), articleWriteForm.getContent());
         return articleRepository.save(article);
     }
 
-    public String deleteArticle(Long articleId, Member member){
+    public String deleteArticle(Long articleId, Long memberId){
         Article article = articleRepository.findById(articleId).orElseThrow(NoSuchElementException::new);
         String galleryName = article.getGallery().getProduct().getName();
-        if(article.getMember().getId() != member.getId()){
+        if(!article.getMember().getId().equals(memberId)){
             log.info("잘못된 Article 삭제 요청::로그인 사용자 불일치");
             return galleryName;
         }

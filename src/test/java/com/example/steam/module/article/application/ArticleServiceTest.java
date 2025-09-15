@@ -156,12 +156,14 @@ class ArticleServiceTest {
         Gallery gallery = Gallery.makeSample(product);
         ArticleWriteForm articleWriteForm = ArticleWriteForm.of(gallery.getProduct().getName(), title, content);
         Member member = Member.makeSample(sampleNum);
+        ReflectionTestUtils.setField(member, "id", 1L);
         Article article = Article.of(gallery, member, title, content);
         given(galleryRepository.findByProduct_Name(gallery.getProduct().getName())).willReturn(Optional.of(gallery));
         given(articleRepository.save(any(Article.class))).willReturn(article);
+        given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
 
         //when
-        Article articleResult = articleService.saveArticle(articleWriteForm, member);
+        Article articleResult = articleService.saveArticle(articleWriteForm, member.getId());
 
         //then
         assertThat(articleResult.getContent()).isEqualTo(article.getContent());

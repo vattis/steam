@@ -6,6 +6,7 @@ import com.example.steam.module.comment.repository.ProductCommentRepository;
 import com.example.steam.module.company.domain.Company;
 import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.domain.MemberGame;
+import com.example.steam.module.member.repository.MemberRepository;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,7 @@ class ProductCommentServiceTest {
     @InjectMocks ProductCommentService productCommentService;
     @Mock ProductRepository productRepository;
     @Mock ProductCommentRepository productCommentRepository;
+    @Mock MemberRepository memberRepository;
 
     private Member member;
     private Company company;
@@ -61,9 +63,10 @@ class ProductCommentServiceTest {
         MemberGame.of(product, member);
         given(productRepository.findById(product.getId())).willReturn(Optional.of(product));
         given(productCommentRepository.save(any(ProductComment.class))).willReturn(productComment);
+        given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
 
         //when
-        productCommentService.makeProductComment(member, product.getId(), productComment.getContent(), productComment.getRate());
+        productCommentService.makeProductComment(member.getId(), product.getId(), productComment.getContent(), productComment.getRate());
 
         //then
         verify(productRepository).findById(product.getId());
@@ -98,7 +101,7 @@ class ProductCommentServiceTest {
         //given
 
         //when
-        boolean result = productCommentService.deleteProductComment(productComment, member);
+        boolean result = productCommentService.deleteProductComment(productComment, member.getId());
 
 
         //then
@@ -116,7 +119,7 @@ class ProductCommentServiceTest {
         ReflectionTestUtils.setField(member, "id", 5L);
 
         //when
-        boolean result = productCommentService.deleteProductComment(productComment, otherMember);
+        boolean result = productCommentService.deleteProductComment(productComment, otherMember.getId());
 
         //then
         assertThat(result).isFalse();

@@ -95,7 +95,7 @@ public class MemberController {
 
     @GetMapping("/members/search")
     public String gotoMemberSearchPage(){
-        return "/member-search";
+        return "/member/member-search";
     }
 
     @GetMapping("/members")

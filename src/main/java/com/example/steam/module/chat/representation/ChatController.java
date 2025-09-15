@@ -4,6 +4,7 @@ import com.example.steam.module.chat.application.ChatRoomService;
 import com.example.steam.module.chat.application.ChatService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -31,7 +32,7 @@ public class ChatController {
     public void sendChat(@DestinationVariable Long chatRoomId,
                            @Payload String content,
                          Principal principal) {
-        Member member = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         chatService.sendMessage(chatRoomId, member.getId(), content);
     }
 

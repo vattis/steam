@@ -59,15 +59,17 @@ class ArticleCommentServiceTest {
         ReflectionTestUtils.setField(article, "id", 1L); // ID 고정
         articleComment = ArticleComment.of(member, article, commentContent);
         ReflectionTestUtils.setField(articleComment, "id", 1L);
+        ReflectionTestUtils.setField(member, "id", 1L);
     }
 
     @Test
     void makeArticleCommentTest() {
         //given
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
+        given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
 
         //when
-        ArticleComment articleCommentResult = articleCommentService.makeArticleComment(member, article, commentContent);
+        ArticleComment articleCommentResult = articleCommentService.makeArticleComment(member.getId(), article, commentContent);
 
         //then
         assertThat(articleCommentResult.getContent()).isEqualTo(commentContent);
@@ -103,7 +105,7 @@ class ArticleCommentServiceTest {
         //given
 
         //when
-        boolean result = articleCommentService.deleteArticleComment(articleComment, member);
+        boolean result = articleCommentService.deleteArticleComment(articleComment, member.getId());
 
 
         //then
@@ -121,7 +123,7 @@ class ArticleCommentServiceTest {
         ReflectionTestUtils.setField(requestMember, "id", 5L);
 
         //when
-        Boolean result = articleCommentService.deleteArticleComment(articleComment, requestMember);
+        Boolean result = articleCommentService.deleteArticleComment(articleComment, requestMember.getId());
 
         //then
         assertThat(result).isFalse();

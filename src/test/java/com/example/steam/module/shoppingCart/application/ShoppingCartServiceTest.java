@@ -60,9 +60,10 @@ class ShoppingCartServiceTest {
         ShoppingCart shoppingCart = member.getShoppingCart();
         ReflectionTestUtils.setField(shoppingCart, "id", 1L);
         Optional<Member> optional = Optional.of(member);
+        given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
 
         //when
-        shoppingCartService.getShoppingCartProducts(member, pageNo);
+        shoppingCartService.getShoppingCartProducts(member.getId(), pageNo);
 
         //then
         verify(shoppingCartProductRepository, times(1)).findAllByShoppingCartId(eq(shoppingCart.getId()), any(PageRequest.class));
@@ -75,9 +76,11 @@ class ShoppingCartServiceTest {
         Product product = Product.makeSample(1, Company.makeSample(1));
         ShoppingCart shoppingCart = ShoppingCart.of(member);
         ShoppingCartProduct shoppingCartProduct = ShoppingCartProduct.of(shoppingCart, product);
+        ReflectionTestUtils.setField(shoppingCartProduct, "id", 1L);
+        ReflectionTestUtils.setField(member, "id", 1L);
 
         //when
-        shoppingCartService.removeShoppingCartProduct(shoppingCartProduct, member);
+        shoppingCartService.removeShoppingCartProduct(shoppingCartProduct, member.getId());
 
         //then
         verify(shoppingCartProductRepository, times(1)).delete(shoppingCartProduct);

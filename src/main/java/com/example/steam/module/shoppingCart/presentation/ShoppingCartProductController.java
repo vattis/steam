@@ -2,6 +2,7 @@ package com.example.steam.module.shoppingCart.presentation;
 
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import com.example.steam.module.product.application.ProductService;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.shoppingCart.application.ShoppingCartService;
@@ -25,7 +26,7 @@ public class ShoppingCartProductController {
 
     @PostMapping("/shoppingCartProduct/{productId}")
     public String addShoppingCartProduct(@PathVariable("productId") Long productId, Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         Product product = productService.findById(productId);
         shoppingCartService.addShoppingCartProduct(member.getId(), product.getId());
         return "redirect:/product/" + productId;
@@ -33,9 +34,9 @@ public class ShoppingCartProductController {
 
     @DeleteMapping("/shoppingCartProduct/{shoppingCartProductId}")
     public String deleteShoppingCartProduct(@PathVariable("shoppingCartProductId") Long shoppingCartProductId, Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         ShoppingCartProduct shoppingCartProduct = shoppingCartService.findById(shoppingCartProductId);
-        shoppingCartService.removeShoppingCartProduct(shoppingCartProduct, member);
+        shoppingCartService.removeShoppingCartProduct(shoppingCartProduct, member.getId());
         return "redirect:/shoppingCart";
     }
 

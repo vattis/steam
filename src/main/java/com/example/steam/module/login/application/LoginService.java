@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoginService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final CacheManager cacheManager;
 
     public JwtToken login(LoginForm loginForm) {
         //검증되지 않은 AuthenticationToken
@@ -40,6 +43,7 @@ public class LoginService {
         //JwtToken 생성
     }
 
+
     public void logout(HttpServletRequest request, HttpServletResponse response){
         try{
             String accessToken = jwtProvider.resolveAccessToken(request);
@@ -48,6 +52,7 @@ public class LoginService {
             long refreshExpire = jwtProvider.parseClaim(refreshToken).getExpiration().getTime();
             JwtBlackList.addBlackList(accessToken, accessExpire);
             JwtBlackList.addBlackList(refreshToken, refreshExpire);
+            evict("memberByEmail", jwtProvider.parseClaim(accessToken).getSubject());
         }catch (JwtException | IllegalArgumentException e){
             log.warn("토큰 로그아웃 블랙리스트 등록 실패");
         }
@@ -86,6 +91,15 @@ public class LoginService {
         } catch (AuthenticationException e) {
             log.warn("인증 실패: {}", e.getMessage());
             throw e;
+        }
+    }
+
+    private void evict(String cacheName, String email){
+        String emailKeyMd5 = "login-member:" + org.springframework.util.DigestUtils
+                .md5DigestAsHex(email.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        Cache cache = cacheManager.getCache(cacheName);
+        if(cache != null){
+            cache.evictIfPresent(emailKeyMd5);
         }
     }
 }

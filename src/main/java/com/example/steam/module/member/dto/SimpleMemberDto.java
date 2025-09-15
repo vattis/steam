@@ -2,12 +2,11 @@ package com.example.steam.module.member.dto;
 
 import com.example.steam.module.friendship.domain.FriendshipState;
 import com.example.steam.module.member.domain.Member;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Jackson용
 @Getter
 public class SimpleMemberDto {
     private Long id;

@@ -3,6 +3,7 @@ package com.example.steam.module.comment.presentation;
 import com.example.steam.module.comment.application.ProfileCommentService;
 import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.dto.SimpleMemberDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -30,8 +31,8 @@ public class ProfileCommentController {
 
     @DeleteMapping("/profileComment/{profileComment}")
     public String deleteProfileComment(@PathVariable("profileComment") Long profileCommentId, Principal principal){
-        Member member = memberService.findMemberByEmail(principal.getName());
-        profileCommentService.deleteProfileComment(profileCommentId, member);
+        SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
+        profileCommentService.deleteProfileComment(profileCommentId, member.getId());
         return "redirect:/profile/" + member.getId();
     }
 }

@@ -4,6 +4,7 @@ import com.example.steam.core.utils.page.PageConst;
 import com.example.steam.module.comment.domain.ProfileComment;
 import com.example.steam.module.comment.repository.ProfileCommentRepository;
 import com.example.steam.module.member.domain.Member;
+import com.example.steam.module.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ class ProfileCommentServiceTest {
 
     @InjectMocks private ProfileCommentService profileCommentService;
     @Mock private ProfileCommentRepository profileCommentRepository;
+    @Mock private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp(){
@@ -88,7 +90,7 @@ class ProfileCommentServiceTest {
         given(profileCommentRepository.findById(profileComment.getId())).willReturn(Optional.of(profileComment));
 
         //when
-        boolean result = profileCommentService.deleteProfileComment(profileComment.getId(), member);
+        boolean result = profileCommentService.deleteProfileComment(profileComment.getId(), member.getId());
 
         //then
         assertThat(result).isTrue();
@@ -105,7 +107,7 @@ class ProfileCommentServiceTest {
         given(profileCommentRepository.findById(profileComment.getId())).willReturn(Optional.of(profileComment));
 
         //when
-        boolean result = profileCommentService.deleteProfileComment(profileComment.getId(), otherMember);
+        boolean result = profileCommentService.deleteProfileComment(profileComment.getId(), otherMember.getId());
 
 
         //then
