@@ -58,4 +58,16 @@ public class MemberUserDetails implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
+    public static MemberUserDetails createUserDetails(Long id, String email, String password, String nickname, Role role){
+        List<String> roles = new ArrayList<>();
+        roles.add(role.getLabel());
+        return MemberUserDetails.builder()
+                .id(id)
+                .username(email)
+                .password(password)
+                .currentMemberDto(CurrentMemberDto.of(id, nickname, email))
+                .roles(roles)
+                .build();
+    }
 }

@@ -58,8 +58,8 @@ public class MemberService {
     }
 
     //이메일을 통한 회원 검색
-    @Cacheable(value="memberByEmail",
-            key = "'login-member:' + T(org.springframework.util.DigestUtils).md5DigestAsHex(#email.bytes)",
+    @Cacheable(cacheNames="login-member::email:memberDto",
+            key = "T(org.springframework.util.DigestUtils).md5DigestAsHex(#email.bytes)",
             unless = "#result == null")
     public SimpleMemberDto findMemberDtoByEmail(String email){
         Member member = memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);

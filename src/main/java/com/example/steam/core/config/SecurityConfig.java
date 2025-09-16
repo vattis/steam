@@ -4,6 +4,7 @@ import com.example.steam.core.filter.JwtAuthenticationFilter;
 import com.example.steam.core.security.jwt.JwtProvider;
 import com.example.steam.module.login.application.LoginService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -24,7 +25,7 @@ public class SecurityConfig {
     private final LoginService loginService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtProvider jwtProvider) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtProvider jwtProvider, CacheManager cacheManager) throws Exception {
         return httpSecurity
                 .httpBasic(AbstractHttpConfigurer::disable) //기본 인증 로그인 비활성화
                 .csrf(AbstractHttpConfigurer::disable) //서버에 인증정보를 보관하지 않기 때문에 csrf 보호 비활성화
@@ -38,6 +39,6 @@ public class SecurityConfig {
                         .requestMatchers("/library/**", "/logout").authenticated()
                         .anyRequest().authenticated())
                 .exceptionHandling(a->a.accessDeniedPage("/noAuthorities"))
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, loginService), UsernamePasswordAuthenticationFilter.class).build();
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, loginService, cacheManager), UsernamePasswordAuthenticationFilter.class).build();
     }
 }

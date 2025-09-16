@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -24,6 +26,7 @@ import java.util.Set;
 public class JwtAuthenticationFilter extends GenericFilterBean {
     private final JwtProvider jwtProvider;
     private final LoginService loginService;
+    private final CacheManager cacheManager;
 
     //request에서 token을 추출 -> 유효성 검사 -> authentication 변환 -> SecurityContext에 authentication 저장
     @Override
@@ -40,6 +43,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
         String token = jwtProvider.resolveAccessToken(request);
         if(StringUtils.hasText(token)) {
+            if(isBlacklisted(token)){
+                log.info("유효하지 않은 토큰: 블랙리스트 됨");
+                SecurityContextHolder.clearContext(); //스레드 로컬을 비워줌?
+                response.sendRedirect("/login");
+            }
             try{
                 if(jwtProvider.validateToken(token)){
                     Authentication auth = jwtProvider.getAuthentication(token);
@@ -70,4 +78,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             "/.well-known",
             "/error"
     );
+
+    private boolean isBlacklisted(String token){
+        Cache cache = cacheManager.getCache("blacklist::jwt:time");
+        if(cache == null) return false;
+        return cache.get(token) != null;
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.steam.module.login.application;
 
-import com.example.steam.core.security.jwt.JwtBlackList;
 import com.example.steam.core.security.jwt.JwtProvider;
 import com.example.steam.core.security.jwt.JwtToken;
 import com.example.steam.module.login.dto.LoginForm;
@@ -11,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,9 +50,9 @@ public class LoginService {
             String refreshToken = jwtProvider.resolveRefreshToken(request);
             long accessExpire = jwtProvider.parseClaim(accessToken).getExpiration().getTime();
             long refreshExpire = jwtProvider.parseClaim(refreshToken).getExpiration().getTime();
-            JwtBlackList.addBlackList(accessToken, accessExpire);
-            JwtBlackList.addBlackList(refreshToken, refreshExpire);
-            evict("memberByEmail", jwtProvider.parseClaim(accessToken).getSubject());
+            addBlacklist(accessToken, accessExpire);
+            addBlacklist(refreshToken, refreshExpire);
+            evict("login-member::email:memberDto", jwtProvider.parseClaim(accessToken).getSubject());
         }catch (JwtException | IllegalArgumentException e){
             log.warn("토큰 로그아웃 블랙리스트 등록 실패");
         }
@@ -95,11 +95,17 @@ public class LoginService {
     }
 
     private void evict(String cacheName, String email){
-        String emailKeyMd5 = "login-member:" + org.springframework.util.DigestUtils
+        String emailKeyMd5 = org.springframework.util.DigestUtils
                 .md5DigestAsHex(email.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         Cache cache = cacheManager.getCache(cacheName);
         if(cache != null){
             cache.evictIfPresent(emailKeyMd5);
         }
+    }
+
+    @CachePut(cacheNames = "blacklist::jwt:time",
+            key = "#token", unless = "#result == null")
+    public Long addBlacklist(String token, Long expire){
+        return expire;
     }
 }

@@ -1,12 +1,15 @@
 package com.example.steam.core.security.jwt;
 
 import com.example.steam.module.member.application.CustomUserDetailsService;
+import com.example.steam.module.member.domain.MemberUserDetails;
+import com.example.steam.module.member.dto.MemberAuthenticationDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -80,11 +85,12 @@ public class JwtProvider {
         if(claims.get("auth") == null){
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
-        UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+        MemberAuthenticationDto authenticationDto = userDetailsService.loadMemberAuthenticationDtoByJwt(accessToken, claims.getSubject());
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .toList();
-        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
+        MemberUserDetails memberUserDetails = MemberUserDetails.createUserDetails(authenticationDto.getId(), authenticationDto.getEmail(), null, authenticationDto.getNickname(), authenticationDto.getRole());
+        return new UsernamePasswordAuthenticationToken(memberUserDetails, "", authorities);
     }
 
     //토큰 검증 메서드

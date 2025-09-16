@@ -35,7 +35,9 @@ public class RedisCacheConfig {
                 .prefixCacheNameWith("steam-cache::");
 
         Map<String, RedisCacheConfiguration> cacheConfig = new HashMap<>();
-        cacheConfig.put("login-member", redisCacheConfiguration.entryTtl(Duration.ofMinutes(30)));
+        cacheConfig.put("login-member::email:memberDto", redisCacheConfiguration.entryTtl(Duration.ofMinutes(30)));
+        cacheConfig.put("login-member::jwt:authDto", redisCacheConfiguration.entryTtl(Duration.ofMinutes(30)));
+        cacheConfig.put("blacklist::jwt:time", redisCacheConfiguration.entryTtl(Duration.ofMinutes(30)));
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
