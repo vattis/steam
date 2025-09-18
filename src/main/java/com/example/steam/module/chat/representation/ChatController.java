@@ -1,10 +1,11 @@
 package com.example.steam.module.chat.representation;
 
+import com.example.steam.module.chat.adapter.RedisChatPublisher;
 import com.example.steam.module.chat.application.ChatRoomService;
 import com.example.steam.module.chat.application.ChatService;
 import com.example.steam.module.member.application.MemberService;
-import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.dto.SimpleMemberDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -25,21 +26,16 @@ public class ChatController {
     private final ChatService chatService;
     private final MemberService memberService;
     private final ChatRoomService chatRoomService;
+    private final RedisChatPublisher redisChatPublisher;
 
 
     //채팅 보내기
     @MessageMapping("/chat/{chatRoomId}/send")
     public void sendChat(@DestinationVariable Long chatRoomId,
                            @Payload String content,
-                         Principal principal) {
+                         Principal principal) throws JsonProcessingException {
+
         SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
-        chatService.sendMessage(chatRoomId, member.getId(), content);
+        redisChatPublisher.publishMessage(chatRoomId, member.getId(), content);
     }
-
-    @GetMapping("/ping")
-    @ResponseBody
-    public String ping(){
-        return "pong";
-    }
-
 }

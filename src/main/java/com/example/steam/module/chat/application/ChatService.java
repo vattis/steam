@@ -14,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,9 +37,11 @@ public class ChatService {
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+
 
     //메세지 보내기
-    public Chat sendMessage(Long chatRoomId, Long memberId, String message){
+    public ChatDto sendMessage(Long chatRoomId, Long memberId, String message){
         if(message.length() > 400){
             log.info("너무 긴 메세지 전송 시도");
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE);
@@ -47,13 +51,10 @@ public class ChatService {
         if(!chatRoom.checkMember(memberId)){
             log.info("권한이 없는 채팅 시도: 채팅 권한이 없는 유저의 채팅 : ChatRoom = {}, memberId = {}, memberId1 = {}, memberId2 = {}",
                     chatRoomId, memberId, chatRoom.getMember1().getId(), chatRoom.getMember2().getId());
-            return null;
+            throw new AccessDeniedException("채팅 권한 없음");
         }
         Chat chat = chatRepository.save(Chat.of(member, chatRoom, message));
-        ChatDto chatDto = ChatDto.from(chat);
-        log.info("[WS OUT] /sub/chat/{} -> {}", chatRoomId, chatDto);
-        messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chatDto);
-        return chat;
+        return ChatDto.from(chat);
     }
 
     //채팅방 메세지 불러오기

@@ -1,4 +1,4 @@
-package com.example.steam.core.config;
+package com.example.steam.core.config.redis;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
