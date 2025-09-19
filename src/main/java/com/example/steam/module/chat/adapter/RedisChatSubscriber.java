@@ -31,7 +31,9 @@ public class RedisChatSubscriber implements MessageListener {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        log.info("[REDIS] recv chan={}, body='{}'", channel, payload);
         messagingTemplate.convertAndSend("/sub/chat/" + chatRoomId, chatDto);
+        log.info("[STOMP] broadcast to /sub/chat/{}", chatRoomId);
         log.debug("[WS BROADCAST] {} <- {}", chatRoomId, chatDto.getId());
     }
 }

@@ -7,6 +7,7 @@ import com.example.steam.module.member.application.MemberService;
 import com.example.steam.module.member.dto.SimpleMemberDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -20,6 +21,7 @@ import java.security.Principal;
 
 @Profile("!load")
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
@@ -34,7 +36,7 @@ public class ChatController {
     public void sendChat(@DestinationVariable Long chatRoomId,
                            @Payload String content,
                          Principal principal) throws JsonProcessingException {
-
+        log.info("[STOMP] SEND hit: room={}, payload='{}'", chatRoomId, content);
         SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         redisChatPublisher.publishMessage(chatRoomId, member.getId(), content);
     }

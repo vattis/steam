@@ -28,6 +28,7 @@ public class RedisChatPublisher {
         ChatDto chatDto = chatService.sendMessage(chatRoomId, memberId, message);
         try{
             log.info("[WS OUT] /sub/chat/{} -> {}", chatRoomId, chatDto);
+            log.info("[REDIS] publish room={}, body='{}'", chatRoomId, message);
             redisTemplate.convertAndSend("chat:chatRoomId:" + chatRoomId, objectMapper.writeValueAsString(chatDto));
         }catch(JsonProcessingException e){
             log.error("메세지 직렬화 실패: {}", chatRoomId, e);

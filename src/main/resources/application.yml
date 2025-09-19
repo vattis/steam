@@ -4,7 +4,7 @@ spring:
       "local": "common, h2, embedded_redis"
       "dev": "common, mysql, embedded_redis"
       "prod": "common, mysql"
-      "dev-load-test": "common, mysql, load"
+      "dev-load-test": "common, mysql, embedded_redis, load"
 ---
 
 spring:
