@@ -1,10 +1,11 @@
 spring:
   profiles:
     group:
-      "local": "common, h2, embedded_redis"
-      "dev": "common, mysql, embedded_redis"
-      "prod": "common, mysql"
-      "dev-load-test": "common, mysql, embedded_redis, load"
+      "local": "common, h2, embedded_redis, mail-jwt"
+      "dev": "common, mysql-dev, embedded_redis, mail-jwt"
+      "prod": "common, mysql-prod, redis, mail-jwt-prod"
+      "dev-load-test": "common, mysql-prod, mail-jwt-prod, redis, load"
+
 ---
 
 spring:
@@ -22,25 +23,57 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: mail-jwt
   jwt:
     secret: YW5kcmV3MDI3MzkyNzg2Mjk0NzQ2Mjk1NjUyOTM3NjQ5NQ==
   mail:
-    mail:
-      host: smtp.gmail.com
-      port: 587
-      username: superhsk00@gmail.com
-      password: kvaelytnqmpofrfy
-      properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
-              required: true
-            connectiontimeout: 5000
-            timeout: 5000
-            writetimeout: 5000
-        auth-code-expiration-millis: 1800000
+    host: smtp.gmail.com
+    port: 587
+    username: superhsk00@gmail.com
+    password: kvaelytnqmpofrfy
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+      auth-code-expiration-millis: 1800000
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: mail-jwt-prod
+  jwt:
+    secret: ${JWT_SECRET}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+      auth-code-expiration-millis: 1800000
+
 
 
 ---
@@ -67,11 +100,31 @@ spring:
 spring:
   config:
     activate:
-      on-profile: mysql
+      on-profile: mysql-dev
   datasource:
     url: jdbc:mysql://localhost:3306/steam?serverTimezone=Asia/Seoul
     username: root
     password: nexonhsk00
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+---
+
+
+spring:
+  config:
+    activate:
+      on-profile: mysql-prod
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/steam
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -133,4 +186,18 @@ spring:
       host: 127.0.0.1
       ssl:
         enabled: true
+      database: 0
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: redis
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
+      ssl:
+        enabled: false
       database: 0
