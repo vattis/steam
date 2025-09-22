@@ -13,7 +13,7 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       DB_HOST: db
       DB_PORT: 3306
-      DB_USERNAME: root
+      DB_USERNAME: superhsk00
       DB_PASSWORD: nexonhsk00
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -28,23 +28,24 @@ services:
   db:
     image: mysql:8.0
     restart: unless-stopped
-    command: ["mysqld","--default-authentication-plugin=mysql_native_password"]
+    command: ["mysqld","--default-authentication-plugin=caching_sha2_password"]
     environment:
       MYSQL_DATABASE: steam
-      MYSQL_USER: appuser
+      MYSQL_USER: superhsk00
       MYSQL_PASSWORD: nexonhsk00
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_ROOT_PASSWORD: nexonhsk00
     volumes:
       - db-data:/var/lib/mysql
-    networks: [app-net]
+    networks:
+      - steam-network
     healthcheck:
       test: ["CMD-SHELL","mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
-      ports:
-        - "3306:3306"
+    ports:
+      - "3306:3306"
 
   redis:
     image: redis:7-alpine
@@ -52,18 +53,18 @@ services:
     command: ["redis-server","--appendonly","yes"]
     volumes:
       - redis-data:/data
-    networks: [app-net]
+    networks:
+      - steam-network
     healthcheck:
       test: ["CMD","redis-cli","ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    # 개발 중 호스트에서 직접 접속 필요하면 주석 해제
     # ports:
     #   - "6379:6379"
 
 networks:
-  app-net:
+  steam-network:
 
 volumes:
   db-data:

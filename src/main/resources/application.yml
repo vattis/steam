@@ -5,6 +5,7 @@ spring:
       "dev": "common, mysql-dev, embedded_redis, mail-jwt"
       "prod": "common, mysql-prod, redis, mail-jwt-prod"
       "dev-load-test": "common, mysql-prod, mail-jwt-prod, redis, load"
+      "test": "common, h2, mail-jwt"
 
 ---
 
@@ -133,28 +134,6 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: dev
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh,health,beans,metrics,info,threaddump,headdump,prometheus
-  endpoint:
-    health:
-      show-details: always
-    metrics:
-      distribution:
-        percentiles:
-          http.server.requests: 0.5,0.95,0.99
-        percentiles-histogram:
-          http.server.requests: true
-
 ---
 spring:
   config:
