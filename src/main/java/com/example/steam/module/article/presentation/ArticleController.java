@@ -42,7 +42,7 @@ public class ArticleController {
         Page<ArticleDto> articlePage = articleService.findAllByGalleryId(gallery.getId(), pageNo).map(ArticleDto::from);
         model.addAttribute("articleDto", articlePage);
         model.addAttribute("galleryId", gallery.getId());
-        return "/gallery/gallery";
+        return "gallery/gallery";
     }
 
     //개시물 작성 폼으로 이동
@@ -52,7 +52,7 @@ public class ArticleController {
         ArticleWriteForm articleWriteForm = ArticleWriteForm.of(galleryName);
         model.addAttribute("articleWriteForm", articleWriteForm);
         model.addAttribute("galleryName", gallery.getProduct().getName());
-        return "/article/writeArticle";
+        return "article/writeArticle";
     }
 
     //게시물 작성
@@ -75,7 +75,7 @@ public class ArticleController {
         Page<ArticleCommentDto> articleCommentDtoPage = articleCommentService.findArticleCommentByArticleId(articleId, pageNo).map(ArticleCommentDto::from);
         DetailArticleWithCommentDto detailArticleWithCommentDto = DetailArticleWithCommentDto.of(DetailArticleDto.from(article), articleCommentDtoPage);
         model.addAttribute("articleCommentDto", detailArticleWithCommentDto);
-        return "/article/article";
+        return "article/article";
     }
 
     //게시물 검색
@@ -92,7 +92,7 @@ public class ArticleController {
         model.addAttribute("articleDtos", articleDtos);
         model.addAttribute("galleryName", galleryName);
         model.addAttribute("searchWord", searchWord);
-        return "/article/search-article";
+        return "article/search-article";
     }
 
     //게시물 삭제

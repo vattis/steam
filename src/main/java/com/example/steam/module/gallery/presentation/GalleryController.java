@@ -36,7 +36,7 @@ public class GalleryController {
             model.addAttribute("ownedGalleries", ownedGalleries);
         }
         model.addAttribute("galleries", galleries);
-        return "/gallery/gallery-list";
+        return "gallery/gallery-list";
     }
 
     //갤러리 검색
@@ -47,6 +47,6 @@ public class GalleryController {
         Page<SimpleGalleryDto> galleryDtos = galleryService.search(searchWord, pageNo).map(SimpleGalleryDto::from);
         model.addAttribute("galleries", galleryDtos);
         model.addAttribute("searchWord", searchWord);
-        return "/gallery/gallery-search";
+        return "gallery/gallery-search";
     }
 }

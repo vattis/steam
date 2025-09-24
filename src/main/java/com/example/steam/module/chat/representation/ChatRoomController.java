@@ -31,9 +31,9 @@ public class ChatRoomController {
         ChatRoom chatRoom = chatRoomService.getChatRoomByMemberIds(partnerId, loginMember.getId());
         if(!chatRoom.checkMember(loginMember.getId())){
             log.info("권한이 없는 채팅방 입장 시도: chatRoom = {} , member = {}", chatRoom.getId(), loginMember.getId());
-            return "/main";
+            return "main";
         }
         model.addAttribute("chatRoomDto", ChatRoomDto.from(chatRoom, loginMember.getId()));
-        return "/chat/chat-room";
+        return "chat/chat-room";
     }
 }

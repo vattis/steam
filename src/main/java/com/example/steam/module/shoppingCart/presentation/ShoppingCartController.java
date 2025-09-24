@@ -30,7 +30,7 @@ public class ShoppingCartController {
         SimpleMemberDto member = memberService.findMemberDtoByEmail(principal.getName());
         Page<SimpleShoppingCartProductDto> shoppingCartProductPage = shoppingCartService.getShoppingCartProducts(member.getId(), pageNo).map(SimpleShoppingCartProductDto::from);
         model.addAttribute("shoppingCartProductPage", shoppingCartProductPage);
-        return "/member/shopping-cart";
+        return "member/shopping-cart";
     }
 
 

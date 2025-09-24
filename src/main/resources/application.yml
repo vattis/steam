@@ -24,7 +24,10 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/
-
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    check-template-location: true
 ---
 
 spring:

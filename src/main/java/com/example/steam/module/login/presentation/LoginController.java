@@ -75,6 +75,6 @@ public class LoginController {
 
     @PostMapping("login/test")
     public String test(){
-        return "/main";
+        return "main";
     }
 }

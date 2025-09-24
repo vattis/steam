@@ -40,16 +40,16 @@ public class ProductController {
         Pageable pageable;
         if(filter == null){
             pageable = PageRequest.of(pageNo, PageConst.PRODUCTS_BANNER_SIZE);
-            html = "/shop";
+            html = "product/shop";
         } else if(filter.equals("popular")){
             pageable = PageRequest.of(pageNo, PageConst.PRODUCT_PAGE_SIZE);
-            html = "/popular-product";
+            html = "product/popular-product";
         } else if(filter.equals("discount")){
             pageable = PageRequest.of(pageNo, PageConst.PRODUCT_PAGE_SIZE);
-            html = "/discount-product";
+            html = "product/discount-product";
         } else{
             pageable = PageRequest.of(pageNo, PageConst.PRODUCTS_BANNER_SIZE);
-            html = "/shop";
+            html = "product/shop";
         }
         Page<SimpleProductBannerDto> discountProducts = productService.findDiscountProductBanner(pageable);
         Page<SimpleProductBannerDto> popularProducts = productService.findTop5PopularProductBanner();
@@ -65,7 +65,7 @@ public class ProductController {
         model.addAttribute("product", productDto);
         model.addAttribute("productCommentDtoPage", productCommentDtoPage);
         model.addAttribute("productWithComment", new ProductWithCommentDto(productDto, productCommentDtoPage));
-        return "/product/product";
+        return "product/product";
     }
 
     @GetMapping("/product/search")
@@ -79,7 +79,7 @@ public class ProductController {
         model.addAttribute("searchWord", searchWord);
         model.addAttribute("searchTag", searchTag);
         model.addAttribute("searchResults", products);
-        return "/product/searchProduct";
+        return "product/searchProduct";
     }
 
 }

@@ -82,7 +82,7 @@ public class MemberController {
             MemberGameDto selectedGame = memberGameService.findDtoById(selectedGameId);
             model.addAttribute("selectedGame", selectedGame);
         }
-        return "/member/library";
+        return "member/library";
     }
 
     //유저 프로필 이동
@@ -90,12 +90,12 @@ public class MemberController {
     public String gotoMyPage(@PathVariable("memberId") Long memberId, @RequestParam(name = "commentPageNum", required = false, defaultValue = "0") int commentPageNum, Model model) {
         ProfileDto profileDto = memberService.getProfile(memberId, PageRequest.of(commentPageNum, PageConst.PROFILE_COMMENT_PAGE_SIZE));
         model.addAttribute("profileDto", profileDto);
-        return "/member/profile";
+        return "member/profile";
     }
 
     @GetMapping("/members/search")
     public String gotoMemberSearchPage(){
-        return "/member/member-search";
+        return "member/member-search";
     }
 
     @GetMapping("/members")
@@ -107,6 +107,6 @@ public class MemberController {
         Page<SimpleMemberDto> simpleMemberDtos =  memberService.searchMember(MemberSearch.of(searchTag, searchWord), pageNo, principal).map(SimpleMemberDto::from);
         Page<SimpleMemberDto> result = memberService.attachFriendState(simpleMemberDtos, principal);
         model.addAttribute("members", result);
-        return "/member/member-search";
+        return "member/member-search";
     }
 }

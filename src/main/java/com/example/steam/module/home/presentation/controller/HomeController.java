@@ -25,6 +25,6 @@ public class HomeController {
     public String gotoHome(Model model){
         Page<SimpleProductBannerDto> products = productService.findTop5PopularProductBanner();
         model.addAttribute("products", products);
-        return "/main";
+        return "main";
     }
 }
