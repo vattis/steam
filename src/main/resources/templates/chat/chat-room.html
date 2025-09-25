@@ -237,7 +237,7 @@
     // STOMP 연결/구독 (native WebSocket)
     function connectStomp(){
         const wsUrl = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + WS_ENDPOINT;
-        const socket = new WebSocket(wsUrl);
+        const socket = new WebSocket(wsUrl, ['v12.stomp','v11.stomp','v10.stomp']);
         stomp = Stomp.over(socket);
         stomp.debug = null; // 필요 시 주석처리
         stomp.heartbeat.outgoing = 10000;
