@@ -13,12 +13,12 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       DB_HOST: db
       DB_PORT: 3306
-      DB_USERNAME: superhsk00
-      DB_PASSWORD: nexonhsk00
+      DB_USERNAME: sup****
+      DB_PASSWORD: nex****
       REDIS_HOST: redis
       REDIS_PORT: 6379
       JWT_SECRET: YW5kcmV3MDI3MzkyNzg2Mjk0NzQ2Mjk1NjUyOTM3NjQ5NQ==
-      MAIL_USERNAME: superhsk00@gmail.com
+      MAIL_USERNAME: sup****@gmail.com
       MAIL_PASSWORD: kvaelytnqmpofrfy
     ports:
       - "8080:8080"
@@ -31,9 +31,9 @@ services:
     command: ["mysqld","--default-authentication-plugin=caching_sha2_password"]
     environment:
       MYSQL_DATABASE: steam
-      MYSQL_USER: superhsk00
-      MYSQL_PASSWORD: nexonhsk00
-      MYSQL_ROOT_PASSWORD: nexonhsk00
+      MYSQL_USER: sup****
+      MYSQL_PASSWORD: nex****
+      MYSQL_ROOT_PASSWORD: nex****
     volumes:
       - db-data:/var/lib/mysql
     networks:
