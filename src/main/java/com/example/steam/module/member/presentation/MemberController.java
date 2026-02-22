@@ -9,6 +9,7 @@ import com.example.steam.module.member.domain.Member;
 import com.example.steam.module.member.dto.MemberGameDto;
 import com.example.steam.module.member.dto.MemberSearch;
 import com.example.steam.module.member.dto.ProfileDto;
+import com.example.steam.module.member.dto.SignUpForm;
 import com.example.steam.module.member.dto.SimpleMemberDto;
 import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.member.repository.MemberRepository;
@@ -36,6 +37,18 @@ public class MemberController {
     private final MemberGameRepository memberGameRepository;
     private final FriendshipService friendshipService;
     private int tempAuthNum; //임시 인증 번호 저장소 이후에 redis에 저장 예정
+
+    @GetMapping("/sign-up")
+    public String signUpForm(Model model) {
+        model.addAttribute("signUpForm", new SignUpForm());
+        return "signup";
+    }
+
+    @PostMapping("/sign-up")
+    public String signUp(@ModelAttribute SignUpForm signUpForm) {
+        memberService.addMember(signUpForm);
+        return "redirect:/login";
+    }
 
     @ResponseBody
     @PostMapping("/auth/sendEmail/{email}") //사용자 이메일 인증 이메일 전송

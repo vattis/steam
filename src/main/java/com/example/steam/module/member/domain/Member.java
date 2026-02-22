@@ -91,6 +91,7 @@ public class Member {
                 .nickname(nickname)
                 .email(email)
                 .password(password)
+                .role(Role.USER)
                 .build();
         member.setShoppingCart(ShoppingCart.of(member));
         return member;

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Steam 회원가입</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1b2838;
+            color: #c7d5e0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .signup-container {
+            width: 400px;
+            margin: 60px auto;
+            background-color: #2a475e;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+        }
+
+        h2 {
+            text-align: center;
+            color: #66c0f4;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            color: #c7d5e0;
+            font-weight: bold;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 0;
+            background-color: #1b2838;
+            border: 1px solid #3b6e8f;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #66c0f4;
+            outline: none;
+            background-color: #223c4f;
+        }
+
+        input:disabled {
+            background-color: #1a2633;
+            color: #6a7a8a;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-row input {
+            flex: 1;
+        }
+
+        .btn-small {
+            padding: 12px 16px;
+            background-color: #3b6e8f;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .btn-small:hover {
+            background-color: #4a8ab0;
+        }
+
+        .btn-small:disabled {
+            background-color: #2a4a5e;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background-color: #66c0f4;
+            border: none;
+            border-radius: 4px;
+            color: #1b2838;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 30px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #417a9b;
+            color: #fff;
+        }
+
+        .btn-primary:disabled {
+            background-color: #4a6a7a;
+            cursor: not-allowed;
+        }
+
+        .message {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            color: #ff6961;
+        }
+
+        .success-message {
+            color: #3ecf8e;
+        }
+
+        .auth-section {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #66c0f4;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .verified-badge {
+            color: #3ecf8e;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 450px) {
+            .signup-container {
+                width: 90%;
+                margin: 50px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="signup-container">
+    <h2>회원가입</h2>
+    <form th:action="@{/sign-up}" th:object="${signUpForm}" method="post" id="signupForm">
+        <label for="email">이메일</label>
+        <div class="input-row">
+            <input type="email" th:field="*{email}" id="email" required/>
+            <button type="button" class="btn-small" id="sendAuthBtn" onclick="sendAuthEmail()">인증하기</button>
+        </div>
+        <span class="message error-message" id="emailError"></span>
+        <span class="message success-message" id="emailSuccess"></span>
+        <div class="verified-badge" id="verifiedBadge" style="display:none;">✓ 이메일 인증 완료</div>
+
+        <!-- 인증번호 입력 섹션 -->
+        <div class="auth-section" id="authSection">
+            <label for="authCode">인증번호</label>
+            <div class="input-row">
+                <input type="text" id="authCode" placeholder="6자리 인증번호 입력" maxlength="6"/>
+                <button type="button" class="btn-small" id="verifyBtn" onclick="verifyAuthCode()">확인</button>
+            </div>
+            <span class="message error-message" id="authError"></span>
+        </div>
+
+        <label for="nickname">닉네임</label>
+        <input type="text" th:field="*{nickname}" id="nickname" required/>
+
+        <label for="password">비밀번호</label>
+        <input type="password" th:field="*{password}" id="password" required/>
+
+        <label for="passwordConfirm">비밀번호 확인</label>
+        <input type="password" th:field="*{passwordConfirm}" id="passwordConfirm" required/>
+        <span class="message error-message" id="passwordError"></span>
+
+        <input type="hidden" id="emailVerified" name="emailVerified" value="false"/>
+
+        <button type="submit" class="btn-primary" id="submitBtn" disabled>가입하기</button>
+    </form>
+
+    <div class="login-link">
+        이미 계정이 있으신가요? <a href="/login">로그인</a>
+    </div>
+</div>
+
+<script>
+    let isEmailVerified = false;
+
+    function sendAuthEmail() {
+        const email = document.getElementById('email').value;
+        const sendBtn = document.getElementById('sendAuthBtn');
+        const emailError = document.getElementById('emailError');
+        const emailSuccess = document.getElementById('emailSuccess');
+        const authSection = document.getElementById('authSection');
+
+        if (!email) {
+            emailError.textContent = '이메일을 입력해주세요.';
+            emailError.style.display = 'block';
+            emailSuccess.style.display = 'none';
+            return;
+        }
+
+        sendBtn.disabled = true;
+        sendBtn.textContent = '전송 중...';
+        emailError.style.display = 'none';
+
+        fetch('/auth/sendEmail/' + encodeURIComponent(email), {
+            method: 'POST'
+        })
+        .then(response => response.text())
+        .then(data => {
+            emailSuccess.textContent = '인증번호가 전송되었습니다.';
+            emailSuccess.style.display = 'block';
+            authSection.style.display = 'block';
+            sendBtn.textContent = '재전송';
+            sendBtn.disabled = false;
+        })
+        .catch(error => {
+            emailError.textContent = '인증번호 전송에 실패했습니다.';
+            emailError.style.display = 'block';
+            sendBtn.textContent = '인증하기';
+            sendBtn.disabled = false;
+        });
+    }
+
+    function verifyAuthCode() {
+        const email = document.getElementById('email').value;
+        const authCode = document.getElementById('authCode').value;
+        const authError = document.getElementById('authError');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const verifiedBadge = document.getElementById('verifiedBadge');
+        const authSection = document.getElementById('authSection');
+        const emailInput = document.getElementById('email');
+        const sendBtn = document.getElementById('sendAuthBtn');
+
+        if (!authCode || authCode.length !== 6) {
+            authError.textContent = '6자리 인증번호를 입력해주세요.';
+            authError.style.display = 'block';
+            return;
+        }
+
+        verifyBtn.disabled = true;
+
+        fetch('/auth/check/' + encodeURIComponent(email) + '/' + authCode)
+        .then(response => response.json())
+        .then(isValid => {
+            if (isValid) {
+                isEmailVerified = true;
+                document.getElementById('emailVerified').value = 'true';
+                authSection.style.display = 'none';
+                verifiedBadge.style.display = 'block';
+                emailInput.readOnly = true;
+                emailInput.style.backgroundColor = '#1a2633';
+                emailInput.style.color = '#6a7a8a';
+                sendBtn.style.display = 'none';
+                document.getElementById('emailSuccess').style.display = 'none';
+                updateSubmitButton();
+            } else {
+                authError.textContent = '인증번호가 일치하지 않습니다.';
+                authError.style.display = 'block';
+                verifyBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            authError.textContent = '인증 확인에 실패했습니다.';
+            authError.style.display = 'block';
+            verifyBtn.disabled = false;
+        });
+    }
+
+    function updateSubmitButton() {
+        const submitBtn = document.getElementById('submitBtn');
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('passwordConfirm').value;
+        const nickname = document.getElementById('nickname').value;
+
+        submitBtn.disabled = !(isEmailVerified && password && passwordConfirm && nickname);
+    }
+
+    // 입력 필드 변경 감지
+    document.getElementById('password').addEventListener('input', updateSubmitButton);
+    document.getElementById('passwordConfirm').addEventListener('input', updateSubmitButton);
+    document.getElementById('nickname').addEventListener('input', updateSubmitButton);
+
+    // 폼 제출 시 검증
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('passwordConfirm').value;
+        const passwordError = document.getElementById('passwordError');
+
+        if (!isEmailVerified) {
+            e.preventDefault();
+            alert('이메일 인증을 완료해주세요.');
+            return;
+        }
+
+        if (password !== passwordConfirm) {
+            e.preventDefault();
+            passwordError.textContent = '비밀번호가 일치하지 않습니다.';
+            passwordError.style.display = 'block';
+        } else {
+            passwordError.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
