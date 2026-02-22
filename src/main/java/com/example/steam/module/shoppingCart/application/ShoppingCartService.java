@@ -9,6 +9,8 @@ import com.example.steam.module.order.repository.OrdersRepository;
 import com.example.steam.module.product.application.ProductService;
 import com.example.steam.module.product.domain.Product;
 import com.example.steam.module.product.repository.ProductRepository;
+import com.example.steam.module.member.domain.MemberGame;
+import com.example.steam.module.member.repository.MemberGameRepository;
 import com.example.steam.module.shoppingCart.domain.ShoppingCart;
 import com.example.steam.module.shoppingCart.domain.ShoppingCartProduct;
 import com.example.steam.module.shoppingCart.repository.ShoppingCartProductRepository;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -32,6 +35,7 @@ public class ShoppingCartService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final OrdersRepository ordersRepository;
+    private final MemberGameRepository memberGameRepository;
     private final MemberService memberService;
     private final ProductService productService;
 
@@ -72,6 +76,23 @@ public class ShoppingCartService {
     //장바구니를 주문으로 변경
     public Orders makeShoppingCartToOrder(Member member){
         ShoppingCart shoppingCart = member.getShoppingCart();
-        return ordersRepository.save(shoppingCart.toOrders());
+
+        // 장바구니 상품 리스트 복사 (toOrders에서 clear되기 전에)
+        List<ShoppingCartProduct> cartProducts = new java.util.ArrayList<>(shoppingCart.getShoppingCartProducts());
+
+        // 장바구니의 각 상품을 회원 라이브러리에 추가
+        for (ShoppingCartProduct cartProduct : cartProducts) {
+            MemberGame memberGame = MemberGame.of(cartProduct.getProduct(), member);
+            memberGameRepository.save(memberGame);
+        }
+
+        // 주문 생성 (장바구니 비우기 포함)
+        Orders order = shoppingCart.toOrders();
+        Orders savedOrder = ordersRepository.save(order);
+
+        // 장바구니 상품 DB에서 삭제
+        shoppingCartProductRepository.deleteAll(cartProducts);
+
+        return savedOrder;
     }
 }

@@ -9,17 +9,24 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class SimpleGalleryDto {
-    private String galleryName;
+    private Long id;
+    private String name;
+    private String description;
+    private String imageUrl;
 
     public static SimpleGalleryDto makeDtoWithMemberGame(MemberGame memberGame) {
         return SimpleGalleryDto.builder()
-                .galleryName(memberGame.getProduct().getName())
+                .name(memberGame.getProduct().getName())
+                .imageUrl(memberGame.getProduct().getImageUrl())
                 .build();
     }
 
     public static SimpleGalleryDto from(Gallery gallery) {
         return SimpleGalleryDto.builder()
-                .galleryName(gallery.getProduct().getName())
+                .id(gallery.getId())
+                .name(gallery.getProduct().getName())
+                .description(gallery.getProduct().getName() + " 갤러리")
+                .imageUrl(gallery.getProduct().getImageUrl())
                 .build();
     }
 }

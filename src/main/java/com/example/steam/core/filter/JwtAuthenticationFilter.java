@@ -42,23 +42,38 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }
 
         String token = jwtProvider.resolveAccessToken(request);
+        boolean isApiRequest = uri.startsWith("/api/");
+
         if(StringUtils.hasText(token)) {
             if(isBlacklisted(token)){
                 log.info("유효하지 않은 토큰: 블랙리스트 됨");
-                SecurityContextHolder.clearContext(); //스레드 로컬을 비워줌?
+                SecurityContextHolder.clearContext();
+                if (isApiRequest) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
                 response.sendRedirect("/login");
+                return;
             }
             try{
                 if(jwtProvider.validateToken(token)){
                     Authentication auth = jwtProvider.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }else{
+                    if (isApiRequest) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        return;
+                    }
                     response.sendRedirect("/login");
                     return;
                 }
             }catch (ExpiredJwtException e){
-                log.info("토큰 만료 : /login 리다이렉트");
+                log.info("토큰 만료");
                 loginService.logout(request, response);
+                if (isApiRequest) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
                 response.sendRedirect("/login");
                 return;
             }

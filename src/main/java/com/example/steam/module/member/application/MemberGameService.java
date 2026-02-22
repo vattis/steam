@@ -35,9 +35,13 @@ public class MemberGameService {
         return memberGameRepository.findTop5DtoByMember(member, PageRequest.of(0, 5));
     }
 
-    public boolean isOwned(Member member,Long memberGameId){
-        MemberGame memberGame = memberGameRepository.findById(memberGameId).orElseThrow(NoSuchElementException::new);
-        Member memberGameMember = memberGame.getMember();
-        return memberGameMember.getId().equals(member.getId());
+    public boolean isOwned(Member member, Long productId){
+        return memberGameRepository.existsByMemberAndProductId(member, productId);
+    }
+
+    public MemberGameDto findDtoByMemberAndProductId(Member member, Long productId){
+        MemberGame memberGame = memberGameRepository.findByMemberAndProductId(member, productId)
+                .orElseThrow(NoSuchElementException::new);
+        return MemberGameDto.from(memberGame);
     }
 }

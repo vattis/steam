@@ -1,7 +1,6 @@
 package com.example.steam.module.comment.dto;
 
 import com.example.steam.module.comment.domain.ArticleComment;
-import com.example.steam.module.member.dto.SimpleMemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,17 +14,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ArticleCommentDto {
     private Long id;
-    private Long articleId;
     private String content;
-    private SimpleMemberDto memberDto;
+    private Long memberId;
+    private String nickname;
+    private String avatarUrl;
     private LocalDateTime createdTime;
 
     public static ArticleCommentDto from(ArticleComment articleComment){
         return ArticleCommentDto.builder()
                 .id(articleComment.getId())
-                .articleId(articleComment.getArticle().getId())
                 .content(articleComment.getContent())
-                .memberDto(SimpleMemberDto.from(articleComment.getMember()))
+                .memberId(articleComment.getMember().getId())
+                .nickname(articleComment.getMember().getNickname())
+                .avatarUrl(articleComment.getMember().getAvatarUrl())
                 .createdTime(articleComment.getCreatedTime())
                 .build();
     }

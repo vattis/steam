@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberGameRepository extends JpaRepository<MemberGame, Long> {
     List<MemberGame> findAllByMember(Member member);
     List<MemberGame> findTop5ByMemberOrderByLastPlayedTimeDesc(Member member);
+    Optional<MemberGame> findByMemberAndProductId(Member member, Long productId);
+    boolean existsByMemberAndProductId(Member member, Long productId);
 
     @Query("""
         SELECT new com.example.steam.module.member.dto.MemberGameDto(

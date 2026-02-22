@@ -50,6 +50,10 @@ public class Article {
     @Builder.Default
     private int likes = 0;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private int viewCount = 0;
+
     @Column(name="deleted", nullable = false)
     @ColumnDefault("false")
     @Builder.Default
@@ -92,6 +96,10 @@ public class Article {
     }
     public void addComment(ArticleComment articleComment){
         this.comments.add(articleComment);
+    }
+
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 
 }

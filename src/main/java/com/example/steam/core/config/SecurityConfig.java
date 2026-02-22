@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Profile("!load")
 @Configuration
@@ -23,10 +24,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final LoginService loginService;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtProvider jwtProvider, CacheManager cacheManager) throws Exception {
         return httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .httpBasic(AbstractHttpConfigurer::disable) //기본 인증 로그인 비활성화
                 .csrf(AbstractHttpConfigurer::disable) //서버에 인증정보를 보관하지 않기 때문에 csrf 보호 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -34,7 +37,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests((authorizeRequest)->authorizeRequest
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/static/**", "/login", "/sign-up", "/sign-in", "/shop/**", "/product/**", "/articles", "/auth/**", "/favicon.ico", "/error", "/.well-known/**", "/actuator/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/static/**", "/login", "/sign-up", "/sign-in", "/shop/**", "/product/**", "/articles", "/auth/**", "/favicon.ico", "/error", "/.well-known/**", "/actuator/**", "/api/login", "/api/me", "/api/shop/**", "/api/product/**", "/api/profile/**", "/api/galleries/**", "/api/gallery/**", "/api/article/**", "/api/friendships/**").permitAll()
                         .requestMatchers("/login/test").hasRole("USER")
                         .requestMatchers("/library/**", "/logout").authenticated()
                         .anyRequest().authenticated())

@@ -66,10 +66,22 @@ public class ArticleService {
         return articleRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
+    //단일 article 조회 (조회수 증가)
+    public Article findArticleWithView(Long id){
+        Article article = articleRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        article.incrementViewCount();
+        return article;
+    }
+
     //article 저장
     public Article saveArticle(ArticleWriteForm articleWriteForm, Long memberId){
         Member member = memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
-        Gallery gallery = galleryRepository.findByProduct_Name(articleWriteForm.getGalleryName()).orElseThrow(NoSuchElementException::new);
+        Gallery gallery;
+        if (articleWriteForm.getGalleryId() != null) {
+            gallery = galleryRepository.findById(articleWriteForm.getGalleryId()).orElseThrow(NoSuchElementException::new);
+        } else {
+            gallery = galleryRepository.findByProduct_Name(articleWriteForm.getGalleryName()).orElseThrow(NoSuchElementException::new);
+        }
         Article article = Article.of(gallery, member, articleWriteForm.getTitle(), articleWriteForm.getContent());
         return articleRepository.save(article);
     }
